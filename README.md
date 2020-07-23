@@ -1,4 +1,7 @@
 # Fifa-AutoBuyer
+
+This tool currently works for Fifa 20 webapp, will try to support when Fifa 21 is released.
+
 Fifa-AutoBuyer TamperMonkey Scripts
 
 Add Tamper Monkey Extenstion To your Browser.

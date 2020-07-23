@@ -1,11 +1,11 @@
-  
+
 // ==UserScript==
 // @name         FUT 20 Autobuyer with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      1.0
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
 // @description  FUT Snipping Tool
-// @author       CK Algos
+// @author       Tiebe_V
 // @match        https://www.easports.com/uk/fifa/ultimate-team/web-app/*
 // @match        https://www.easports.com/fifa/ultimate-team/web-app/*
 // @grant        none
@@ -18,6 +18,7 @@
     };
 
     window.searchCount = 0;
+    window.profit = 0
 
     window.initStatisics = function() {
         window.futStatistics = {
@@ -34,8 +35,9 @@
             transferList: window.createTimeout(0, 0),
         };
     };
-    
+
     window.bids = [];
+    window.minB = 150;
 
     window.createTimeout = function(time, interval) {
         return {
@@ -80,12 +82,16 @@
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
 
         searchCriteria.maxBid = window.getMaxSearchBid(300000, 800000);
+        searchCriteria.minBid = window.minB;
+        if (window.minB >= 600){
+            window.minB = 150
+        }
 
         services.Item.clearTransferMarketCache();
 
         services.Item.searchTransferMarket(searchCriteria, 1).observe(this, (function(sender, response) {
             if (response.success) {
-                writeToDebugLog('Received ' + response.data.items.length + ' items');
+                writeToDebugLog('Received ' + response.data.items.length + ' items. MinBid is ' + searchCriteria.minBid);
 
                 var maxPurchases = 3;
                 if ($('#ab_max_purchases').val() !== '') {
@@ -104,24 +110,21 @@
 
                 for (var i = 0; i < response.data.items.length; i++) {
                     var player = response.data.items[i];
-                    var auction = player._auction; 
+                    var auction = player._auction;
 
                     var buyNowPrice = auction.buyNowPrice;
                     var tradeId = auction.tradeId;
                     var tradeState = auction.tradeState;
 
-                    var expires = services.Localization.localizeAuctionTimeRemaining(auction.expires); 
+                    var expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
                     writeToDebugLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + auction.tradeId + '] [' + expires + '] ' + buyNowPrice);
 
-                    writeToDebugLog('Buy Price :' + jQuery('#ab_buy_price').val()); 
-                    
-                    
                     if (buyNowPrice <= parseInt(jQuery('#ab_buy_price').val()) && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
                         buyPlayer(player, buyNowPrice);
-                        
+
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
-                            
+
                             if (window.bids.length > 300) {
                                 window.bids.shift();
                             }
@@ -129,16 +132,22 @@
                     }
                 };
             }
+            else {
+                writeToLog('WARNING!');
+                window.autoBuyerActive = false;
+            }
         }));
     }
 
     window.buyPlayer = function(player, price) {
         services.Item.bid(player, price).observe(this, (function(sender, data){
             if (data.success) {
-                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ' bought');
+                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + " Bought");
                 var sellPrice = parseInt(jQuery('#ab_sell_price').val());
                 if (sellPrice !== 0 && !isNaN(sellPrice)) {
                     writeToLog(' -- Selling for: ' + sellPrice);
+                    window.profit += (sellPrice/100*95) - price;
+                    writeToLog('Current profit: ' + window.profit);
                     window.sellRequestTimeout = window.setTimeout(function() {
                         services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                     }, window.getRandomWait());
@@ -147,6 +156,7 @@
                 writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ' buy failed');
             }
         }));
+        window.minB += 50;
     }
 
     window.getSellBidPrice = function(bin) {
@@ -203,16 +213,4 @@
         services.Item.clearSoldItems().observe(this, function(t, response) {});
     }
 
-    function getLeagueIdByAbbr(abbr) {
-        var leagues = Object.values(repositories.TeamConfig._leagues._collection['11']._leagues._collection);
-        var leagueId = 0;
-        for(var i = 0; i < leagues.length; i++) {
-            if (abbr === leagues[i].abbreviation) {
-                leagueId = leagues[i].id;
-                break;
-            }
-        }
-
-        return leagueId;
-    }
 })();

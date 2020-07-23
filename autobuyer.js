@@ -91,7 +91,7 @@
 
         services.Item.searchTransferMarket(searchCriteria, 1).observe(this, (function(sender, response) {
             if (response.success) {
-                writeToDebugLog('Received ' + response.data.items.length + ' items. MinBid is ' + searchCriteria.minBid);
+                writeToDebugLog('Received ' + response.data.items.length + ' items.');
 
                 var maxPurchases = 3;
                 if ($('#ab_max_purchases').val() !== '') {

@@ -2,8 +2,8 @@
 // ==UserScript==
 // @name         FUT 20 Autobuyer with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      1.0
-// @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
+// @version      1.1
+// @updateURL    https://github.com/TiebeVercoutter/FIFA-20-Autobuyer/blob/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       Tiebe_V
 // @match        https://www.easports.com/uk/fifa/ultimate-team/web-app/*
@@ -111,11 +111,7 @@
                 for (var i = 0; i < response.data.items.length; i++) {
                     var player = response.data.items[i];
                     var auction = player._auction;
-
                     var buyNowPrice = auction.buyNowPrice;
-                    var tradeId = auction.tradeId;
-                    var tradeState = auction.tradeState;
-
                     var expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
                     writeToDebugLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + auction.tradeId + '] [' + expires + '] ' + buyNowPrice);
 
@@ -147,7 +143,6 @@
                 if (sellPrice !== 0 && !isNaN(sellPrice)) {
                     writeToLog(' -- Selling for: ' + sellPrice);
                     window.profit += (sellPrice/100*95) - price;
-                    writeToLog('Current profit: ' + window.profit);
                     window.sellRequestTimeout = window.setTimeout(function() {
                         services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                     }, window.getRandomWait());

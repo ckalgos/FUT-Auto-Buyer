@@ -5,8 +5,8 @@
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyermenu.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
-// @match        https://www.easports.com/uk/fifa/ultimate-team/web-app/*
-// @match        https://www.easports.com/fifa/ultimate-team/web-app/*
+// @match        https://www.ea.com/uk/fifa/ultimate-team/web-app/*
+// @match        https://www.ea.com/fifa/ultimate-team/web-app/*
 // @grant        none
 // ==/UserScript==
 

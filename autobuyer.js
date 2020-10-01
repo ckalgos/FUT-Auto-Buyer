@@ -1,12 +1,12 @@
   
 // ==UserScript==
-// @name         FUT 20 Autobuyer with TamperMonkey
+// @name         FUT 21 Autobuyer with TamperMonkey
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
-// @match        https://www.ea.com/uk/fifa/ultimate-team/web-app/*
+// @match        https://www.ea.com/*/fifa/ultimate-team/web-app/*
 // @match        https://www.ea.com/fifa/ultimate-team/web-app/*
 // @grant        none
 // ==/UserScript==

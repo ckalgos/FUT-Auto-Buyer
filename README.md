@@ -1,6 +1,6 @@
-# Fifa-AutoBuyer
+# Fifa21-AutoBuyer
 
-This tool currently works for Fifa 20 webapp, will try to support when Fifa 21 is released.
+This tool currently works for Fifa 21 webapp.
 
 Installation And Demo - https://www.youtube.com/watch?v=M3Jn4FI1nUw
 

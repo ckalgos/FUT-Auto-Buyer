@@ -27,7 +27,7 @@
         }
 
         window.autoBuyerActive = true;
-        window.notify('Autobyer Started');
+        window.notify('Autobuyer Started');
     }
 
     window.deactivateAutoBuyer = function() {
@@ -36,7 +36,7 @@
         }
 
         window.autoBuyerActive = false;
-        window.notify('Autobyer Stopped');
+        window.notify('Autobuyer Stopped');
     }
 
     utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController)
@@ -66,7 +66,7 @@
     };
 
     function addTabItem() {
-        if (jQuery('h1.title').html() == 'Home') {
+        if (services.Localization && jQuery('h1.title').html() === services.Localization.localize("navbar.label.home")) {
             getAppMain().getRootViewController().showGameView = function showGameView() {
                 if (this._presentedViewController instanceof UTGameTabBarController)
                     return !1;
@@ -166,7 +166,7 @@
 
     function createAutoBuyerInterface()
     {
-        if (jQuery('h1.title').html() == 'Home') {
+        if (services.Localization && jQuery('h1.title').html() === services.Localization.localize("navbar.label.home")) {
             window.hasLoadedAll = true;
         }
 
@@ -238,6 +238,16 @@
                         '   <div class="buttonInfo">' + 
                         '       <div class="inputBox">' + 
                         '           <input type="tel" class="numericInput" id="ab_buy_price" placeholder="5000">' + 
+                        '       </div>' + 
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' + 
+                        '       <span class="secondary label">Bid Price:</span>' + 
+                        '   </div>' + 
+                        '   <div class="buttonInfo">' + 
+                        '       <div class="inputBox">' + 
+                        '           <input type="tel" class="numericInput" id="ab_max_bid_price" placeholder="5000">' + 
                         '       </div>' + 
                         '   </div>' +
                         '</div>' +

@@ -78,9 +78,8 @@
         }
 
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
-
-        searchCriteria.maxBid = window.getMaxSearchBid(300000, 800000);
-
+ 
+        searchCriteria.maxBid = window.getMaxSearchBid(300000,800000); 
         services.Item.clearTransferMarketCache();
 
         services.Item.searchTransferMarket(searchCriteria, 1).observe(this, (function(sender, response) {
@@ -109,15 +108,29 @@
                     var buyNowPrice = auction.buyNowPrice;
                     var tradeId = auction.tradeId;
                     var tradeState = auction.tradeState;
+                    var currentBid = auction.currentBid || auction.startingBid;
+                    var isBid = auction.currentBid;
+                    var bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
 
                     var expires = services.Localization.localizeAuctionTimeRemaining(auction.expires); 
                     writeToDebugLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + auction.tradeId + '] [' + expires + '] ' + buyNowPrice);
-
-                    writeToDebugLog('Buy Price :' + jQuery('#ab_buy_price').val()); 
                     
                     
                     if (buyNowPrice <= parseInt(jQuery('#ab_buy_price').val()) && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
-                        buyPlayer(player, buyNowPrice);
+                        writeToDebugLog('Buy Price :' + jQuery('#ab_buy_price').val()); 
+                        buyPlayer(player, buyNowPrice,true);
+                        
+                        if (!window.bids.includes(auction.tradeId)) {
+                            window.bids.push(auction.tradeId);
+                            
+                            if (window.bids.length > 300) {
+                                window.bids.shift();
+                            }
+                        }
+                    } else if (bidPrice && currentBid  <= ((isBid) ? window.getSellBidPrice(bidPrice) : bidPrice) && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
+
+                        writeToDebugLog('Bid Price :' + bidPrice); 
+                        buyPlayer(player, ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid));
                         
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
@@ -132,19 +145,19 @@
         }));
     }
 
-    window.buyPlayer = function(player, price) {
+    window.buyPlayer = function(player, price, isBin) {
         services.Item.bid(player, price).observe(this, (function(sender, data){
             if (data.success) {
-                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ' bought');
+                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ?' bought' : ' bid successfully'));
                 var sellPrice = parseInt(jQuery('#ab_sell_price').val());
-                if (sellPrice !== 0 && !isNaN(sellPrice)) {
+                if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
                     writeToLog(' -- Selling for: ' + sellPrice);
                     window.sellRequestTimeout = window.setTimeout(function() {
                         services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                     }, window.getRandomWait());
                 }
             } else {
-                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ' buy failed');
+                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ?' buy failed' : ' bid failed'));
             }
         }));
     }
@@ -167,6 +180,26 @@
         }
 
         return bin - 1000;
+    };
+
+    window.getBuyBidPrice = function(bin) {
+        if (bin <= 1000) {
+            return bin + 50;
+        }
+
+        if (bin > 1000 && bin <= 10000) {
+            return bin + 100;
+        }
+
+        if (bin > 10000 && bin <= 50000) {
+            return bin + 250;
+        }
+
+        if (bin > 50000 && bin <= 100000) {
+            return bin + 500;
+        }
+
+        return bin + 1000;
     };
 
     window.updateTransferList = function() {

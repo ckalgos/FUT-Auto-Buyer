@@ -326,17 +326,14 @@
     };
 
     window.getRandomWait = function() {
-        var addedTime = 0;
-        if (window.searchCount % 15 === 0) {
-            addedTime = 10000;
-        }
-
+        var addedTime = 0; 
+        
         var wait = [7, 15];
         if (jQuery('#ab_wait_time').val() !== '') {
             wait = jQuery('#ab_wait_time').val().split('-');
         }
         window.searchCount++;
-        return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000) + 5000 + addedTime;
+        return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000);
     };
 
     window.getTimerProgress = function (timer) {

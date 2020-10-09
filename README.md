@@ -11,4 +11,6 @@ Then Navigate to Create Script -> Then to Utilities
 Under Utilities -> File (Import the two Scripts and Install it).
 In Ultimate Team Web App, New Menu will be added as AutoBuyer.
 
+If you like the tool and wanted to contribute -> https://www.patreon.com/i_m_ck13
+
 Enjoy...

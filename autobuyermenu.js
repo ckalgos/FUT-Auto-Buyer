@@ -20,12 +20,14 @@
 
     window.sellList = [];
     window.autoBuyerActive = false;
+    window.botStartTime = null; 
 
     window.activateAutoBuyer = function() {
         if (window.autoBuyerActive) {
             return;
-        }
+        } 
 
+        window.botStartTime = new Date();
         window.autoBuyerActive = true;
         window.notify('Autobuyer Started');
     }
@@ -35,6 +37,9 @@
             return;
         }
 
+        window.previousBid == null;
+        window.previousMaxBid == null;
+        window.botStartTime = null;
         window.autoBuyerActive = false;
         window.notify('Autobuyer Stopped');
     }
@@ -278,6 +283,26 @@
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
                         '           <input type="text" class="numericInput" id="ab_max_purchases" placeholder="3">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Stop After:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_stop_after" placeholder="1H">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Concurrent Search Request:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_con_request" placeholder="1">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>'

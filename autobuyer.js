@@ -25,13 +25,14 @@
             unsoldItems: '-',
             activeTransfers: '-',
             availableItems: '-',
-            coins: '-',
+            coins: '-'
         };
 
         window.timers = {
             search: window.createTimeout(0, 0),
             coins: window.createTimeout(0, 0),
             transferList: window.createTimeout(0, 0),
+            bidCheck: window.createTimeout(0, 0),
         };
     };
     
@@ -46,10 +47,22 @@
 
     window.processor = window.setInterval(function() {
         if (window.autoBuyerActive) {
+
+            window.stopIfRequired();
+
             var time = (new Date()).getTime();
 
             if (window.timers.search.finish == 0 || window.timers.search.finish <= time) {
-                window.searchFutMarket(null, null, null);
+
+                let searchRequest = 1;
+
+                if ($('#ab_con_request').val() !== '') {
+                    searchRequest = $('#ab_con_request').val();
+                }
+
+                while ( searchRequest-- > 0) {
+                    window.searchFutMarket(null, null, null);
+                }
 
                 window.timers.search = window.createTimeout(time, window.getRandomWait());
             }
@@ -65,6 +78,12 @@
 
                 window.timers.transferList = window.createTimeout(time, 30000);
             }
+
+            if (window.timers.bidCheck.finish == 0 || window.timers.bidCheck.finish <= time) {
+                window.watchBidItems();
+
+                window.timers.bidCheck = window.createTimeout(time, 1000);
+            }
         } else {
             window.initStatisics();
         }
@@ -72,18 +91,52 @@
         window.updateStatistics();
     }, 500);
 
+    window.stopIfRequired = function () {
+        var stopAfter = "1H";
+        if ($('#ab_stop_after').val() !== '') {
+            stopAfter = $('#ab_stop_after').val();
+        }
+        let interval = stopAfter[stopAfter.length - 1].toUpperCase();
+        let time = parseInt(stopAfter.substring(0, stopAfter.length - 1));
+
+        let multipler = (interval === "M") ? 60 : ((interval === "H") ? 3600 : 1)
+        if (time) {
+            time = time * multipler;
+
+            let currentTime = new Date();
+
+            let timeElapsed = (currentTime.getTime() - window.botStartTime.getTime()) / 1000;
+
+            if (timeElapsed >= time) {
+                window.deactivateAutoBuyer();
+            }
+        }
+    }
+
     window.searchFutMarket = function(sender, event, data) {
         if (!window.autoBuyerActive) {
             return;
         }
 
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
- 
-        searchCriteria.maxBid = window.getMaxSearchBid(300000,800000); 
+
+        let tempSearchCriteria = { ...searchCriteria };
+
+        tempSearchCriteria.minBid = (window.searchCount % 22 !== 0 && (Math.floor((window.searchCount / 22) % 2) === 0) ? window.getBuyBidPrice(window.previousBid || searchCriteria.minBid || 100) : searchCriteria.minBid);
+
+        tempSearchCriteria.maxBid = (window.searchCount % 22 === 0 || window.searchCount % 22 !== 0 && (Math.floor((window.searchCount / 22) % 2) === 1) ? window.getBuyBidPrice(window.previousMaxBid || searchCriteria.maxBid || 100) : searchCriteria.maxBid);
+
+        while (tempSearchCriteria.minBid >= tempSearchCriteria.maxBid) {
+            tempSearchCriteria.maxBid = window.getBuyBidPrice(tempSearchCriteria.maxBid);
+        }
+
+        window.previousBid = tempSearchCriteria.minBid;
+        window.previousMaxBid = tempSearchCriteria.maxBid;       
+         
         services.Item.clearTransferMarketCache();
 
-        services.Item.searchTransferMarket(searchCriteria, 1).observe(this, (function(sender, response) {
-            if (response.success) {
+        services.Item.searchTransferMarket(tempSearchCriteria, 1).observe(this, (function(sender, response) {
+            if (response.success && window.autoBuyerActive) {
                 writeToDebugLog('Received ' + response.data.items.length + ' items');
 
                 var maxPurchases = 3;
@@ -105,9 +158,7 @@
                     var player = response.data.items[i];
                     var auction = player._auction; 
 
-                    var buyNowPrice = auction.buyNowPrice;
-                    var tradeId = auction.tradeId;
-                    var tradeState = auction.tradeState;
+                    var buyNowPrice = auction.buyNowPrice; 
                     var currentBid = auction.currentBid || auction.startingBid;
                     var isBid = auction.currentBid;
                     var bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
@@ -130,8 +181,7 @@
                     } else if (bidPrice && currentBid  <= ((isBid) ? window.getSellBidPrice(bidPrice) : bidPrice) && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
 
                         writeToDebugLog('Bid Price :' + bidPrice); 
-                        buyPlayer(player, ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid));
-                        
+                        buyPlayer(player, ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid)); 
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
                             
@@ -145,6 +195,59 @@
         }));
     }
 
+    window.watchBidItems = function () {
+        services.Item.requestWatchedItems().observe(this, function (t, response) {
+
+            var bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
+            var sellPrice = parseInt(jQuery('#ab_sell_price').val());
+
+            if (bidPrice) {
+                let outBidItems = response.data.items.filter(function (item) {
+                    return item.getAuctionData().isOutbid() && !item.getAuctionData().isExpired();
+                });
+
+                for (var i = 0; i < outBidItems.length; i++) {
+                    var player = outBidItems[i];
+                    var auction = player._auction;
+
+                    var isBid = auction.currentBid;
+
+                    var currentBid = auction.currentBid || auction.startingBid;
+
+                    var priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice; 
+
+                    if (currentBid <= priceToBid && priceToBid <= window.futStatistics.coins) {
+                        writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + bidPrice);
+                        buyPlayer(player, ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid));
+                        if (!window.bids.includes(auction.tradeId)) {
+                            window.bids.push(auction.tradeId);
+
+                            if (window.bids.length > 300) {
+                                window.bids.shift();
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (sellPrice && !isNaN(sellPrice)) {
+
+                let boughtItems = response.data.items.filter(function (item) {
+                    return item.getAuctionData().isBought();
+                });
+
+                for (var i = 0; i < boughtItems.length; i++) {
+                    var player = boughtItems[i];
+                    var auction = player._auction;
+                    writeToLog(' -- Selling for: ' + sellPrice);
+                    window.sellRequestTimeout = window.setTimeout(function () {
+                        services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
+                    }, window.getRandomWait());
+                }
+            }
+        });
+    }
+   
     window.buyPlayer = function(player, price, isBin) {
         services.Item.bid(player, price).observe(this, (function(sender, data){
             if (data.success) {
@@ -183,19 +286,19 @@
     };
 
     window.getBuyBidPrice = function(bin) {
-        if (bin <= 1000) {
+        if (bin < 1000) {
             return bin + 50;
         }
 
-        if (bin > 1000 && bin <= 10000) {
+        if (bin >= 1000 && bin < 10000) {
             return bin + 100;
         }
 
-        if (bin > 10000 && bin <= 50000) {
+        if (bin >= 10000 && bin < 50000) {
             return bin + 250;
         }
 
-        if (bin > 50000 && bin <= 100000) {
+        if (bin >= 50000 && bin < 100000) {
             return bin + 500;
         }
 
@@ -206,7 +309,11 @@
         services.Item.requestTransferItems().observe(this, function(t, response) {
             window.futStatistics.soldItems = response.data.items.filter(function(item) {
                 return item.getAuctionData().isSold();
-            }).length;
+            });
+
+            let soldItemsCount = window.futStatistics.soldItems.length;
+
+            response.data.items.reduce((a, b) => a + (isNaN(b.lastSalePrice) ? 0 : b.lastSalePrice), 0)
 
             window.futStatistics.unsoldItems = response.data.items.filter(function(item) {
                 return !item.getAuctionData().isSold() && item.getAuctionData().isExpired();
@@ -225,8 +332,8 @@
                 minSoldCount = Math.max(1, parseInt($('#ab_min_delete_count').val()));
             }
 
-            if (window.futStatistics.soldItems >= minSoldCount) {
-                writeToLog(window.futStatistics.soldItems + " item(s) sold");
+            if (soldItemsCount >= minSoldCount) {
+                writeToLog(soldItemsCount + " item(s) sold");
                 window.clearSoldItems();
             }
         });
@@ -234,18 +341,5 @@
 
     window.clearSoldItems = function() {
         services.Item.clearSoldItems().observe(this, function(t, response) {});
-    }
-
-    function getLeagueIdByAbbr(abbr) {
-        var leagues = Object.values(repositories.TeamConfig._leagues._collection['11']._leagues._collection);
-        var leagueId = 0;
-        for(var i = 0; i < leagues.length; i++) {
-            if (abbr === leagues[i].abbreviation) {
-                leagueId = leagues[i].id;
-                break;
-            }
-        }
-
-        return leagueId;
-    }
+    } 
 })();

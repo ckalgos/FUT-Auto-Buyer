@@ -233,17 +233,20 @@
             if (sellPrice && !isNaN(sellPrice)) {
 
                 let boughtItems = response.data.items.filter(function (item) {
-                    return item.getAuctionData().isBought();
+                    return item.getAuctionData().isWon();
                 });
 
                 for (var i = 0; i < boughtItems.length; i++) {
                     var player = boughtItems[i];
                     var auction = player._auction;
-                    writeToLog(' -- Selling for: ' + sellPrice);
+                    writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + '[' + player._auction.tradeId + '] -- Selling for: ' + sellPrice);
                     window.sellRequestTimeout = window.setTimeout(function () {
                         services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
+                        player.clearAuction();
                     }, window.getRandomWait());
                 }
+
+                services.Item.clearTransferMarketCache();
             }
         });
     }

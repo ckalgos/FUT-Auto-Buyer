@@ -238,8 +238,8 @@
                 });
 
                 for (var i = 0; i < boughtItems.length; i++) {
-                    var player = boughtItems[i];
-                    var auction = player._auction;
+                    let player = boughtItems[i];
+                    let auction = player._auction;
 
                     window.sellBids.push(auction.tradeId);
 

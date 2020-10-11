@@ -354,7 +354,7 @@
         var addedTime = 0; 
         
         var wait = [7, 15];
-        if (jQuery('#ab_wait_time').val() !== '') {
+        if (jQuery('#ab_wait_time').val()) {
             wait = jQuery('#ab_wait_time').val().split('-');
         }
         window.searchCount++;

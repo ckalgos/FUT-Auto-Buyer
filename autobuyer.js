@@ -244,10 +244,12 @@
                     window.sellBids.push(auction.tradeId);
 
                     writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + '[' + player._auction.tradeId + '] -- Selling for: ' + sellPrice);
+
+                    player.clearAuction();
+
                     window.sellRequestTimeout = window.setTimeout(function () {
                         services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                     }, window.getRandomWait());
-                    player.clearAuction();
                 }
 
                 services.Item.clearTransferMarketCache();

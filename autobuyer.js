@@ -25,7 +25,8 @@
             unsoldItems: '-',
             activeTransfers: '-',
             availableItems: '-',
-            coins: '-'
+            coins: '-',
+            coinsNumber : 0
         };
 
         window.timers = {
@@ -70,7 +71,7 @@
 
             if (window.timers.coins.finish == 0 || window.timers.coins.finish <= time) {
                 window.futStatistics.coins = services.User.getUser().coins.amount.toLocaleString();
-
+                window.futStatistics.coinsNumber = services.User.getUser().coins.amount;
                 window.timers.coins = window.createTimeout(time, 2500);
             }
 
@@ -121,22 +122,24 @@
 
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
 
-        let tempSearchCriteria = { ...searchCriteria };
-
-        tempSearchCriteria.minBid = (window.searchCount % 22 !== 0 && (Math.floor((window.searchCount / 22) % 2) === 0) ? window.getBuyBidPrice(window.previousBid || searchCriteria.minBid || 100) : searchCriteria.minBid);
-
-        tempSearchCriteria.maxBid = (window.searchCount % 22 === 0 || window.searchCount % 22 !== 0 && (Math.floor((window.searchCount / 22) % 2) === 1) ? window.getBuyBidPrice(window.previousMaxBid || searchCriteria.maxBid || 100) : searchCriteria.maxBid);
-
-        while (tempSearchCriteria.minBid >= tempSearchCriteria.maxBid) {
-            tempSearchCriteria.maxBid = window.getBuyBidPrice(tempSearchCriteria.maxBid);
+        if (!window.currentSearchCriteria) {
+            window.currentSearchCriteria = { ...searchCriteria };
         }
 
-        window.previousBid = tempSearchCriteria.minBid;
-        window.previousMaxBid = tempSearchCriteria.maxBid;       
-         
+        searchCriteria.minBid = (window.searchCount % 22 !== 0 && (Math.floor((window.searchCount / 22) % 2) === 0) ? window.getBuyBidPrice(window.previousBid || window.currentSearchCriteria.minBid || 100) : window.currentSearchCriteria.minBid);
+
+        searchCriteria.maxBid = (window.searchCount % 22 === 0 || window.searchCount % 22 !== 0 && (Math.floor((window.searchCount / 22) % 2) === 1) ? window.getBuyBidPrice(window.previousMaxBid || window.currentSearchCriteria.maxBid || 100) : window.currentSearchCriteria.maxBid);
+
+        while (searchCriteria.minBid >= searchCriteria.maxBid) {
+            searchCriteria.maxBid = window.getBuyBidPrice(searchCriteria.maxBid);
+        }
+
+        window.previousBid = searchCriteria.minBid;
+        window.previousMaxBid = searchCriteria.maxBid;       
+
         services.Item.clearTransferMarketCache();
 
-        services.Item.searchTransferMarket(tempSearchCriteria, 1).observe(this, (function(sender, response) {
+        services.Item.searchTransferMarket(searchCriteria, 1).observe(this, (function(sender, response) {
             if (response.success && window.autoBuyerActive) {
                 writeToDebugLog('Received ' + response.data.items.length + ' items');
 
@@ -215,11 +218,13 @@
 
                     var currentBid = auction.currentBid || auction.startingBid;
 
-                    var priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice; 
+                    var priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice;
 
-                    if (currentBid <= priceToBid && priceToBid <= window.futStatistics.coins) {
-                        writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + bidPrice);
-                        buyPlayer(player, ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid));
+                    var checkPrice = (isBid) ? window.getBuyBidPrice(currentBid) : currentBid; 
+
+                    if (currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
+                        writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + checkPrice);
+                        buyPlayer(player, checkPrice);
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
 

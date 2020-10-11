@@ -94,7 +94,7 @@
 
     window.stopIfRequired = function () {
         var stopAfter = "1H";
-        if ($('#ab_stop_after').val() !== '') {
+        if ($('#ab_stop_after').val()) {
             stopAfter = $('#ab_stop_after').val();
         }
         let interval = stopAfter[stopAfter.length - 1].toUpperCase();

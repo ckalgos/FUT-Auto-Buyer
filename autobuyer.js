@@ -37,6 +37,7 @@
     };
     
     window.bids = [];
+    window.sellBids = [];
 
     window.createTimeout = function(time, interval) {
         return {
@@ -233,17 +234,20 @@
             if (sellPrice && !isNaN(sellPrice)) {
 
                 let boughtItems = response.data.items.filter(function (item) {
-                    return item.getAuctionData().isWon();
+                    return item.getAuctionData().isWon() && !window.sellBids.includes(item._auction.tradeId);
                 });
 
                 for (var i = 0; i < boughtItems.length; i++) {
                     var player = boughtItems[i];
                     var auction = player._auction;
+
+                    window.sellBids.push(auction.tradeId);
+
                     writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + '[' + player._auction.tradeId + '] -- Selling for: ' + sellPrice);
                     window.sellRequestTimeout = window.setTimeout(function () {
                         services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
-                        player.clearAuction();
                     }, window.getRandomWait());
+                    player.clearAuction();
                 }
 
                 services.Item.clearTransferMarketCache();

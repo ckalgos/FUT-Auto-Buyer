@@ -144,15 +144,15 @@
                 });
 
                 for (var i = 0; i < response.data.items.length; i++) {
-                    var player = response.data.items[i];
-                    var auction = player._auction;
+                    let player = response.data.items[i];
+                    let auction = player._auction;
 
-                    var buyNowPrice = auction.buyNowPrice;
-                    var currentBid = auction.currentBid || auction.startingBid;
-                    var isBid = auction.currentBid;
-                    var bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
+                    let buyNowPrice = auction.buyNowPrice;
+                    let currentBid = auction.currentBid || auction.startingBid;
+                    let isBid = auction.currentBid;
+                    let bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
 
-                    var expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
+                    let expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
                     writeToDebugLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + auction.tradeId + '] [' + expires + '] ' + buyNowPrice);
 
 
@@ -196,16 +196,17 @@
                 });
 
                 for (var i = 0; i < outBidItems.length; i++) {
-                    var player = outBidItems[i];
-                    var auction = player._auction;
 
-                    var isBid = auction.currentBid;
+                    let player = outBidItems[i];
+                    let auction = player._auction;
 
-                    var currentBid = auction.currentBid || auction.startingBid;
+                    let isBid = auction.currentBid;
 
-                    var priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice;
+                    let currentBid = auction.currentBid || auction.startingBid;
 
-                    var checkPrice = (isBid) ? window.getBuyBidPrice(currentBid) : currentBid;
+                    let priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice;
+
+                    let checkPrice = (isBid) ? window.getBuyBidPrice(currentBid) : currentBid;
 
                     if (currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
                         writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + checkPrice);

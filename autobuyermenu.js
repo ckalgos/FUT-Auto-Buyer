@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyermenu.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
@@ -10,7 +10,7 @@
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
     window.UTAutoBuyerViewController = function () {
@@ -20,27 +20,23 @@
 
     window.sellList = [];
     window.autoBuyerActive = false;
-    window.botStartTime = null; 
+    window.botStartTime = null;
 
-    window.activateAutoBuyer = function() {
+    window.activateAutoBuyer = function () {
         if (window.autoBuyerActive) {
             return;
-        } 
-
-        window.currentSearchCriteria = null;
+        }
+         
         window.botStartTime = new Date();
         window.autoBuyerActive = true;
         window.notify('Autobuyer Started');
     }
 
-    window.deactivateAutoBuyer = function() {
+    window.deactivateAutoBuyer = function () {
         if (!window.autoBuyerActive) {
             return;
         }
 
-        window.currentSearchCriteria = null;
-        window.previousBid == null;
-        window.previousMaxBid == null;
         window.botStartTime = null;
         window.autoBuyerActive = false;
         window.notify('Autobuyer Stopped');
@@ -53,7 +49,7 @@
             this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch),
                 this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
             var t = gConfigurationModel.getConfigObject(models.ConfigurationModel.KEY_ITEMS_PER_PAGE)
-            , count = 1 + (utils.JS.isValid(t) ? t[models.ConfigurationModel.ITEMS_PER_PAGE.TRANSFER_MARKET] : 15);
+                , count = 1 + (utils.JS.isValid(t) ? t[models.ConfigurationModel.ITEMS_PER_PAGE.TRANSFER_MARKET] : 15);
             this._viewmodel.searchCriteria.count = count,
                 this._viewmodel.searchFeature = enums.ItemSearchFeature.MARKET;
             var view = this.getView();
@@ -65,7 +61,7 @@
                 view.addTarget(this, this._eMinBuyPriceChanged, UTMarketSearchFiltersView.Event.MIN_BUY_PRICE_CHANGE),
                 view.addTarget(this, this._eMaxBuyPriceChanged, UTMarketSearchFiltersView.Event.MAX_BUY_PRICE_CHANGE),
                 this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
-                                                            view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
+                    view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
                 this._squadContext ? isPhone() || view.addClass("narrow") : view.addClass("floating"),
                 view.getPlayerNameSearch().addTarget(this, this._ePlayerNameChanged, enums.Event.CHANGE),
                 view.__root.style = "width: 50%; float: left;";
@@ -159,20 +155,19 @@
                 }
                 return i.initWithViewControllers(t),
                     i.getView().addClass("game-navigation"),
-                    this.presentViewController(i, !0, function() {
-                    services.URL.hasDeepLinkURL() && services.URL.processDeepLinkURL()
-                }),
+                    this.presentViewController(i, !0, function () {
+                        services.URL.hasDeepLinkURL() && services.URL.processDeepLinkURL()
+                    }),
                     !0
             };
 
             getAppMain().getRootViewController().showGameView();
         } else {
-            window.setTimeout(addTabItem ,1000);
+            window.setTimeout(addTabItem, 1000);
         }
     };
 
-    function createAutoBuyerInterface()
-    {
+    function createAutoBuyerInterface() {
         if (services.Localization && jQuery('h1.title').html() === services.Localization.localize("navbar.label.home")) {
             window.hasLoadedAll = true;
         }
@@ -182,7 +177,7 @@
                 var view = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._view;
                 jQuery(view.__root.parentElement).prepend(
                     '<div id="InfoWrapper" class="ut-navigation-bar-view navbar-style-landscape">' +
-                    '   <h1 class="title">AUTOBUYER STATUS: <span id="ab_status"></span> | REQUEST COUNT: <span id="ab_request_count">0</span></h1>' + 
+                    '   <h1 class="title">AUTOBUYER STATUS: <span id="ab_status"></span> | REQUEST COUNT: <span id="ab_request_count">0</span></h1>' +
                     '   <div class="view-navbar-clubinfo">' +
                     '       <div class="view-navbar-clubinfo-data">' +
                     '           <div class="view-navbar-clubinfo-name">' +
@@ -199,16 +194,16 @@
                     '           </div>' +
                     '       </div>' +
                     '   </div>' +
-                    '   <div class="view-navbar-currency" style="margin-left: 10px;">' + 
-                    '       <div class="view-navbar-currency-coins" id="ab_coins"></div>' + 
+                    '   <div class="view-navbar-currency" style="margin-left: 10px;">' +
+                    '       <div class="view-navbar-currency-coins" id="ab_coins"></div>' +
                     '   </div>' +
-                    '   <div class="view-navbar-clubinfo">' + 
+                    '   <div class="view-navbar-clubinfo">' +
                     '       <div class="view-navbar-clubinfo-data">' +
                     '           <span class="view-navbar-clubinfo-name">Sold Items: <span id="ab-sold-items"></span></span>' +
                     '           <span class="view-navbar-clubinfo-name">Unsold Items: <span id="ab-unsold-items"></span></span>' +
                     '       </div>' +
                     '   </div>' +
-                    '   <div class="view-navbar-clubinfo" style="border: none;">' + 
+                    '   <div class="view-navbar-clubinfo" style="border: none;">' +
                     '       <div class="view-navbar-clubinfo-data">' +
                     '           <span class="view-navbar-clubinfo-name">Available Items: <span id="ab-available-items"></span></span>' +
                     '           <span class="view-navbar-clubinfo-name">Active transfers: <span id="ab-active-transfers"></span></span>' +
@@ -225,37 +220,37 @@
             if (jQuery('.search-prices').first().length) {
                 if (!jQuery('#ab_buy_price').length) {
                     jQuery('.search-prices').first().append(
-                        '<div class="search-price-header">' + 
-                        '   <h1 class="secondary">AB Settings:</h1>'+
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">AB Settings:</h1>' +
                         '</div>' +
-                        '<div class="price-filter">' + 
-                        '   <div class="info">' + 
-                        '       <span class="secondary label">Sell Price:</span><br/><small>Recieve After Tax: <span id="sell_after_tax">0</span></small>' + 
-                        '   </div>' + 
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Sell Price:</span><br/><small>Recieve After Tax: <span id="sell_after_tax">0</span></small>' +
+                        '   </div>' +
                         '   <div class="buttonInfo">' +
-                        '       <div class="inputBox">' + 
-                        '           <input type="tel" class="numericInput" id="ab_sell_price" placeholder="7000">' + 
-                        '       </div>' + 
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_sell_price" placeholder="7000">' +
+                        '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
-                        '   <div class="info">' + 
-                        '       <span class="secondary label">Buy Price:</span>' + 
-                        '   </div>' + 
-                        '   <div class="buttonInfo">' + 
-                        '       <div class="inputBox">' + 
-                        '           <input type="tel" class="numericInput" id="ab_buy_price" placeholder="5000">' + 
-                        '       </div>' + 
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Buy Price:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_buy_price" placeholder="5000">' +
+                        '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
-                        '   <div class="info">' + 
-                        '       <span class="secondary label">Bid Price:</span>' + 
-                        '   </div>' + 
-                        '   <div class="buttonInfo">' + 
-                        '       <div class="inputBox">' + 
-                        '           <input type="tel" class="numericInput" id="ab_max_bid_price" placeholder="5000">' + 
-                        '       </div>' + 
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Bid Price:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_max_bid_price" placeholder="5000">' +
+                        '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
@@ -322,11 +317,11 @@
 
     jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
 
-    jQuery(document).on('keyup', '#ab_sell_price', function(){
+    jQuery(document).on('keyup', '#ab_sell_price', function () {
         jQuery('#sell_after_tax').html((jQuery('#ab_sell_price').val() - ((parseInt(jQuery('#ab_sell_price').val()) / 100) * 5)).toLocaleString());
     });
 
-    window.updateAutoTransferListStat = function() {
+    window.updateAutoTransferListStat = function () {
         if (!window.autoBuyerActive) {
             return;
         }
@@ -334,30 +329,30 @@
         window.updateTransferList();
     };
 
-    window.writeToLog = function(message) {
+    window.writeToLog = function (message) {
         var $log = jQuery('#progressAutobuyer');
         message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
         $log.val($log.val() + message);
         $log.scrollTop($log[0].scrollHeight);
     };
 
-    window.writeToDebugLog = function(message) {
+    window.writeToDebugLog = function (message) {
         var $log = jQuery('#autoBuyerFoundLog');
         message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
         $log.val($log.val() + message);
         $log.scrollTop($log[0].scrollHeight);
     };
 
-    window.notify = function(message) {
+    window.notify = function (message) {
         services.Notification.queue([message, enums.UINotificationType.POSITIVE])
     };
 
-    window.getRandomWait = function() {
-        var addedTime = 0; 
-        
+    window.getRandomWait = function () {
+        var addedTime = 0;
+
         var wait = [7, 15];
         if (jQuery('#ab_wait_time').val()) {
-            wait = jQuery('#ab_wait_time').val().split('-');
+            wait = jQuery('#ab_wait_time').val().split('-').map(a => parseInt(a));
         }
         window.searchCount++;
         return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000);

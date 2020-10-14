@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
@@ -18,6 +18,14 @@
     };
 
     window.searchCount = 0;
+
+    window.errorCodeLookUp = {
+        '521': 'Server Rejected the request',
+        '512': 'Server Rejected the request',
+        '429': 'Bidding Rejected, too many request received from this user',
+        '426': 'Bidding Rejected, other user won the (card / bid)',
+        '461': 'Bidding Rejected, other user won the (card / bid)',
+    }
 
     window.initStatisics = function () {
         window.futStatistics = {
@@ -260,7 +268,7 @@
                     }, window.getRandomWait());
                 }
             } else {
-                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' buy failed' : ' bid failed'));
+                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' buy failed' : ' bid failed') + '\nError Code : ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
             }
         }));
     }

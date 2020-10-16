@@ -4,9 +4,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url] 
-[![LinkedIn][linkedin-shield]][linkedin-url]
- 
-<br />
+[![LinkedIn][linkedin-shield]][linkedin-url] 
 <p align="center"> 
   <h3 align="center">Fifa21 AutoBuyer</h3>
 
@@ -32,13 +30,13 @@
 * [Contact](#contact)
 
 <!-- installation -->
-## installation  
+## Installation  
 
 * Download the latest release from - [Latest Release](https://github.com/chithakumar13/Fifa21-AutoBuyer/releases/).
 * Add Tamper Monkey Extenstion To your Browser.
 * Navigate to Create Script -> Then to Utilities.
 * Under Utilities -> File (Import the two Scripts and Install it).
-* Installation And Demo - [Installation](https://www.youtube.com/watch?v=M3Jn4FI1nUw).
+* Installation And Demo - [Video Guide](https://www.youtube.com/watch?v=M3Jn4FI1nUw).
  
 Now in Ultimate Team Web App, new menu will be added as AutoBuyer. 
 
@@ -51,43 +49,43 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 * If specified the autobuyer will list the bought item for the specified price.
 * The tool will list all the cards in transfer target , make sure to move our cards to the club before running the tool to avoid losing the card. 
 
-###Buy Price
+### Buy Price
 * If specified the autobuyer will buy the card matching the search critieria for the price less than or equal to specified price.
 
-###Bid Price
+### Bid Price
 * If specified the autobuyer will bid on the card matching the search critieria for the price less than or equal to specified price.
 
-###Wait Time
+### Wait Time
 * The autobuyer will wait from the specified time before making the next search request.
 * Default Value (`7 - 15`).
 
-###Min clear count
+### Min clear count
 * The autobuyer will clear all the sold items from transfer list when the count exceeds the specified value.
 * Default Value (`10`).
 
-###Max purchases per search request
+### Max purchases per search request
 * Indicates the count of cards the tool should buy or bid from the results of each request.
 * Default Value (`3`).
 
-###Stop After
+### Stop After
 * If specified the tool will automatically stop.
 * Default Value (`1H`) (S for seconds, M for Minutes, H for hours).
 
-###Concurrent Search Request
+### Concurrent Search Request
 * If specified the tool will send multiple search request each time.
 * Default Value (`1`).
 * Allowed Value (`1 to 4`).
 
-###Pause For
+### Pause For
 * The parameter has a dependency on Cycle Amount 
 * The tool will pause for the specified interval , if the the number of search request in the given cycle matches the specified cycle amount.
 * Default Value (`0S`) (S for seconds, M for Minutes, H for hours). 
 
-###Cycle Amount 
+### Cycle Amount 
 * Indicates the amount of search request to be made before pausing the tool.
 * Default Value (`10`). 
 
-### Prerequisites
+## Prerequisites
 
 * To use this tool, the user should have access to the transfer market. 
 * Hence play the required number of games to get access to the transfer market before trying this tool.   
@@ -116,13 +114,11 @@ Any contributions you make are **greatly appreciated**.
 <!-- CONTACT -->
 ## Contact
 
-[@Instagram](https://www.instagram.com/i_m_ck13/) - chithakumar13@gmail.com
+Instagram - [@Instagram](https://www.instagram.com/i_m_ck13/) - chithakumar13@gmail.com
 
 Project Link: [https://github.com/chithakumar13/Fifa21-AutoBuyer](https://github.com/chithakumar13/Fifa21-AutoBuyer)
 
 <!-- MARKDOWN LINKS & IMAGES --> 
-
-https://img.shields.io/github/stars/chithakumar13/Fifa21-AutoBuyer.svg?style=flat-square
 
 [contributors-shield]: https://img.shields.io/github/contributors/chithakumar13/Fifa21-AutoBuyer.svg?style=flat-square
 [contributors-url]: https://github.com/chithakumar13/Fifa21-AutoBuyer/graphs/contributors

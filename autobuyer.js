@@ -315,14 +315,11 @@
 
     window.updateTransferList = function () {
         services.Item.requestTransferItems().observe(this, function (t, response) {
-            window.futStatistics.soldItems = response.data.items.filter(function (item) {
+            let soldItems = response.data.items.filter(function (item) {
                 return item.getAuctionData().isSold();
             });
 
-            let soldItemsCount = window.futStatistics.soldItems.length;
-
-            response.data.items.reduce((a, b) => a + (isNaN(b.lastSalePrice) ? 0 : b.lastSalePrice), 0)
-
+            window.futStatistics.soldItems = soldItems.length;
             window.futStatistics.unsoldItems = response.data.items.filter(function (item) {
                 return !item.getAuctionData().isSold() && item.getAuctionData().isExpired();
             }).length;
@@ -340,8 +337,8 @@
                 minSoldCount = Math.max(1, parseInt($('#ab_min_delete_count').val()));
             }
 
-            if (soldItemsCount >= minSoldCount) {
-                writeToLog(soldItemsCount + " item(s) sold");
+            if (window.futStatistics.soldItems >= minSoldCount) {
+                writeToLog(window.futStatistics.soldItems + " item(s) sold");
                 window.clearSoldItems();
             }
         });

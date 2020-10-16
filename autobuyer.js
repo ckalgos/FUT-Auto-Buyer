@@ -60,6 +60,8 @@
 
             window.stopIfRequired();
 
+            window.pauseIfRequired();
+
             var time = (new Date()).getTime();
 
             if (window.timers.search.finish == 0 || window.timers.search.finish <= time) {
@@ -123,6 +125,30 @@
         }
     }
 
+    window.pauseIfRequired = function () {
+        if (window.searchCountBeforePause <= 0) {
+            var pauseFor = "0S";
+            if ($('#ab_pause_for').val()) {
+                pauseFor = $('#ab_pause_for').val();
+            }
+            let interval = pauseFor[pauseFor.length - 1].toUpperCase();
+            let time = parseInt(pauseFor.substring(0, pauseFor.length - 1));
+
+            let multipler = (interval === "M") ? 60 : ((interval === "H") ? 3600 : 1)
+            if (time) {
+                time = time * multipler * 1000;
+
+                window.deactivateAutoBuyer(true);
+
+                setTimeout(() => {
+                    window.activateAutoBuyer(false);
+                }, time);
+            } else {
+                window.searchCountBeforePause = window.defaultStopTime;
+            }
+        }
+    }
+
     window.searchFutMarket = function (sender, event, data) {
         if (!window.autoBuyerActive) {
             return;
@@ -134,6 +160,8 @@
 
         services.Item.searchTransferMarket(searchCriteria, 1).observe(this, (function (sender, response) {
             if (response.success && window.autoBuyerActive) {
+
+                window.searchCountBeforePause--;
                 writeToDebugLog('Received ' + response.data.items.length + ' items');
 
                 var maxPurchases = 3;

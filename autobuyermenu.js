@@ -21,25 +21,35 @@
     window.sellList = [];
     window.autoBuyerActive = false;
     window.botStartTime = null;
+    window.searchCountBeforePause = 10;
+    window.defaultStopTime = 10;
 
-    window.activateAutoBuyer = function () {
+    window.activateAutoBuyer = function (isStart) {
         if (window.autoBuyerActive) {
             return;
         }
          
         window.botStartTime = new Date();
         window.autoBuyerActive = true;
-        window.notify('Autobuyer Started');
+        window.searchCountBeforePause = 10;
+
+        if ($('#ab_cycle_amount').val() !== '') {
+            window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
+        }
+        window.defaultStopTime = window.searchCountBeforePause;
+        window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
     }
 
-    window.deactivateAutoBuyer = function () {
+    window.deactivateAutoBuyer = function (isPassed) {
         if (!window.autoBuyerActive) {
             return;
         }
 
         window.botStartTime = null;
         window.autoBuyerActive = false;
-        window.notify('Autobuyer Stopped');
+        window.searchCountBeforePause = 10;
+        window.defaultStopTime = window.searchCountBeforePause;
+        window.notify((isPassed) ? 'Autobuyer Paused' : 'Autobuyer Stopped');
     }
 
     utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController)
@@ -79,16 +89,19 @@
                     l = new UTGameFlowNavigationController,
                     u = new UTGameFlowNavigationController,
                     h = new UTGameFlowNavigationController,
+                    st = new UTGameFlowNavigationController,
                     p = new UTTabBarItemView,
                     _ = new UTTabBarItemView,
                     g = new UTTabBarItemView,
                     m = new UTTabBarItemView,
+                    ST = new UTTabBarItemView,
                     S = new UTTabBarItemView;
                 if (s.initWithRootController(new UTHomeHubViewController),
                     o.initWithRootController(new UTSquadsHubViewController),
                     l.initWithRootController(new UTTransfersHubViewController),
                     u.initWithRootController(new UTStoreViewController),
                     h.initWithRootController(new UTClubHubViewController),
+                    st.initWithRootController(new UTCustomizeHubViewController),
                     p.init(),
                     p.setTag(UTGameTabBarController.TabTag.HOME),
                     p.setText(services.Localization.localize("navbar.label.home")),
@@ -109,12 +122,17 @@
                     S.setTag(UTGameTabBarController.TabTag.CLUB),
                     S.setText(services.Localization.localize("nav.label.club")),
                     S.addClass("icon-club"),
+                    ST.init(),
+                    ST.setTag(UTGameTabBarController.TabTag.STADIUM),
+                    ST.setText(services.Localization.localize("navbar.label.customizeHub")),
+                    ST.addClass("icon-stadium"),
                     s.tabBarItem = p,
                     o.tabBarItem = _,
                     l.tabBarItem = g,
                     u.tabBarItem = m,
                     h.tabBarItem = S,
-                    t = [s, o, l, u, h],
+                    st.tabBarItem = ST,
+                    t = [s, o, l, u,st,h],
                     !isPhone()) {
                     var C = new UTGameFlowNavigationController,
                         T = new UTGameFlowNavigationController,
@@ -300,6 +318,26 @@
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
                         '           <input type="text" class="numericInput" id="ab_con_request" placeholder="1">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Pause For:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_pause_for" placeholder="0S">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Cycle Amount:<br/><small>(Number of searches performed before triggerring Pause)</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_cycle_amount" placeholder="10">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>'

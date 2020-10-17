@@ -25,7 +25,7 @@
 * [Usage](#Usage)
 * [Prerequisites](#prerequisites) 
 * [Roadmap](#Roadmap)  
-* [Developer Guide](#Developer Guide) 
+* [Developer Guide](#DevGuide) 
 * [Contributing](#contributing) 
 * [Contact](#contact)
 
@@ -96,7 +96,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 See the [open issues](https://github.com/chithakumar13/Fifa21-AutoBuyer/issues) for a list of proposed features (and known issues).
 
 <!-- DevGuide -->
-## Developer Guide
+## Developer-Guide
 
 Will be added soon.
 

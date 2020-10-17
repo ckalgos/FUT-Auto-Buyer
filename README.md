@@ -33,7 +33,7 @@
 ## Installation  
 
 * Download the latest release from - [Latest Release](https://github.com/chithakumar13/Fifa21-AutoBuyer/releases/).
-* Add Tamper Monkey Extenstion To your Browser.
+* Add Tamper Monkey Extenstion to your Browser.
 * Navigate to Create Script -> Then to Utilities.
 * Under Utilities -> File (Import the two Scripts and Install it).
 * Installation And Demo - [Video Guide](https://www.youtube.com/watch?v=M3Jn4FI1nUw).
@@ -47,7 +47,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 
 ### Sell Price 
 * If specified the autobuyer will list the bought item for the specified price.
-* The tool will list all the cards in transfer target , make sure to move our cards to the club before running the tool to avoid losing the card. 
+* The tool will list all the cards in transfer target, make sure to move your cards to the club before running the tool to avoid losing the card. 
 
 ### Buy Price
 * If specified the autobuyer will buy the card matching the search critieria for the price less than or equal to specified price.
@@ -56,7 +56,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 * If specified the autobuyer will bid on the card matching the search critieria for the price less than or equal to specified price.
 
 ### Wait Time
-* The autobuyer will wait from the specified time before making the next search request.
+* The autobuyer will wait for the specified time before making the next search request.
 * Default Value (`7 - 15`).
 
 ### Min clear count
@@ -68,7 +68,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 * Default Value (`3`).
 
 ### Stop After
-* If specified the tool will automatically stop.
+* If specified the tool will automatically stop after running the tool foe the specified interval.
 * Default Value (`1H`) (S for seconds, M for Minutes, H for hours).
 
 ### Concurrent Search Request
@@ -78,7 +78,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 
 ### Pause For
 * The parameter has a dependency on Cycle Amount 
-* The tool will pause for the specified interval , if the the number of search request in the given cycle matches the specified cycle amount.
+* The tool will pause for the specified interval, if the the number of search request in the given cycle matches the specified cycle amount.
 * Default Value (`0S`) (S for seconds, M for Minutes, H for hours). 
 
 ### Cycle Amount 

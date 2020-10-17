@@ -174,7 +174,7 @@
                     maxPurchases = Math.max(1, parseInt($('#ab_max_purchases').val()));
                 }
 
-                if (response.data.items.length === 21) {
+                if (window.currentPage <= 20 && response.data.items.length === 21) {
                     window.currentPage++;
                 } else {
                     window.currentPage = 1;

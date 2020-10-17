@@ -25,7 +25,7 @@
 * [Usage](#Usage)
 * [Prerequisites](#prerequisites) 
 * [Roadmap](#Roadmap)  
-* [Developer Guide](#DevGuide) 
+* [Developer Guide](#Developer Guide) 
 * [Contributing](#contributing) 
 * [Contact](#contact)
 

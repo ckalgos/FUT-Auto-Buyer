@@ -23,6 +23,8 @@
     window.botStartTime = null;
     window.searchCountBeforePause = 10;
     window.defaultStopTime = 10;
+    window.currentPage = 1;
+    window.reListEnabled = true;
 
     window.activateAutoBuyer = function (isStart) {
         if (window.autoBuyerActive) {
@@ -30,26 +32,27 @@
         }
          
         window.botStartTime = new Date();
-        window.autoBuyerActive = true;
         window.searchCountBeforePause = 10;
-
+        window.currentPage = 1; 
         if ($('#ab_cycle_amount').val() !== '') {
             window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
         }
         window.defaultStopTime = window.searchCountBeforePause;
+        window.autoBuyerActive = true;
         window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
     }
 
-    window.deactivateAutoBuyer = function (isPassed) {
+    window.deactivateAutoBuyer = function (isStopped) {
         if (!window.autoBuyerActive) {
             return;
         }
 
-        window.botStartTime = null;
         window.autoBuyerActive = false;
+        window.botStartTime = null; 
         window.searchCountBeforePause = 10;
+        window.currentPage = 1;
         window.defaultStopTime = window.searchCountBeforePause;
-        window.notify((isPassed) ? 'Autobuyer Paused' : 'Autobuyer Stopped');
+        window.notify((isStopped) ? 'Autobuyer Stopped' : 'Autobuyer Paused');
     }
 
     utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController)
@@ -340,11 +343,20 @@
                         '           <input type="text" class="numericInput" id="ab_cycle_amount" placeholder="10">' +
                         '       </div>' +
                         '   </div>' +
-                        '</div>'
+                        '</div>' +
+                        '<div style="padding-top : 20px" class="ut-toggle-cell-view">' +
+                            '<span class="ut-toggle-cell-view--label">Relist Unsold Items</span>' +
+                            '<div id="ab_sell_toggle" class="ut-toggle-control toggled">' +
+                                '<div class="ut-toggle-control--track">' +
+                                '</div>' +
+                                '<div class= "ut-toggle-control--grip" >' +
+                                 '</div>' +
+                            '</div>' +
+                        '</div> '
                     );
                 }
             }
-
+            
             if (!jQuery('#search_cancel_button').length) {
                 jQuery('#InfoWrapper').next().find('.button-container button').first().after('<button class="btn-standard" id="search_cancel_button">Stop</button>')
             }
@@ -354,6 +366,18 @@
     }
 
     jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
+
+    window.toggleRelist = function () {
+        if (window.reListEnabled) {
+            window.reListEnabled = false;
+            jQuery("#ab_sell_toggle").removeClass("toggled");
+        } else {
+            window.reListEnabled = true;
+            jQuery("#ab_sell_toggle").addClass("toggled");
+        }
+    }
+
+    jQuery(document).on('click', '#ab_sell_toggle', toggleRelist);
 
     jQuery(document).on('keyup', '#ab_sell_price', function () {
         jQuery('#sell_after_tax').html((jQuery('#ab_sell_price').val() - ((parseInt(jQuery('#ab_sell_price').val()) / 100) * 5)).toLocaleString());

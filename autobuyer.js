@@ -198,7 +198,10 @@
                     let currentBid = auction.currentBid || auction.startingBid;
                     let isBid = auction.currentBid;
                     let bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
-                    let priceToBid = (isBid) ? window.getBuyBidPrice(bidPrice) : bidPrice;
+
+                    let priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice;
+
+                    let checkPrice = (isBid) ? window.getBuyBidPrice(currentBid) : currentBid;
 
                     let expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
                     writeToDebugLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + auction.tradeId + '] [' + expires + '] ' + buyNowPrice);
@@ -214,10 +217,10 @@
                                 window.bids.shift();
                             }
                         }
-                    } else if (bidPrice && currentBid <= priceToBid && priceToBid <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
+                    } else if (bidPrice && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
 
                         writeToDebugLog('Bid Price :' + bidPrice);
-                        buyPlayer(player, priceToBid);
+                        buyPlayer(player, checkPrice);
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
 

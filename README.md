@@ -13,7 +13,7 @@
     <br />  
     <br /> 
     <a href="https://github.com/chithakumar13/Fifa21-AutoBuyer/issues">Report Bug</a>
-    �
+    ·
     <a href="https://github.com/chithakumar13/Fifa21-AutoBuyer/issues">Request Feature</a>
   </p>
 </p>
@@ -94,6 +94,14 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 ## Roadmap
 
 See the [open issues](https://github.com/chithakumar13/Fifa21-AutoBuyer/issues) for a list of proposed features (and known issues).
+
+## 💬 Community
+
+If you are looking for help or any new feature request, join our discord group 
+
+<img src="https://img.shields.io/discord/768336764447621122?color=green&label=Discord&logo=discord&logoColor=white">
+
+<a href="https://discord.com/invite/s8T6Uv">Join</a>
 
 <!-- DevGuide -->
 ## Developer-Guide

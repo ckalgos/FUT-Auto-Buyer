@@ -160,7 +160,7 @@
         }
 
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
-         
+
         services.Item.clearTransferMarketCache();
 
         services.Item.searchTransferMarket(searchCriteria, window.currentPage).observe(this, (function (sender, response) {
@@ -231,6 +231,10 @@
                     }
                 };
             }
+            else if (!response.success) {
+                writeToLog('Autostopping bot as fetching search results failed, this may be due to Captcha being trigged');
+                window.deactivateAutoBuyer(true);
+            }
         }));
     }
 
@@ -245,7 +249,7 @@
 
             let activeItems = response.data.items.filter(function (item) {
                 return item._auction && item._auction._tradeState === "active";
-            }); 
+            });
 
             services.Item.refreshAuctions(activeItems).observe(this, function (t, refreshResponse) {
                 services.Item.requestWatchedItems().observe(this, function (t, watchResponse) {
@@ -253,7 +257,7 @@
 
                         let outBidItems = watchResponse.data.items.filter(function (item) {
                             return item._auction._bidState === "outbid" && item._auction._tradeState === "active";
-                        });                        
+                        });
 
                         for (var i = 0; i < outBidItems.length; i++) {
 

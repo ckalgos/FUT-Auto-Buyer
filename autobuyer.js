@@ -67,11 +67,7 @@
 
             if (window.timers.search.finish == 0 || window.timers.search.finish <= time) {
 
-                let searchRequest = 1;
-
-                if ($('#ab_con_request').val() !== '') {
-                    searchRequest = $('#ab_con_request').val();
-                }
+                let searchRequest = 1; 
 
                 while (searchRequest-- > 0) {
                     window.searchFutMarket(null, null, null);
@@ -163,6 +159,21 @@
 
         services.Item.clearTransferMarketCache();
 
+        var expiresIn = 3600;
+        if ($('#ab_item_expiring').val() !== '') {
+            var expiresInString = "1H";
+            if ($('#ab_item_expiring').val()) {
+                expiresInString = $('#ab_item_expiring').val();
+            }
+            let expiresInterval = expiresInString[expiresInString.length - 1].toUpperCase();
+            let expiresInTime = parseInt(expiresInString.substring(0, expiresInString.length - 1));
+
+            let multipler = (expiresInterval === "M") ? 60 : ((expiresInterval === "H") ? 3600 : 1)
+            if (expiresInTime) {
+                expiresIn = expiresInTime * multipler;
+            }
+        }
+
         services.Item.searchTransferMarket(searchCriteria, window.currentPage).observe(this, (function (sender, response) {
             if (response.success && window.autoBuyerActive) {
 
@@ -194,6 +205,13 @@
                     let player = response.data.items[i];
                     let auction = player._auction;
 
+                    let expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
+
+                    if (auction.expires > expiresIn) {
+                        writeToDebugLog('Ignoring Item [' + auction.tradeId + '] as it expires on [ ' + expires+ ']' );
+                        continue;
+                    }
+
                     let buyNowPrice = auction.buyNowPrice;
                     let currentBid = auction.currentBid || auction.startingBid;
                     let isBid = auction.currentBid;
@@ -202,11 +220,10 @@
                     let priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice;
 
                     let checkPrice = (isBid) ? window.getBuyBidPrice(currentBid) : currentBid;
-
-                    let expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
+                     
                     writeToDebugLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + auction.tradeId + '] [' + expires + '] ' + buyNowPrice);
 
-                    if (buyNowPrice <= parseInt(jQuery('#ab_buy_price').val()) && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
+                    if (window.autoBuyerActive && buyNowPrice <= parseInt(jQuery('#ab_buy_price').val()) && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
                         writeToDebugLog('Buy Price :' + jQuery('#ab_buy_price').val());
                         buyPlayer(player, buyNowPrice, true);
 
@@ -217,7 +234,7 @@
                                 window.bids.shift();
                             }
                         }
-                    } else if (bidPrice && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
+                    } else if (window.autoBuyerActive && bidPrice && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
 
                         writeToDebugLog('Bid Price :' + bidPrice);
                         buyPlayer(player, checkPrice);
@@ -253,7 +270,7 @@
 
             services.Item.refreshAuctions(activeItems).observe(this, function (t, refreshResponse) {
                 services.Item.requestWatchedItems().observe(this, function (t, watchResponse) {
-                    if (bidPrice) {
+                    if (window.autoBuyerActive && bidPrice) {
 
                         let outBidItems = watchResponse.data.items.filter(function (item) {
                             return item._auction._bidState === "outbid" && item._auction._tradeState === "active";
@@ -272,7 +289,7 @@
 
                             let checkPrice = (isBid) ? window.getBuyBidPrice(currentBid) : currentBid;
 
-                            if (currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
+                            if (window.autoBuyerActive && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
                                 writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + checkPrice);
                                 buyPlayer(player, checkPrice);
                                 if (!window.bids.includes(auction.tradeId)) {
@@ -286,7 +303,7 @@
                         }
                     }
 
-                    if (sellPrice && !isNaN(sellPrice)) {
+                    if (window.autoBuyerActive && sellPrice && !isNaN(sellPrice)) {
 
                         let boughtItems = response.data.items.filter(function (item) {
                             return item.getAuctionData().isWon() && !window.sellBids.includes(item._auction.tradeId);

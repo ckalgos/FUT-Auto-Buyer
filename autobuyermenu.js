@@ -24,7 +24,8 @@
     window.searchCountBeforePause = 10;
     window.defaultStopTime = 10;
     window.currentPage = 1;
-    window.reListEnabled = true;
+    window.reListEnabled = false;
+    window.currentChemistry = -1;
 
     window.activateAutoBuyer = function (isStart) {
         if (window.autoBuyerActive) {
@@ -33,6 +34,7 @@
          
         window.botStartTime = new Date();
         window.searchCountBeforePause = 10;
+        window.currentChemistry = -1;
         window.currentPage = 1; 
         if ($('#ab_cycle_amount').val() !== '') {
             window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
@@ -50,9 +52,17 @@
         window.autoBuyerActive = false;
         window.botStartTime = null; 
         window.searchCountBeforePause = 10;
+        window.currentChemistry = -1;
         window.currentPage = 1;
         window.defaultStopTime = window.searchCountBeforePause;
         window.notify((isStopped) ? 'Autobuyer Stopped' : 'Autobuyer Paused');
+    }
+
+    window.clearLog = function () {
+        var $progressLog = jQuery('#progressAutobuyer');
+        var $buyerLog = jQuery('#autoBuyerFoundLog');
+        $progressLog.val("");
+        $buyerLog.val(""); 
     }
 
     utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController)
@@ -316,11 +326,11 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Concurrent Search Request:</span>' +
+                        '       <span class="secondary label">Bid / Buy Items Expiring In:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_con_request" placeholder="1">' +
+                        '           <input type="text" class="numericInput" id="ab_item_expiring" placeholder="1H">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -346,7 +356,7 @@
                         '</div>' +
                         '<div style="padding-top : 20px" class="ut-toggle-cell-view">' +
                             '<span class="ut-toggle-cell-view--label">Relist Unsold Items</span>' +
-                            '<div id="ab_sell_toggle" class="ut-toggle-control toggled">' +
+                            '<div id="ab_sell_toggle" class="ut-toggle-control">' +
                                 '<div class="ut-toggle-control--track">' +
                                 '</div>' +
                                 '<div class= "ut-toggle-control--grip" >' +
@@ -358,7 +368,7 @@
             }
             
             if (!jQuery('#search_cancel_button').length) {
-                jQuery('#InfoWrapper').next().find('.button-container button').first().after('<button class="btn-standard" id="search_cancel_button">Stop</button>')
+                jQuery('#InfoWrapper').next().find('.button-container button').first().after('<button class="btn-standard" id="search_cancel_button">Stop</button><button class="btn-standard" id="clear_log_button">Clear Log</button>')
             }
         } else {
             window.setTimeout(createAutoBuyerInterface, 1000);
@@ -366,12 +376,16 @@
     }
 
     jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
+    jQuery(document).on('click', '#clear_log_button', clearLog);
 
     window.toggleRelist = function () {
         if (window.reListEnabled) {
             window.reListEnabled = false;
             jQuery("#ab_sell_toggle").removeClass("toggled");
         } else {
+            alert("Re-listing will list all the cards in the transfer list not only the card which bought by the tool. " +
+                  "Check the transfer list once and move the required cards to your club to avoid losing any required cards.")
+
             window.reListEnabled = true;
             jQuery("#ab_sell_toggle").addClass("toggled");
         }

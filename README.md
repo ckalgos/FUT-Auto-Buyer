@@ -101,7 +101,7 @@ If you are looking for help or any new feature request, join our discord group
 
 <img src="https://img.shields.io/discord/768336764447621122?color=green&label=Discord&logo=discord&logoColor=white">
 
-<a href="https://discord.com/invite/s8T6Uv">Join</a>
+<a href="https://discord.gg/cktHYmp">Join</a>
 
 <!-- DevGuide -->
 ## Developer-Guide

@@ -71,10 +71,9 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 * If specified the tool will automatically stop after running the tool foe the specified interval.
 * Default Value (`1H`) (S for seconds, M for Minutes, H for hours).
 
-### Concurrent Search Request
-* If specified the tool will send multiple search request each time.
-* Default Value (`1`).
-* Allowed Value (`1 to 4`).
+### Expires In
+* Will only Bid on Cards which expires with in this value.
+* Default Value (`1H`). 
 
 ### Pause For
 * The parameter has a dependency on Cycle Amount 

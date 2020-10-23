@@ -72,7 +72,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 * Default Value (`1H`) (S for seconds, M for Minutes, H for hours).
 
 ### Expires In
-* Will only Bid / Buy Card which expires with in this value.
+* Will only Bid on Cards which expires with in this value.
 * Default Value (`1H`). 
 
 ### Pause For

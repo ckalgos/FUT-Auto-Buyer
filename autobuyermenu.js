@@ -326,7 +326,7 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Bid / Buy Items Expiring In:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
+                        '       <span class="secondary label">Bid Items Expiring In:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +

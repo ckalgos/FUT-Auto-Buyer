@@ -205,12 +205,7 @@
                     let player = response.data.items[i];
                     let auction = player._auction;
 
-                    let expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
-
-                    if (auction.expires > expiresIn) {
-                        writeToDebugLog('Ignoring Item [' + auction.tradeId + '] as it expires on [ ' + expires+ ']' );
-                        continue;
-                    }
+                    let expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);                 
 
                     let buyNowPrice = auction.buyNowPrice;
                     let currentBid = auction.currentBid || auction.startingBid;
@@ -235,6 +230,11 @@
                             }
                         }
                     } else if (window.autoBuyerActive && bidPrice && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
+
+                        if (auction.expires > expiresIn) {
+                            writeToDebugLog('Ignoring Item [' + auction.tradeId + '] as it expires on [ ' + expires + ']');
+                            continue;
+                        }
 
                         writeToDebugLog('Bid Price :' + bidPrice);
                         buyPlayer(player, checkPrice);

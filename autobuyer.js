@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.8
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
@@ -41,8 +41,7 @@
             search: window.createTimeout(0, 0),
             coins: window.createTimeout(0, 0),
             transferList: window.createTimeout(0, 0),
-            bidCheck: window.createTimeout(0, 0),
-            relist: window.createTimeout(0, 0),
+            bidCheck: window.createTimeout(0, 0)
         };
     };
 
@@ -92,11 +91,7 @@
                 window.watchBidItems();
 
                 window.timers.bidCheck = window.createTimeout(time, 20000);
-            }
-            if (window.reListEnabled && (window.timers.relist.finish == 0 || window.timers.relist.finish <= time)) {
-                services.Item.relistExpiredAuctions().observe(this, function (t, response) { });
-                window.timers.relist = window.createTimeout(time, 1800000);
-            }
+            } 
         } else {
             window.initStatisics();
         }
@@ -123,6 +118,10 @@
             if (timeElapsed >= time) {
                 window.deactivateAutoBuyer(true);
             }
+        }
+
+        if (window.buyCardCount && window.purchasedCardCount >= window.buyCardCount) {
+            window.deactivateAutoBuyer(true);
         }
     }
 
@@ -174,6 +173,12 @@
             }
         }
 
+        if ($('#ab_card_count').val() !== '') {
+            window.buyCardCount = parseInt(jQuery('#ab_card_count').val());
+        } else {
+            window.buyCardCount  = undefined;
+        }
+
         services.Item.searchTransferMarket(searchCriteria, window.currentPage).observe(this, (function (sender, response) {
             if (response.success && window.autoBuyerActive) {
 
@@ -212,9 +217,9 @@
                     let isBid = auction.currentBid;
                     let bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
 
-                    let priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice;
+                    let priceToBid = (window.bidExact) ? bidPrice : ((isBid) ? window.getSellBidPrice(bidPrice) : bidPrice);
 
-                    let checkPrice = (isBid) ? window.getBuyBidPrice(currentBid) : currentBid;
+                    let checkPrice = (window.bidExact) ? priceToBid : ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid);
                      
                     writeToDebugLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + auction.tradeId + '] [' + expires + '] ' + buyNowPrice);
 
@@ -249,7 +254,11 @@
                 };
             }
             else if (!response.success) {
-                writeToLog('Autostopping bot as fetching search results failed, this may be due to Captcha being trigged');
+                if (response.status == HttpStatusCode.CAPTCHA_REQUIRED) {
+                    writeToLog('Autostopping bot since Captcha got triggered');
+                } else {
+                    writeToLog('Autostopping bot as fetching search results failed, please check if you can access transfer market in Web App');
+                }
                 window.deactivateAutoBuyer(true);
             }
         }));
@@ -285,9 +294,9 @@
 
                             let currentBid = auction.currentBid || auction.startingBid;
 
-                            let priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice;
+                            let priceToBid = (window.bidExact) ? bidPrice : ((isBid) ? window.getSellBidPrice(bidPrice) : bidPrice);                             
 
-                            let checkPrice = (isBid) ? window.getBuyBidPrice(currentBid) : currentBid;
+                            let checkPrice = (window.bidExact) ? bidPrice : ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid);
 
                             if (window.autoBuyerActive && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
                                 writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + checkPrice);
@@ -332,20 +341,27 @@
     }
 
     window.buyPlayer = function (player, price, isBin) {
-        services.Item.bid(player, price).observe(this, (function (sender, data) {
-            if (data.success) {
-                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' bought' : ' bid successfully'));
-                var sellPrice = parseInt(jQuery('#ab_sell_price').val());
-                if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
-                    writeToLog(' -- Selling for: ' + sellPrice);
-                    window.sellRequestTimeout = window.setTimeout(function () {
-                        services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
-                    }, window.getRandomWait());
+        setTimeout(function () {
+            services.Item.bid(player, price).observe(this, (function (sender, data) {
+                if (data.success) {
+
+                    if (isBin) {
+                        window.purchasedCardCount++;
+                    }
+
+                    writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' bought' : ' bid successfully'));
+                    var sellPrice = parseInt(jQuery('#ab_sell_price').val());
+                    if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
+                        writeToLog(' -- Selling for: ' + sellPrice);
+                        window.sellRequestTimeout = window.setTimeout(function () {
+                            services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
+                        }, window.getRandomWait());
+                    }
+                } else {
+                    writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' buy failed' : ' bid failed') + '\nError Code : ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
                 }
-            } else {
-                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' buy failed' : ' bid failed') + '\nError Code : ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
-            }
-        }));
+            }));
+        }, 800);
     }
 
     window.getSellBidPrice = function (bin) {
@@ -398,6 +414,10 @@
             window.futStatistics.unsoldItems = response.data.items.filter(function (item) {
                 return !item.getAuctionData().isSold() && item.getAuctionData().isExpired();
             }).length;
+
+            if (window.futStatistics.unsoldItems && window.reListEnabled) {
+                services.Item.relistExpiredAuctions().observe(this, function (t, response) { });
+            }
 
             window.futStatistics.activeTransfers = response.data.items.filter(function (item) {
                 return item.getAuctionData().isSelling();

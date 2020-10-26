@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.8
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyermenu.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
@@ -26,7 +26,8 @@
     window.currentPage = 1;
     window.reListEnabled = false;
     window.currentChemistry = -1;
-
+    window.purchasedCardCount = 0;
+    window.bidExact = false;
     window.activateAutoBuyer = function (isStart) {
         if (window.autoBuyerActive) {
             return;
@@ -41,6 +42,7 @@
         }
         window.defaultStopTime = window.searchCountBeforePause;
         window.autoBuyerActive = true;
+        window.purchasedCardCount = 0;
         window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
     }
 
@@ -54,6 +56,11 @@
         window.searchCountBeforePause = 10;
         window.currentChemistry = -1;
         window.currentPage = 1;
+
+        if (isStopped) {
+            window.purchasedCardCount = 0;
+        }
+
         window.defaultStopTime = window.searchCountBeforePause;
         window.notify((isStopped) ? 'Autobuyer Stopped' : 'Autobuyer Paused');
     }
@@ -256,7 +263,7 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Sell Price:</span><br/><small>Recieve After Tax: <span id="sell_after_tax">0</span></small>' +
+                        '       <span class="secondary label">Sell Price:</span><br/><small>Receive After Tax: <span id="sell_after_tax">0</span></small>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
@@ -284,9 +291,20 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
+                        '<div class="price-filter">' + 
+                        '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                        '       <span class="ut-toggle-cell-view--label">Bid Exact Price</span>' +
+                        '           <div id="ab_bid_exact" class="ut-toggle-control">' +
+                        '           <div class="ut-toggle-control--track">' +
+                        '           </div>' +
+                        '           <div class= "ut-toggle-control--grip" >' +
+                        '           </div>' +
+                        '       </div>' +
+                        '   </div>'+
+                        '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Wait Time:<br/><small>(random second range eg. 7-15)</small>:</span>' +
+                        '       <span class="secondary label">Wait Time:<br/><small>(Random second range eg. 7-15)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
@@ -296,7 +314,7 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Min clear count:<br/><small>(clear sold items if count is not less than)</small>:</span>' +
+                        '       <span class="secondary label">Min clear count:<br/><small>(Clear sold items if count is not less than)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
@@ -326,7 +344,17 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Bid Items Expiring In:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
+                        '       <span class="secondary label">No. of cards to buy:<br/><small>(Works only with Buy price)</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_card_count" placeholder="10">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Bid items expiring in:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
@@ -346,7 +374,7 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Cycle Amount:<br/><small>(Number of searches performed before triggerring Pause)</small>:</span>' +
+                        '       <span class="secondary label">Pause Cycle :<br/><small>(Number of searches performed before triggerring Pause)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
@@ -378,19 +406,30 @@
     jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
     jQuery(document).on('click', '#clear_log_button', clearLog);
 
+    window.toggleBidExact = function () {
+        if (window.bidExact) {
+            window.bidExact = false;
+            jQuery("#ab_bid_exact").removeClass("toggled");
+        } else {
+            window.bidExact = true;
+            jQuery("#ab_bid_exact").addClass("toggled");
+        }
+    }
+
     window.toggleRelist = function () {
         if (window.reListEnabled) {
             window.reListEnabled = false;
             jQuery("#ab_sell_toggle").removeClass("toggled");
         } else {
             alert("Re-listing will list all the cards in the transfer list not only the card which bought by the tool. " +
-                  "Check the transfer list once and move the required cards to your club to avoid losing any required cards.")
+                "Check the transfer list once and move the required cards to your club to avoid losing any required cards.")
 
             window.reListEnabled = true;
             jQuery("#ab_sell_toggle").addClass("toggled");
         }
     }
 
+    jQuery(document).on('click', '#ab_bid_exact', toggleBidExact);
     jQuery(document).on('click', '#ab_sell_toggle', toggleRelist);
 
     jQuery(document).on('keyup', '#ab_sell_price', function () {

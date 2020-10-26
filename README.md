@@ -17,7 +17,7 @@
     <a href="https://github.com/chithakumar13/Fifa21-AutoBuyer/issues">Request Feature</a>
   
   # Must Read :no_entry_sign:
-   EA might (soft) ban from using transfer market in web app for using this tool. Continuously soft ban might lead to permanent ban as well. Also use of tools like this to gain advantage over other players is not be ethically right.  
+   EA might (soft) ban from using transfer market in web app for using this tool. Continuously soft ban might lead to permanent ban as well. Also use of tools like this to gain advantage over other players is not ethically right.  
    
    Use this tool at your own risk, any developers contributing to this repo won’t held responsible if your account gets banned.
   </p>

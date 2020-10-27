@@ -31,11 +31,11 @@
         if (window.autoBuyerActive) {
             return;
         }
-         
+
         window.botStartTime = new Date();
         window.searchCountBeforePause = 10;
         window.currentChemistry = -1;
-        window.currentPage = 1; 
+        window.currentPage = 1;
         if ($('#ab_cycle_amount').val() !== '') {
             window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
         }
@@ -50,7 +50,7 @@
         }
 
         window.autoBuyerActive = false;
-        window.botStartTime = null; 
+        window.botStartTime = null;
         window.searchCountBeforePause = 10;
         window.currentChemistry = -1;
         window.currentPage = 1;
@@ -62,7 +62,7 @@
         var $progressLog = jQuery('#progressAutobuyer');
         var $buyerLog = jQuery('#autoBuyerFoundLog');
         $progressLog.val("");
-        $buyerLog.val(""); 
+        $buyerLog.val("");
     }
 
     utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController)
@@ -70,7 +70,7 @@
         if (!this.initialized) {
             //getAppMain().superclass(),
             this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch),
-                this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
+            this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
             var t = gConfigurationModel.getConfigObject(models.ConfigurationModel.KEY_ITEMS_PER_PAGE)
                 , count = 1 + (utils.JS.isValid(t) ? t[models.ConfigurationModel.ITEMS_PER_PAGE.TRANSFER_MARKET] : 15);
             this._viewmodel.searchCriteria.count = count,
@@ -83,8 +83,8 @@
                 view.addTarget(this, this._eMaxBidPriceChanged, UTMarketSearchFiltersView.Event.MAX_BID_PRICE_CHANGE),
                 view.addTarget(this, this._eMinBuyPriceChanged, UTMarketSearchFiltersView.Event.MIN_BUY_PRICE_CHANGE),
                 view.addTarget(this, this._eMaxBuyPriceChanged, UTMarketSearchFiltersView.Event.MAX_BUY_PRICE_CHANGE),
-                this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
-                    view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
+            this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
+                view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
                 this._squadContext ? isPhone() || view.addClass("narrow") : view.addClass("floating"),
                 view.getPlayerNameSearch().addTarget(this, this._ePlayerNameChanged, enums.Event.CHANGE),
                 view.__root.style = "width: 50%; float: left;";
@@ -251,6 +251,8 @@
             if (jQuery('.search-prices').first().length) {
                 if (!jQuery('#ab_buy_price').length) {
                     jQuery('.search-prices').first().append(
+
+                        '<br>' +
                         '<div class="search-price-header">' +
                         '   <h1 class="secondary">AB Settings:</h1>' +
                         '</div>' +
@@ -346,7 +348,7 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Cycle Amount:<br/><small>(Number of searches performed before triggerring Pause)</small>:</span>' +
+                        '       <span class="secondary label">Cycle Amount:<br/><small>(Nb of searches before triggerring Pause)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
@@ -354,19 +356,44 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
+                        '<div><br></div>'+
+                        '<hr><br>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Rating Filttering:</h1>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Min Rating:<br/><small>Minimum Player Rating</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_min_rate" placeholder="10" value="10">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Max Rating:<br/><small>Maximum Player Rating</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_max_rate" placeholder="100" value="100">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
                         '<div style="padding-top : 20px" class="ut-toggle-cell-view">' +
-                            '<span class="ut-toggle-cell-view--label">Relist Unsold Items</span>' +
-                            '<div id="ab_sell_toggle" class="ut-toggle-control">' +
-                                '<div class="ut-toggle-control--track">' +
-                                '</div>' +
-                                '<div class= "ut-toggle-control--grip" >' +
-                                 '</div>' +
-                            '</div>' +
+                        '<span class="ut-toggle-cell-view--label">Relist Unsold Items</span>' +
+                        '<div id="ab_sell_toggle" class="ut-toggle-control">' +
+                        '<div class="ut-toggle-control--track">' +
+                        '</div>' +
+                        '<div class= "ut-toggle-control--grip" >' +
+                        '</div>' +
+                        '</div>' +
                         '</div> '
                     );
                 }
             }
-            
+
             if (!jQuery('#search_cancel_button').length) {
                 jQuery('#InfoWrapper').next().find('.button-container button').first().after('<button class="btn-standard" id="search_cancel_button">Stop</button><button class="btn-standard" id="clear_log_button">Clear Log</button>')
             }
@@ -384,7 +411,7 @@
             jQuery("#ab_sell_toggle").removeClass("toggled");
         } else {
             alert("Re-listing will list all the cards in the transfer list not only the card which bought by the tool. " +
-                  "Check the transfer list once and move the required cards to your club to avoid losing any required cards.")
+                "Check the transfer list once and move the required cards to your club to avoid losing any required cards.")
 
             window.reListEnabled = true;
             jQuery("#ab_sell_toggle").addClass("toggled");

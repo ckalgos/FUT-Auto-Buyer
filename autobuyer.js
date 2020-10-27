@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.8
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
@@ -17,6 +17,11 @@
         return Math.round((Math.random() * (max - min) + min) / 1000) * 1000;
     };
 
+    window.getRandNum = function (min, max){
+        return Math.round((Math.random() * (max - min) + min));
+    };
+
+
     window.searchCount = 0;
 
     window.errorCodeLookUp = {
@@ -25,7 +30,12 @@
         '429': 'Bidding Rejected, too many request received from this user',
         '426': 'Bidding Rejected, other user won the (card / bid)',
         '461': 'Bidding Rejected, other user won the (card / bid)',
-    }
+    };
+
+    window.format_string = function (str, len) {
+        if(str.length <= len){ str += " ".repeat(len-str.length)}
+        return str;
+    };
 
     window.initStatisics = function () {
         window.futStatistics = {
@@ -67,7 +77,7 @@
 
             if (window.timers.search.finish == 0 || window.timers.search.finish <= time) {
 
-                let searchRequest = 1; 
+                let searchRequest = 1;
 
                 while (searchRequest-- > 0) {
                     window.searchFutMarket(null, null, null);
@@ -173,18 +183,29 @@
                 expiresIn = expiresInTime * multipler;
             }
         }
-
+        // Randomize search criteria min bid to clear cache
+        searchCriteria.minBid = window.getRandNum(1, 40) * 10 + 100;
+        searchCriteria.minBuy = window.getRandNum(1, 40) * 10 + 100;
+        window.mbid = searchCriteria.minBid;
+        window.mBuy = searchCriteria.minBuy;
         services.Item.searchTransferMarket(searchCriteria, window.currentPage).observe(this, (function (sender, response) {
             if (response.success && window.autoBuyerActive) {
 
                 window.searchCountBeforePause--;
-                writeToDebugLog('Received ' + response.data.items.length + ' items');
+
+                let min_rate_txt = jQuery('#ab_min_rate').val();
+                let max_rate_txt = jQuery('#ab_max_rate').val();
+                if(min_rate_txt == ''){min_rate_txt = "40"}
+                if(max_rate_txt == ''){max_rate_txt = "100"}
+                let selected_min_rate = parseInt(min_rate_txt);
+                let selected_max_rate = parseInt(max_rate_txt);
+
+                writeToDebugLog('>>>> Config: (' +window.mbid + '-' + window.mBuy + ') => ' +'Received ' + response.data.items.length + ' items');
 
                 var maxPurchases = 3;
                 if ($('#ab_max_purchases').val() !== '') {
                     maxPurchases = Math.max(1, parseInt($('#ab_max_purchases').val()));
                 }
-
                 if (window.currentPage <= 20 && response.data.items.length === 21) {
                     window.currentPage++;
                 } else {
@@ -204,8 +225,18 @@
                 for (var i = 0; i < response.data.items.length; i++) {
                     let player = response.data.items[i];
                     let auction = player._auction;
+                    let player_rating = parseInt(player.rating);
+                    let rating_ok = false;
+                    let rating_ok_txt = "no";
+                    if (player_rating >= selected_min_rate && player_rating <= selected_max_rate){
+                        rating_ok = true;
+                        rating_ok_txt = "ok";
+                    }
+                    else{
+                        continue;
+                    }
 
-                    let expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);                 
+                    let expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
 
                     let buyNowPrice = auction.buyNowPrice;
                     let currentBid = auction.currentBid || auction.startingBid;
@@ -213,15 +244,17 @@
                     let bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
 
                     let priceToBid = (isBid) ? window.getSellBidPrice(bidPrice) : bidPrice;
-
                     let checkPrice = (isBid) ? window.getBuyBidPrice(currentBid) : currentBid;
-                     
-                    writeToDebugLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + auction.tradeId + '] [' + expires + '] ' + buyNowPrice);
+                    let bid_buy_txt = "(bid: "+ window.format_string(currentBid.toString(), 6) + " / buy:" + window.format_string(buyNowPrice.toString(), 7)+ ")"
+                    let player_name = window.format_string(player._staticData.firstName + ' ' + player._staticData.lastName, 30);
+                    if (player.type == "training"){window.format_string(player_name = player._staticData.name, 30);}
+                    let expire_time = window.format_string(expires, 15);
+                    writeToDebugLog("(" + player_rating + "-" + rating_ok_txt + ") " + player_name + ' [' + auction.tradeId + '] [' + expire_time + '] ' + bid_buy_txt);
 
-                    if (window.autoBuyerActive && buyNowPrice <= parseInt(jQuery('#ab_buy_price').val()) && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
+                    if (rating_ok && window.autoBuyerActive && buyNowPrice <= parseInt(jQuery('#ab_buy_price').val()) && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
                         writeToDebugLog('Buy Price :' + jQuery('#ab_buy_price').val());
                         buyPlayer(player, buyNowPrice, true);
-
+                        setTimeout(function (){}, 900);
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
 
@@ -229,7 +262,7 @@
                                 window.bids.shift();
                             }
                         }
-                    } else if (window.autoBuyerActive && bidPrice && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
+                    } else if (rating_ok && window.autoBuyerActive && bidPrice && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
 
                         if (auction.expires > expiresIn) {
                             writeToDebugLog('Ignoring Item [' + auction.tradeId + '] as it expires on [ ' + expires + ']');
@@ -238,6 +271,7 @@
 
                         writeToDebugLog('Bid Price :' + bidPrice);
                         buyPlayer(player, checkPrice);
+                        //setTimeout(function (){}, 1000);
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
 
@@ -333,8 +367,11 @@
 
     window.buyPlayer = function (player, price, isBin) {
         services.Item.bid(player, price).observe(this, (function (sender, data) {
+            let player_name = window.format_string(player._staticData.firstName + ' ' + player._staticData.lastName, 30);
+            if (player.type == "training"){window.format_string(player_name = player._staticData.name, 30);}
             if (data.success) {
-                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' bought' : ' bid successfully'));
+                writeToLog(player_name + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' bought' : ' bid successfully'));
+
                 var sellPrice = parseInt(jQuery('#ab_sell_price').val());
                 if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
                     writeToLog(' -- Selling for: ' + sellPrice);
@@ -343,10 +380,10 @@
                     }, window.getRandomWait());
                 }
             } else {
-                writeToLog(player._staticData.firstName + ' ' + player._staticData.lastName + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' buy failed' : ' bid failed') + '\nError Code : ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
+                writeToLog(player_name + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' buy failed' : ' bid failed') + '\nError Code : ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
             }
         }));
-    }
+    };
 
     window.getSellBidPrice = function (bin) {
         if (bin <= 1000) {

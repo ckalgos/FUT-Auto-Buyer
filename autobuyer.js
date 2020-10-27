@@ -220,7 +220,7 @@
                 let selected_min_rate = parseInt(min_rate_txt);
                 let selected_max_rate = parseInt(max_rate_txt);
 
-                writeToDebugLog('>>>> Config: (' + window.mbid + '-' + window.mBuy + ') => ' + 'Received ' + response.data.items.length + ' items');
+                writeToDebugLog('>>>> Random min bid/buy config: (minbid:' + window.mbid + '-minbuy:' + window.mBuy + ') => ' + 'Received ' + response.data.items.length + ' items');
 
                 var maxPurchases = 3;
                 if ($('#ab_max_purchases').val() !== '') {
@@ -375,7 +375,7 @@
 
                             window.sellBids.push(auction.tradeId);
                             let player_name =  window.getItemName(player);
-                            writeToLog(player_name + '[' + player._auction.tradeId + '] -- Selling for: ' + sellPrice);
+                            writeToLog( " ($$$) "+ player_name + '[' + player._auction.tradeId + '] -- Selling for: ' + sellPrice);
                             player.clearAuction();
 
                             window.sellRequestTimeout = window.setTimeout(function () {
@@ -400,16 +400,16 @@
                         window.purchasedCardCount++;
                     }
 
-                    writeToLog(player_name + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' bought' : ' bid successfully'));
+                    writeToLog("[$$$] > " + player_name + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' bought' : ' bid successfully'));
                     var sellPrice = parseInt(jQuery('#ab_sell_price').val());
                     if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
-                        writeToLog(' -- Selling for: ' + sellPrice);
+                        writeToLog('[===] > Selling for: ' + sellPrice);
                         window.sellRequestTimeout = window.setTimeout(function () {
                             services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                         }, window.getRandomWait());
                     }
                 } else {
-                    writeToLog(player_name + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' buy failed' : ' bid failed') + '\nError Code : ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
+                    writeToLog("[XXX] > "+ player_name + ' [' + player._auction.tradeId + '] ' + price + ((isBin) ? ' buy failed' : ' bid failed') + ' - Error Code : ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
                 }
             }));
         }, 800);
@@ -485,7 +485,7 @@
             }
 
             if (window.futStatistics.soldItems >= minSoldCount) {
-                writeToLog(window.futStatistics.soldItems + " item(s) sold");
+                writeToLog('( $$$$$ ) ' + window.futStatistics.soldItems + " item(s) sold");
                 window.clearSoldItems();
             }
         });

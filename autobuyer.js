@@ -28,6 +28,7 @@
     };
     window.winCount = 0;
     window.lossCount = 0;
+    window.bidCount = 0;
     window.searchCount = 0;
 
     window.errorCodeLookUp = {
@@ -220,7 +221,7 @@
                 let selected_min_rate = parseInt(min_rate_txt);
                 let selected_max_rate = parseInt(max_rate_txt);
 
-                writeToDebugLog('= Received ' + response.data.items.length + ' items' + '  =>  config: (minbid:' + window.mbid + '-minbuy:' + window.mBuy + ') ');
+                writeToDebugLog('= Received ' + response.data.items.length + ' items - from page ('+ window.currentPage + ')  =>  config: (minbid:' + window.mbid + '-minbuy:' + window.mBuy + ') ');
 
                 var maxPurchases = 3;
                 if ($('#ab_max_purchases').val() !== '') {
@@ -242,8 +243,9 @@
                     return a._auction.expires - b._auction.expires;
                 });
                 if (response.data.items.length > 0){
-                    writeToDebugLog('------------------------------------------------------------------------------------------');
-                    writeToDebugLog('| rating | player name               | bid    | buy    | time            | action');
+                    writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
+                    writeToDebugLog('| rating   | player name               | bid    | buy    | time            | action');
+                    writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
                 }
                 for (var i = 0; i < response.data.items.length; i++) {
                     let action_txt = 'none';
@@ -314,11 +316,14 @@
                                 window.bids.shift();
                             }
                         }
+                    }else{
+                        action_txt = 'skip >>>';
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                     }
 
                 };
                 if (response.data.items.length > 0){
-                    writeToDebugLog('------------------------------------------------------------------------------------------');
+                    writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
                 }
             } else if (!response.success) {
                 if (response.status == HttpStatusCode.CAPTCHA_REQUIRED) {
@@ -423,18 +428,20 @@
                     var sellPrice = parseInt(jQuery('#ab_sell_price').val());
                     if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
                         window.winCount++;
-                        let sym = "W:" + window.format_string(window.winCount.toString(), 4);
+                        let sym = " W:" + window.format_string(window.winCount.toString(), 4);
                         writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
                         window.sellRequestTimeout = window.setTimeout(function () {
                             services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                         }, window.getRandomWait());
                     }else{
-                        window.lossCount++;
-                        let sym = "L:" + window.format_string(window.lossCount.toString(), 4);
-                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to unassigned' : ' | bid | success | move to unassigned'));
+                        window.bidCount++;
+                        let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
+                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to unassigned' : ' | bid | success | waiting to expire'));
                     }
                 } else {
-                    writeToLog("[XXX] | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
+                    window.lossCount++;
+                    let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
+                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
                 }
             }));
     };
@@ -510,7 +517,7 @@
 
             if (window.futStatistics.soldItems >= minSoldCount) {
                 writeToLog('------------------------------------------------------------------------------------------');
-                writeToLog('[...] > ' + window.futStatistics.soldItems + " item(s) sold");
+                writeToLog('Report] > ' + window.futStatistics.soldItems + " item(s) sold");
                 writeToLog('------------------------------------------------------------------------------------------');
                 window.clearSoldItems();
             }

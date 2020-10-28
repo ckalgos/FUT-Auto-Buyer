@@ -252,10 +252,15 @@
 
                 jQuery(view.__root.parentElement).append('<div id="SearchWrapper" style="width: 50%; right: 50%"><textarea readonly id="progressAutobuyer" style="font-size: 15px; width: 100%;height: 58%;"></textarea><label>Search Results:</label><br/><textarea readonly id="autoBuyerFoundLog" style="font-size: 10px; width: 100%;height: 26%;"></textarea></div>');
 
-                writeToLog('Autobuyer Ready\n');
-                writeToLog('------------------------------------------------------------------------------------------');
-                writeToLog(' SYM  | Item name          | price  | op  | result  | comments ');
-                writeToLog('------------------------------------------------------------------------------------------');
+                var $log = jQuery('#progressAutobuyer');
+                if($log.val() == ''){
+                    let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
+                    let log_init_text = 'Autobuyer Ready\n' +
+                        time_txt + '------------------------------------------------------------------------------------------\n' +
+                        time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                        time_txt + '------------------------------------------------------------------------------------------\n';
+                    $log.val(log_init_text)
+                }
             }
 
             if (jQuery('.search-prices').first().length) {
@@ -475,7 +480,16 @@
     };
 
     window.writeToLog = function (message) {
+        let time_txt = '[' + new Date().toLocaleTimeString() + '] '
         var $log = jQuery('#progressAutobuyer');
+        if($log.val() == ''){
+            let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
+            let log_init_text = 'Autobuyer Ready\n' +
+                time_txt + '------------------------------------------------------------------------------------------\n' +
+                time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                time_txt + '------------------------------------------------------------------------------------------\n';
+            $log.val(log_init_text)
+        }
         message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
         $log.val($log.val() + message);
         $log.scrollTop($log[0].scrollHeight);

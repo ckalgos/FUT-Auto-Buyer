@@ -20,14 +20,14 @@
         return Math.round((Math.random() * (max - min) + min));
     };
     window.getItemName = function(itemObj){
-        let item_name = window.format_string(itemObj._staticData.firstName.split(" ")[0] + ' ' + itemObj._staticData.lastName.split(" ")[0], 15);
+        let item_name = window.format_string(itemObj._staticData.firstName.split(" ")[0] + ' ' + itemObj._staticData.lastName.split(" ")[0], 25);
         if (itemObj.type == "training") {
-            item_name = window.format_string(itemObj._staticData.name, 15)
+            item_name = window.format_string(itemObj._staticData.name, 25)
         }
         return item_name
     };
-
-
+    window.winCount = 0;
+    window.lossCount = 0;
     window.searchCount = 0;
 
     window.errorCodeLookUp = {
@@ -192,8 +192,8 @@
         }
 
         // Randomize search criteria min bid to clear cache
-        searchCriteria.minBid = window.getRandNum(1, 20) * 10 + 100;
-        searchCriteria.minBuy = window.getRandNum(1, 20) * 10 + 100;
+        searchCriteria.minBid = window.getRandNum(1, 30) * 10;
+        searchCriteria.minBuy = window.getRandNum(1, 30) * 10;
         window.mbid = searchCriteria.minBid;
         window.mBuy = searchCriteria.minBuy;
 
@@ -212,7 +212,7 @@
                 let min_rate_txt = jQuery('#ab_min_rate').val();
                 let max_rate_txt = jQuery('#ab_max_rate').val();
                 if (min_rate_txt == '') {
-                    min_rate_txt = "40"
+                    min_rate_txt = "10"
                 }
                 if (max_rate_txt == '') {
                     max_rate_txt = "100"
@@ -241,8 +241,12 @@
 
                     return a._auction.expires - b._auction.expires;
                 });
-
+                if (response.data.items.length > 0){
+                    writeToDebugLog('------------------------------------------------------------------------------------------');
+                    writeToDebugLog('| rating | player name               | bid    | buy    | time            | action');
+                }
                 for (var i = 0; i < response.data.items.length; i++) {
+                    let action_txt = 'none';
                     let player = response.data.items[i];
                     let auction = player._auction;
                     let player_rating = parseInt(player.rating);
@@ -252,6 +256,8 @@
                         rating_ok = true;
                         rating_ok_txt = "ok";
                     } else {
+                        action_txt = 'ignore as rating does not fit criteria';
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         continue;
                     }
 
@@ -269,11 +275,16 @@
                     let bid_buy_txt = "(bid: " + window.format_string(currentBid.toString(), 6) + " / buy:" + window.format_string(buyNowPrice.toString(), 7) + ")"
                     let player_name =  window.getItemName(player);
                     let expire_time = window.format_string(expires, 15);
+                    let rating_txt = "(" +player_rating + "-" + rating_ok_txt + ") ";
+                    //writeToDebugLog(rating_txt + player_name + '=>' + expire_time + '] ' + bid_buy_txt);
 
-                    writeToDebugLog("(" + player_rating + "-" + rating_ok_txt + ") " + player_name + '=>' + expire_time + '] ' + bid_buy_txt);
+                    //
+                    let bid_txt = window.format_string(currentBid.toString(), 6)
+                    let buy_txt = window.format_string(buyNowPrice.toString(), 6)
 
                     if (rating_ok && window.autoBuyerActive && buyNowPrice <= parseInt(jQuery('#ab_buy_price').val()) && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
-                        writeToDebugLog('Buy Price :' + jQuery('#ab_buy_price').val());
+                        action_txt = 'attempt buy: ' + jQuery('#ab_buy_price').val();
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         buyPlayer(player, buyNowPrice, true);
                         setTimeout(function () {
                         }, 500);
@@ -287,11 +298,13 @@
                     } else if (rating_ok && window.autoBuyerActive && bidPrice && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
 
                         if (auction.expires > expiresIn) {
-                            writeToDebugLog('Ignoring Item [' + auction.tradeId + '] as it expires on [ ' + expires + ']');
+                            action_txt = 'ignore because of expiry time';
+                            writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                             continue;
                         }
 
-                        writeToDebugLog('Bid Price :' + bidPrice);
+                        action_txt = 'attempt bid: ' + bidPrice;
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         buyPlayer(player, checkPrice);
                         //setTimeout(function (){}, 1000);
                         if (!window.bids.includes(auction.tradeId)) {
@@ -302,13 +315,20 @@
                             }
                         }
                     }
+
+                };
+                if (response.data.items.length > 0){
+                    writeToDebugLog('------------------------------------------------------------------------------------------');
                 }
-                ;
             } else if (!response.success) {
                 if (response.status == HttpStatusCode.CAPTCHA_REQUIRED) {
-                    writeToLog('Autostopping bot since Captcha got triggered');
+                    writeToLog('------------------------------------------------------------------------------------------');
+                    writeToLog('[!!!] Autostopping bot since Captcha got triggered');
+                    writeToLog('------------------------------------------------------------------------------------------');
                 } else {
-                    writeToLog('Autostopping bot as fetching search results failed, please check if you can access transfer market in Web App');
+                    writeToLog('------------------------------------------------------------------------------------------');
+                    writeToLog('[!!!] Autostopping bot as search failed, please check if you can access transfer market in Web App');
+                    writeToLog('------------------------------------------------------------------------------------------');
                 }
                 window.deactivateAutoBuyer(true);
             }
@@ -392,22 +412,29 @@
 
     window.buyPlayer = function (player, price, isBin) {
             services.Item.bid(player, price).observe(this, (function (sender, data) {
+                let price_txt = window.format_string(price.toString(), 6)
                 let player_name = window.getItemName(player);
                 if (data.success) {
 
                     if (isBin) {
                         window.purchasedCardCount++;
                     }
-                    writeToLog("[$$$] > " + player_name + ' => ' + price + ((isBin) ? ' [successful] buy' : ' [ successful ] bid'));
+
                     var sellPrice = parseInt(jQuery('#ab_sell_price').val());
                     if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
-                        writeToLog('[===] > Selling for: ' + sellPrice);
+                        window.winCount++;
+                        let sym = "W:" + window.format_string(window.winCount.toString(), 4);
+                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
                         window.sellRequestTimeout = window.setTimeout(function () {
                             services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                         }, window.getRandomWait());
+                    }else{
+                        window.lossCount++;
+                        let sym = "L:" + window.format_string(window.lossCount.toString(), 4);
+                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to unassigned' : ' | bid | success | move to unassigned'));
                     }
                 } else {
-                    writeToLog("[XXX] > "+ player_name + ' => ' + price + ((isBin) ? ' [  failed  ] buy' : ' [   failed   ] bid') + ' - ERR: ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
+                    writeToLog("[XXX] | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
                 }
             }));
     };
@@ -482,11 +509,13 @@
             }
 
             if (window.futStatistics.soldItems >= minSoldCount) {
+                writeToLog('------------------------------------------------------------------------------------------');
                 writeToLog('[...] > ' + window.futStatistics.soldItems + " item(s) sold");
+                writeToLog('------------------------------------------------------------------------------------------');
                 window.clearSoldItems();
             }
         });
-    }
+    };
 
     window.clearSoldItems = function () {
         services.Item.clearSoldItems().observe(this, function (t, response) {

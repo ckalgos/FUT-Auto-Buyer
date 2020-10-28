@@ -16,7 +16,7 @@
     window.UTAutoBuyerViewController = function () {
         UTMarketSearchFiltersViewController.call(this);
         this._jsClassName = "UTAutoBuyerViewController";
-    }
+    };
 
     window.sellList = [];
     window.autoBuyerActive = false;
@@ -44,7 +44,7 @@
         window.autoBuyerActive = true;
         window.purchasedCardCount = 0;
         window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
-    }
+    };
 
     window.deactivateAutoBuyer = function (isStopped) {
         if (!window.autoBuyerActive) {
@@ -63,14 +63,14 @@
 
         window.defaultStopTime = window.searchCountBeforePause;
         window.notify((isStopped) ? 'Autobuyer Stopped' : 'Autobuyer Paused');
-    }
+    };
 
     window.clearLog = function () {
         var $progressLog = jQuery('#progressAutobuyer');
         var $buyerLog = jQuery('#autoBuyerFoundLog');
         $progressLog.val("");
         $buyerLog.val("");
-    }
+    };
 
     utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController)
     window.UTAutoBuyerViewController.prototype.init = function init() {
@@ -252,7 +252,10 @@
 
                 jQuery(view.__root.parentElement).append('<div id="SearchWrapper" style="width: 50%; right: 50%"><textarea readonly id="progressAutobuyer" style="font-size: 15px; width: 100%;height: 58%;"></textarea><label>Search Results:</label><br/><textarea readonly id="autoBuyerFoundLog" style="font-size: 10px; width: 100%;height: 26%;"></textarea></div>');
 
-                writeToLog('Autobuyer Ready');
+                writeToLog('Autobuyer Ready\n');
+                writeToLog('------------------------------------------------------------------------------------------');
+                writeToLog(' SYM  | Item name          | price  | op  | result  | comments ');
+                writeToLog('------------------------------------------------------------------------------------------');
             }
 
             if (jQuery('.search-prices').first().length) {

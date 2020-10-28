@@ -156,6 +156,17 @@
 
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
 
+        if (window.bidIncreaseCount >= 8) { //increase bid 8 times before reseting
+            window.prevMinBid = 100;
+        }
+
+        let currentMinBid = (window.prevMinBid === 100 && searchCriteria.minBid) ? searchCriteria.minBid : window.prevMinBid;
+
+        window.prevMinBid = getBuyBidPrice(currentMinBid);
+
+        searchCriteria.minBid = window.prevMinBid;
+        window.bidIncreaseCount++;
+
         services.Item.clearTransferMarketCache();
 
         var expiresIn = 3600;

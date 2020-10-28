@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.9
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyermenu.js
 // @description  FUT Snipping Tool
 // @author       CK Algos

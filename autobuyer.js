@@ -270,18 +270,6 @@
                     let player = response.data.items[i];
                     let auction = player._auction;
                     let player_rating = parseInt(player.rating);
-                    let rating_ok = false;
-                    let rating_ok_txt = "no";
-
-                    if (player_rating >= selected_min_rate && player_rating <= selected_max_rate) {
-                        rating_ok = true;
-                        rating_ok_txt = "ok";
-                    } else {
-                        action_txt = 'skip >>> (rating does not fit criteria)';
-                        let rating_txt = "(" +player_rating + "-" + rating_ok_txt + ") ";
-                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
-                        continue;
-                    }
 
                     let expires = services.Localization.localizeAuctionTimeRemaining(auction.expires);
 
@@ -297,11 +285,21 @@
                     let bid_buy_txt = "(bid: " + window.format_string(currentBid.toString(), 6) + " / buy:" + window.format_string(buyNowPrice.toString(), 7) + ")"
                     let player_name =  window.getItemName(player);
                     let expire_time = window.format_string(expires, 15);
-                    let rating_txt = "(" +player_rating + "-" + rating_ok_txt + ") ";
-
-
                     let bid_txt = window.format_string(currentBid.toString(), 6)
                     let buy_txt = window.format_string(buyNowPrice.toString(), 6)
+
+                    let rating_ok = false;
+                    let rating_ok_txt = "no";
+                    if (player_rating >= selected_min_rate && player_rating <= selected_max_rate) {
+                        rating_ok = true;
+                        rating_ok_txt = "ok";
+                    } else {
+                        action_txt = 'skip >>> (rating does not fit criteria)';
+                        let rating_txt = "(" +player_rating + "-" + rating_ok_txt + ") ";
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
+                        continue;
+                    }
+                    let rating_txt = "(" +player_rating + "-" + rating_ok_txt + ") ";
 
                     let userBuyNowPrice = parseInt(jQuery('#ab_buy_price').val());
                     // ============================================================================================================
@@ -310,6 +308,7 @@
 
                     if(maxPurchases < 1){
                         action_txt = 'skip >>> (Exceeded num of buys/bids per search)';
+                        let player_name =  window.getItemName(player);
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         continue;
                     }
@@ -363,6 +362,7 @@
                         if(isNaN(userBuyNowPrice) && isNaN(priceToBid)){
                             action_txt = 'skip >>> (No action required)';
                             writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
+                            continue;
                         }
 
                         action_txt = 'skip >>>';

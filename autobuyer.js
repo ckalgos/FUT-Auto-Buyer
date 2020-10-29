@@ -166,7 +166,7 @@
                 window.searchCountBeforePause = window.defaultStopTime;
             }
         }
-    }
+    };
 
     window.searchFutMarket = function (sender, event, data) {
         if (!window.autoBuyerActive) {
@@ -193,11 +193,21 @@
         }
 
         // Randomize search criteria min bid to clear cache
-        searchCriteria.minBid = window.getRandNum(1, 30) * 10;
-        searchCriteria.minBuy = window.getRandNum(1, 30) * 10;
+        if(window.useRandMinBid){
+            let user_min_bid_txt = $('#ab_rand_min_bid_input').val();
+            if(user_min_bid_txt == '') { user_min_bid_txt = '300' }
+            let user_min_bid = Math.round(parseInt(user_min_bid_txt));
+            searchCriteria.minBid = window.getRandNum(0, user_min_bid);
+        }
+        if(window.useRandMinBuy){
+            let user_min_buy_txt = $('#ab_rand_min_buy_input').val();
+            if(user_min_buy_txt == '') { user_min_buy_txt = '300' }
+            let user_min_buy = Math.round(parseInt(user_min_buy_txt));
+            searchCriteria.minBuy = window.getRandNum(0, user_min_buy);
+        }
+
         window.mbid = searchCriteria.minBid;
         window.mBuy = searchCriteria.minBuy;
-
 
         if ($('#ab_card_count').val() !== '') {
             window.buyCardCount = parseInt(jQuery('#ab_card_count').val());
@@ -239,7 +249,6 @@
                     if (priceDiff != 0) {
                         return priceDiff;
                     }
-
                     return a._auction.expires - b._auction.expires;
                 });
                 if (response.data.items.length > 0){
@@ -258,7 +267,7 @@
                         rating_ok = true;
                         rating_ok_txt = "ok";
                     } else {
-                        action_txt = 'ignore as rating does not fit criteria';
+                        action_txt = 'skip >>> (rating does not fit criteria)';
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         continue;
                     }
@@ -278,16 +287,28 @@
                     let player_name =  window.getItemName(player);
                     let expire_time = window.format_string(expires, 15);
                     let rating_txt = "(" +player_rating + "-" + rating_ok_txt + ") ";
-                    //writeToDebugLog(rating_txt + player_name + '=>' + expire_time + '] ' + bid_buy_txt);
 
-                    //
+
                     let bid_txt = window.format_string(currentBid.toString(), 6)
                     let buy_txt = window.format_string(buyNowPrice.toString(), 6)
 
-                    if (rating_ok && window.autoBuyerActive && buyNowPrice <= parseInt(jQuery('#ab_buy_price').val()) && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
-                        action_txt = 'attempt buy: ' + jQuery('#ab_buy_price').val();
+                    let userBuyNowPrice = parseInt(jQuery('#ab_buy_price').val());
+                    // ============================================================================================================
+                    // checking reasons to skip
+                    // ============================================================================================================
+
+                    if(maxPurchases < 1){
+                        action_txt = 'skip >>> (Exceeded num of buys/bids per search)';
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
+                        continue;
+                    }
+                    // ============================================================================================================
+
+                    if (rating_ok && window.autoBuyerActive && buyNowPrice <= userBuyNowPrice && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId)) {
+                        action_txt = 'attempt buy: ' + buy_txt;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         buyPlayer(player, buyNowPrice, true);
+                        maxPurchases--;
                         setTimeout(function () {
                         }, 500);
                         if (!window.bids.includes(auction.tradeId)) {
@@ -297,10 +318,10 @@
                                 window.bids.shift();
                             }
                         }
-                    } else if (rating_ok && window.autoBuyerActive && bidPrice && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId) && --maxPurchases >= 0) {
+                    } else if (rating_ok && window.autoBuyerActive && bidPrice && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId)) {
 
                         if (auction.expires > expiresIn) {
-                            action_txt = 'ignore because of expiry time';
+                            action_txt = 'skip >>> (Waiting for specified expiry time)';
                             writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                             continue;
                         }
@@ -308,6 +329,7 @@
                         action_txt = 'attempt bid: ' + bidPrice;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         buyPlayer(player, checkPrice);
+                        maxPurchases--;
                         //setTimeout(function (){}, 1000);
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
@@ -317,6 +339,16 @@
                             }
                         }
                     }else{
+                        if(buyNowPrice > userBuyNowPrice || currentBid > priceToBid){
+                            action_txt = 'skip >>> (higher than specified buy/bid price)';
+                            writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
+                            continue;
+                        }
+                        if(buyNowPrice > window.futStatistics.coinsNumber){
+                            action_txt = 'skip >>> (Insufficient coins)';
+                            writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
+                            continue;
+                        }
                         action_txt = 'skip >>>';
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                     }
@@ -517,7 +549,7 @@
 
             if (window.futStatistics.soldItems >= minSoldCount) {
                 writeToLog('------------------------------------------------------------------------------------------');
-                writeToLog('Report] > ' + window.futStatistics.soldItems + " item(s) sold");
+                writeToLog('[TRANSFER-LIST] > ' + window.futStatistics.soldItems + " item(s) sold");
                 writeToLog('------------------------------------------------------------------------------------------');
                 window.clearSoldItems();
             }

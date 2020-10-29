@@ -267,7 +267,7 @@
                     let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
                     let log_init_text = 'Autobuyer Ready\n' +
                         time_txt + '------------------------------------------------------------------------------------------\n' +
-                        time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                        time_txt + ' Index  | Item name       | price  | op  | result  | comments\n' +
                         time_txt + '------------------------------------------------------------------------------------------\n';
                     $log.val(log_init_text)
                 }
@@ -582,7 +582,7 @@
             let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
             let log_init_text = 'Autobuyer Ready\n' +
                 time_txt + '------------------------------------------------------------------------------------------\n' +
-                time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                time_txt + ' Index  | Item name       | price  | op  | result  | comments\n' +
                 time_txt + '------------------------------------------------------------------------------------------\n';
             $log.val(log_init_text)
         }

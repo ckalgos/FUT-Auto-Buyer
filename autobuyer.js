@@ -272,11 +272,13 @@
                     let player_rating = parseInt(player.rating);
                     let rating_ok = false;
                     let rating_ok_txt = "no";
+
                     if (player_rating >= selected_min_rate && player_rating <= selected_max_rate) {
                         rating_ok = true;
                         rating_ok_txt = "ok";
                     } else {
                         action_txt = 'skip >>> (rating does not fit criteria)';
+                        let rating_txt = "(" +player_rating + "-" + rating_ok_txt + ") ";
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         continue;
                     }

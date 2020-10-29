@@ -360,11 +360,16 @@
                             writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                             continue;
                         }
+                        if(isNaN(userBuyNowPrice) && isNaN(priceToBid)){
+                            action_txt = 'skip >>> (No action required)';
+                            writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
+                        }
+
                         action_txt = 'skip >>>';
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                     }
 
-                };
+                }
                 if (response.data.items.length > 0){
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
                 }

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.9
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
@@ -174,6 +174,15 @@
         }
 
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
+
+        // if (window.bidIncreaseCount >= 8) { //increase bid 8 times before reseting
+        //     window.prevMinBid = 100;
+        // }
+        //
+        // let currentMinBid = (window.prevMinBid === 100 && searchCriteria.minBid) ? searchCriteria.minBid : window.prevMinBid;
+        // window.prevMinBid = getBuyBidPrice(currentMinBid);
+        // searchCriteria.minBid = window.prevMinBid;
+        // window.bidIncreaseCount++;
 
         services.Item.clearTransferMarketCache();
 
@@ -370,7 +379,7 @@
                 window.deactivateAutoBuyer(true);
             }
         }));
-    }
+    };
 
     window.watchBidItems = function () {
 

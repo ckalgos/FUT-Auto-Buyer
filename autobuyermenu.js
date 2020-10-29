@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.9
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyermenu.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
@@ -32,6 +32,8 @@
     window.useRandMinBuy = false;
     window.useRandMinBid = false;
 
+    window.prevMinBid = 100;
+    window.bidIncreaseCount = 0;
     window.activateAutoBuyer = function (isStart) {
         if (window.autoBuyerActive) {
             return;
@@ -45,6 +47,8 @@
             window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
         }
         window.defaultStopTime = window.searchCountBeforePause;
+        window.prevMinBid = 100;
+        window.bidIncreaseCount = 0;
         window.autoBuyerActive = true;
         window.purchasedCardCount = 0;
         window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
@@ -63,6 +67,8 @@
 
         if (isStopped) {
             window.purchasedCardCount = 0;
+            window.prevMinBid = 100;
+            window.bidIncreaseCount = 0;
         }
 
         window.defaultStopTime = window.searchCountBeforePause;

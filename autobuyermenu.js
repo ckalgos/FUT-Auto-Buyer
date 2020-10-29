@@ -16,7 +16,7 @@
     window.UTAutoBuyerViewController = function () {
         UTMarketSearchFiltersViewController.call(this);
         this._jsClassName = "UTAutoBuyerViewController";
-    }
+    };
 
     window.sellList = [];
     window.autoBuyerActive = false;
@@ -28,17 +28,21 @@
     window.currentChemistry = -1;
     window.purchasedCardCount = 0;
     window.bidExact = false;
+
+    window.useRandMinBuy = false;
+    window.useRandMinBid = false;
+
     window.prevMinBid = 100;
     window.bidIncreaseCount = 0;
     window.activateAutoBuyer = function (isStart) {
         if (window.autoBuyerActive) {
             return;
         }
-         
+
         window.botStartTime = new Date();
         window.searchCountBeforePause = 10;
         window.currentChemistry = -1;
-        window.currentPage = 1; 
+        window.currentPage = 1;
         if ($('#ab_cycle_amount').val() !== '') {
             window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
         }
@@ -48,7 +52,7 @@
         window.autoBuyerActive = true;
         window.purchasedCardCount = 0;
         window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
-    }
+    };
 
     window.deactivateAutoBuyer = function (isStopped) {
         if (!window.autoBuyerActive) {
@@ -56,7 +60,7 @@
         }
 
         window.autoBuyerActive = false;
-        window.botStartTime = null; 
+        window.botStartTime = null;
         window.searchCountBeforePause = 10;
         window.currentChemistry = -1;
         window.currentPage = 1;
@@ -69,21 +73,21 @@
 
         window.defaultStopTime = window.searchCountBeforePause;
         window.notify((isStopped) ? 'Autobuyer Stopped' : 'Autobuyer Paused');
-    }
+    };
 
     window.clearLog = function () {
         var $progressLog = jQuery('#progressAutobuyer');
         var $buyerLog = jQuery('#autoBuyerFoundLog');
         $progressLog.val("");
-        $buyerLog.val(""); 
-    }
+        $buyerLog.val("");
+    };
 
     utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController)
     window.UTAutoBuyerViewController.prototype.init = function init() {
         if (!this.initialized) {
             //getAppMain().superclass(),
             this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch),
-                this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
+            this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
             var t = gConfigurationModel.getConfigObject(models.ConfigurationModel.KEY_ITEMS_PER_PAGE)
                 , count = 1 + (utils.JS.isValid(t) ? t[models.ConfigurationModel.ITEMS_PER_PAGE.TRANSFER_MARKET] : 15);
             this._viewmodel.searchCriteria.count = count,
@@ -96,8 +100,8 @@
                 view.addTarget(this, this._eMaxBidPriceChanged, UTMarketSearchFiltersView.Event.MAX_BID_PRICE_CHANGE),
                 view.addTarget(this, this._eMinBuyPriceChanged, UTMarketSearchFiltersView.Event.MIN_BUY_PRICE_CHANGE),
                 view.addTarget(this, this._eMaxBuyPriceChanged, UTMarketSearchFiltersView.Event.MAX_BUY_PRICE_CHANGE),
-                this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
-                    view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
+            this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
+                view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
                 this._squadContext ? isPhone() || view.addClass("narrow") : view.addClass("floating"),
                 view.getPlayerNameSearch().addTarget(this, this._ePlayerNameChanged, enums.Event.CHANGE),
                 view.__root.style = "width: 50%; float: left;";
@@ -258,25 +262,26 @@
 
                 jQuery(view.__root.parentElement).append('<div id="SearchWrapper" style="width: 50%; right: 50%"><textarea readonly id="progressAutobuyer" style="font-size: 15px; width: 100%;height: 58%;"></textarea><label>Search Results:</label><br/><textarea readonly id="autoBuyerFoundLog" style="font-size: 10px; width: 100%;height: 26%;"></textarea></div>');
 
-                writeToLog('Autobuyer Ready');
+                var $log = jQuery('#progressAutobuyer');
+                if($log.val() == ''){
+                    let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
+                    let log_init_text = 'Autobuyer Ready\n' +
+                        time_txt + '------------------------------------------------------------------------------------------\n' +
+                        time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                        time_txt + '------------------------------------------------------------------------------------------\n';
+                    $log.val(log_init_text)
+                }
             }
 
             if (jQuery('.search-prices').first().length) {
                 if (!jQuery('#ab_buy_price').length) {
                     jQuery('.search-prices').first().append(
+                        '<div><br></div>'+
+                        '<hr>' +
                         '<div class="search-price-header">' +
-                        '   <h1 class="secondary">AB Settings:</h1>' +
+                        '   <h1 class="secondary">Buy/Bid Settings:</h1>' +
                         '</div>' +
-                        '<div class="price-filter">' +
-                        '   <div class="info">' +
-                        '       <span class="secondary label">Sell Price:</span><br/><small>Receive After Tax: <span id="sell_after_tax">0</span></small>' +
-                        '   </div>' +
-                        '   <div class="buttonInfo">' +
-                        '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_sell_price" placeholder="7000">' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</div>' +
+                        '<div><br></div>'+
                         '<div class="price-filter">' +
                         '   <div class="info">' +
                         '       <span class="secondary label">Buy Price:</span>' +
@@ -284,6 +289,16 @@
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
                         '           <input type="tel" class="numericInput" id="ab_buy_price" placeholder="5000">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">No. of cards to buy:<br/><small>(Works only with Buy price)</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_card_count" placeholder="10">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -310,21 +325,63 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Wait Time:<br/><small>(Random second range eg. 7-15)</small>:</span>' +
+                        '       <span class="secondary label">Bid items expiring in:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_wait_time" placeholder="7-15">' +
+                        '           <input type="text" class="numericInput" id="ab_item_expiring" placeholder="1H">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+
+                        '<div><br></div>'+
+                        '<hr>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Sell settings:</h1>' +
+                        '</div>' +
+                        '<div><br></div>'+
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Sell Price:</span><br/><small>Receive After Tax: <span id="sell_after_tax">0</span></small>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_sell_price" placeholder="7000">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Min clear count:<br/><small>(Clear sold items if count is not less than)</small>:</span>' +
+                        '       <span class="secondary label">Clear sold count:<br/><small>(Clear sold items when reach a specified count)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
                         '           <input type="tel" class="numericInput" id="ab_min_delete_count" placeholder="10">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div style="padding-top : 20px" class="ut-toggle-cell-view">' +
+                        '    <span class="ut-toggle-cell-view--label">Relist Unsold Items</span>' +
+                        '    <div id="ab_sell_toggle" class="ut-toggle-control">' +
+                        '        <div class="ut-toggle-control--track">' +
+                        '        </div>' +
+                        '        <div class= "ut-toggle-control--grip" >' +
+                        '        </div>' +
+                        '    </div>' +
+                        '</div>' +
+                        '<div><br></div>'+
+                        '<hr>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Safety settings:</h1>' +
+                        '</div>' +
+                        '<div><br></div>'+
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Wait Time:<br/><small>(Random second range eg. 7-15)</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_wait_time" placeholder="7-15">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -340,31 +397,11 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Stop After:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
+                        '       <span class="secondary label">Pause Cycle :<br/><small>(Number of searches performed before triggerring Pause)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_stop_after" placeholder="1H">' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</div>' +
-                        '<div class="price-filter">' +
-                        '   <div class="info">' +
-                        '       <span class="secondary label">No. of cards to buy:<br/><small>(Works only with Buy price)</small>:</span>' +
-                        '   </div>' +
-                        '   <div class="buttonInfo">' +
-                        '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_card_count" placeholder="10">' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</div>' +
-                        '<div class="price-filter">' +
-                        '   <div class="info">' +
-                        '       <span class="secondary label">Bid items expiring in:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
-                        '   </div>' +
-                        '   <div class="buttonInfo">' +
-                        '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_item_expiring" placeholder="1H">' +
+                        '           <input type="text" class="numericInput" id="ab_cycle_amount" placeholder="10">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -380,27 +417,92 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Pause Cycle :<br/><small>(Number of searches performed before triggerring Pause)</small>:</span>' +
+                        '       <span class="secondary label">Stop After:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_cycle_amount" placeholder="10">' +
+                        '           <input type="text" class="numericInput" id="ab_stop_after" placeholder="1H">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
-                        '<div style="padding-top : 20px" class="ut-toggle-cell-view">' +
-                            '<span class="ut-toggle-cell-view--label">Relist Unsold Items</span>' +
-                            '<div id="ab_sell_toggle" class="ut-toggle-control">' +
-                                '<div class="ut-toggle-control--track">' +
-                                '</div>' +
-                                '<div class= "ut-toggle-control--grip" >' +
-                                 '</div>' +
-                            '</div>' +
-                        '</div> '
+                        '<div><br></div>'+
+                        '<hr>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Rating Filtering:</h1>' +
+                        '</div>' +
+                        '<div><br></div>'+
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Min Rating:<br/><small>Minimum Player Rating</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_min_rate" placeholder="10" value="10">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Max Rating:<br/><small>Maximum Player Rating</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_max_rate" placeholder="100" value="100">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div><br></div>'+
+                        '<hr>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Search settings:</h1>' +
+                        '</div>' +
+                        '<div><br></div>'+
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Max value of random min bid:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_rand_min_bid_input" placeholder="300">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                        '       <span class="ut-toggle-cell-view--label">Use random min bid</span>' +
+                        '           <div id="ab_rand_min_bid_toggle" class="ut-toggle-control">' +
+                        '           <div class="ut-toggle-control--track">' +
+                        '           </div>' +
+                        '           <div class= "ut-toggle-control--grip" >' +
+                        '           </div>' +
+                        '       </div>' +
+                        '   </div>'+
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Max value of random min buy:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_rand_min_buy_input" placeholder="300">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                        '       <span class="ut-toggle-cell-view--label">Use random min buy</span>' +
+                        '           <div id="ab_rand_min_buy_toggle" class="ut-toggle-control">' +
+                        '           <div class="ut-toggle-control--track">' +
+                        '           </div>' +
+                        '           <div class= "ut-toggle-control--grip" >' +
+                        '           </div>' +
+                        '       </div>' +
+                        '   </div>'+
+                        '</div>'
                     );
                 }
             }
-            
+
             if (!jQuery('#search_cancel_button').length) {
                 jQuery('#InfoWrapper').next().find('.button-container button').first().after('<button class="btn-standard" id="search_cancel_button">Stop</button><button class="btn-standard" id="clear_log_button">Clear Log</button>')
             }
@@ -420,7 +522,27 @@
             window.bidExact = true;
             jQuery("#ab_bid_exact").addClass("toggled");
         }
-    }
+    };
+
+    window.toggleUseRandMinBid = function () {
+        if (window.useRandMinBid) {
+            window.useRandMinBid = false;
+            jQuery("#ab_rand_min_bid_toggle").removeClass("toggled");
+        } else {
+            window.useRandMinBid = true;
+            jQuery("#ab_rand_min_bid_toggle").addClass("toggled");
+        }
+    };
+
+    window.toggleUseRandMinBuy = function () {
+        if (window.useRandMinBuy) {
+            window.useRandMinBuy = false;
+            jQuery("#ab_rand_min_buy_toggle").removeClass("toggled");
+        } else {
+            window.useRandMinBuy = true;
+            jQuery("#ab_rand_min_buy_toggle").addClass("toggled");
+        }
+    };
 
     window.toggleRelist = function () {
         if (window.reListEnabled) {
@@ -438,6 +560,9 @@
     jQuery(document).on('click', '#ab_bid_exact', toggleBidExact);
     jQuery(document).on('click', '#ab_sell_toggle', toggleRelist);
 
+    jQuery(document).on('click', '#ab_rand_min_bid_toggle', toggleUseRandMinBid);
+    jQuery(document).on('click', '#ab_rand_min_buy_toggle', toggleUseRandMinBuy);
+
     jQuery(document).on('keyup', '#ab_sell_price', function () {
         jQuery('#sell_after_tax').html((jQuery('#ab_sell_price').val() - ((parseInt(jQuery('#ab_sell_price').val()) / 100) * 5)).toLocaleString());
     });
@@ -451,7 +576,16 @@
     };
 
     window.writeToLog = function (message) {
+        let time_txt = '[' + new Date().toLocaleTimeString() + '] '
         var $log = jQuery('#progressAutobuyer');
+        if($log.val() == ''){
+            let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
+            let log_init_text = 'Autobuyer Ready\n' +
+                time_txt + '------------------------------------------------------------------------------------------\n' +
+                time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                time_txt + '------------------------------------------------------------------------------------------\n';
+            $log.val(log_init_text)
+        }
         message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
         $log.val($log.val() + message);
         $log.scrollTop($log[0].scrollHeight);

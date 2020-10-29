@@ -281,6 +281,7 @@
 
                     let priceToBid = (window.bidExact) ? bidPrice : ((isBid) ? window.getSellBidPrice(bidPrice) : bidPrice);
                     let checkPrice = (window.bidExact) ? priceToBid : ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid);
+                    let userBuyNowPrice = parseInt(jQuery('#ab_buy_price').val());
 
                     let bid_buy_txt = "(bid: " + window.format_string(currentBid.toString(), 6) + " / buy:" + window.format_string(buyNowPrice.toString(), 7) + ")"
                     let player_name =  window.getItemName(player);
@@ -289,6 +290,13 @@
                     let buy_txt = window.format_string(buyNowPrice.toString(), 6)
 
                     let rating_ok = false;
+
+                    if(isNaN(userBuyNowPrice) && isNaN(priceToBid)){
+                        action_txt = 'skip >>> (No action required)';
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
+                        continue;
+                    }
+
                     let rating_ok_txt = "no";
                     if (player_rating >= selected_min_rate && player_rating <= selected_max_rate) {
                         rating_ok = true;
@@ -301,7 +309,6 @@
                     }
                     let rating_txt = "(" +player_rating + "-" + rating_ok_txt + ") ";
 
-                    let userBuyNowPrice = parseInt(jQuery('#ab_buy_price').val());
                     // ============================================================================================================
                     // checking reasons to skip
                     // ============================================================================================================
@@ -356,11 +363,6 @@
                         }
                         if(buyNowPrice > window.futStatistics.coinsNumber){
                             action_txt = 'skip >>> (Insufficient coins)';
-                            writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
-                            continue;
-                        }
-                        if(isNaN(userBuyNowPrice) && isNaN(priceToBid)){
-                            action_txt = 'skip >>> (No action required)';
                             writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | '  + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                             continue;
                         }

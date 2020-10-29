@@ -370,7 +370,7 @@
                 window.deactivateAutoBuyer(true);
             }
         }));
-    }
+    };
 
     window.watchBidItems = function () {
 

@@ -370,6 +370,17 @@
                     writeToLog('------------------------------------------------------------------------------------------');
                     writeToLog('[!!!] Autostopping bot since Captcha got triggered');
                     writeToLog('------------------------------------------------------------------------------------------');
+                    let bot_token = null; //Replace Null with Bot Token
+                    let bot_chatID = null; //Replace Null with your Chat ID
+                    let bot_message = 'Captcha, please solve the problem so that the bot can work again.';
+                    if(bot_token != null && bot_chatID != null){
+                        let url = 'https://api.telegram.org/bot' + bot_token +
+                            '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message;
+
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.open("GET", url, true);
+                        xhttp.send();
+                    }
                 } else {
                     writeToLog('------------------------------------------------------------------------------------------');
                     writeToLog('[!!!] Autostopping bot as search failed, please check if you can access transfer market in Web App');

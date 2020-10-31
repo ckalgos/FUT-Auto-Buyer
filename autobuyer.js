@@ -1011,12 +1011,8 @@
     window.getRandNum = function (min, max) {
         return Math.round((Math.random() * (max - min) + min));
     };
-    window.getItemName = function (itemObj) {
-        let item_name = window.format_string(itemObj._staticData.firstName.split(" ")[0] + ' ' + itemObj._staticData.lastName.split(" ")[0], 25);
-        if (itemObj.type == "training") {
-            item_name = window.format_string(itemObj._staticData.name, 25)
-        }
-        return item_name
+    window.getItemName = function(itemObj){
+        return window.format_string(itemObj._staticData.name, 15);
     };
     window.winCount = 0;
     window.lossCount = 0;
@@ -1029,6 +1025,14 @@
         '429': 'Bidding Rejected, too many request received from this user',
         '426': 'Bidding Rejected, other user won the (card / bid)',
         '461': 'Bidding Rejected, other user won the (card / bid)',
+    };
+
+    window.errorCodeLookUpShort = {
+        '521': 'Rejected',
+        '512': 'Rejected',
+        '429': 'Too many requests',
+        '426': 'Others won card/bid',
+        '461': 'Others won card/bid',
     };
 
     window.format_string = function (str, len) {
@@ -1250,7 +1254,7 @@
                 });
                 if (response.data.items.length > 0) {
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
-                    writeToDebugLog('| rating   | player name               | bid    | buy    | time            | action');
+                    writeToDebugLog('| rating   | player name     | bid    | buy    | time            | action');
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
                 }
                 for (var i = 0; i < response.data.items.length; i++) {
@@ -1371,11 +1375,23 @@
                     writeToLog('------------------------------------------------------------------------------------------');
                     writeToLog('[!!!] Autostopping bot since Captcha got triggered');
                     writeToLog('------------------------------------------------------------------------------------------');
+                    let bot_token = null; //Replace Null with Bot Token
+                    let bot_chatID = null; //Replace Null with your Chat ID
+                    let bot_message = 'Captcha, please solve the problem so that the bot can work again.';
+                    if(bot_token != null && bot_chatID != null){
+                        let url = 'https://api.telegram.org/bot' + bot_token +
+                            '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message;
+
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.open("GET", url, true);
+                        xhttp.send();
+                    }
                 } else {
                     writeToLog('------------------------------------------------------------------------------------------');
                     writeToLog('[!!!] Autostopping bot as search failed, please check if you can access transfer market in Web App');
                     writeToLog('------------------------------------------------------------------------------------------');
                 }
+                window.play_audio('capatcha');
                 window.deactivateAutoBuyer(true);
             }
         }));
@@ -1472,6 +1488,7 @@
                         window.winCount++;
                         let sym = " W:" + window.format_string(window.winCount.toString(), 4);
                         writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
+                        window.play_audio('card_won');
                         window.sellRequestTimeout = window.setTimeout(function () {
                             services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                         }, window.getRandomWait());
@@ -1483,7 +1500,7 @@
                 } else {
                     window.lossCount++;
                     let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
-                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
+                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
                 }
             }));
         }, window.bidRandomWait());

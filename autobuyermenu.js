@@ -49,6 +49,16 @@
         window.purchasedCardCount = 0;
         window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
     };
+    window.play_audio = function (event_type) {
+        var elem = document.getElementById("win_mp3");
+
+        if(event_type == "capatcha"){
+            elem = document.getElementById("capatcha_mp3");
+        }
+
+        elem.currentTime = 0;
+        elem.play();
+    };
 
     window.deactivateAutoBuyer = function (isStopped) {
         if (!window.autoBuyerActive) {
@@ -261,7 +271,7 @@
                     let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
                     let log_init_text = 'Autobuyer Ready\n' +
                         time_txt + '------------------------------------------------------------------------------------------\n' +
-                        time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                        time_txt + ' Index  | Item name       | price  | op  | result  | comments\n' +
                         time_txt + '------------------------------------------------------------------------------------------\n';
                     $log.val(log_init_text)
                 }
@@ -492,7 +502,17 @@
                         '           </div>' +
                         '       </div>' +
                         '   </div>'+
-                        '</div>'
+                        '</div>' +
+                        '<audio id="win_mp3" hidden">\n' +
+                        '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.ogg" type="audio/ogg">\n' +
+                        '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.mp3" type="audio/mpeg">\n' +
+                        '  Your browser does not support the audio element.\n' +
+                        '</audio>' +
+                        '<audio id="capatcha_mp3" hidden">\n' +
+                        '  <source src="https://proxy.notificationsounds.com/wake-up-tones/alarm-frenzy-493/download/file-sounds-897-alarm-frenzy.ogg" type="audio/ogg">\n' +
+                        '  <source src="https://proxy.notificationsounds.com/wake-up-tones/alarm-frenzy-493/download/file-sounds-897-alarm-frenzy.mp3" type="audio/mpeg">\n' +
+                        '  Your browser does not support the audio element.\n' +
+                        '</audio>'
                     );
                 }
             }
@@ -576,7 +596,7 @@
             let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
             let log_init_text = 'Autobuyer Ready\n' +
                 time_txt + '------------------------------------------------------------------------------------------\n' +
-                time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                time_txt + ' Index  | Item name       | price  | op  | result  | comments\n' +
                 time_txt + '------------------------------------------------------------------------------------------\n';
             $log.val(log_init_text)
         }

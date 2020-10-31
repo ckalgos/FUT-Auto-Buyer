@@ -20,11 +20,7 @@
         return Math.round((Math.random() * (max - min) + min));
     };
     window.getItemName = function(itemObj){
-        let item_name = window.format_string(itemObj._staticData.firstName.split(" ")[0] + ' ' + itemObj._staticData.lastName.split(" ")[0], 25);
-        if (itemObj.type == "training") {
-            item_name = window.format_string(itemObj._staticData.name, 25)
-        }
-        return item_name
+        return window.format_string(itemObj._staticData.name, 15);
     };
     window.winCount = 0;
     window.lossCount = 0;
@@ -37,6 +33,14 @@
         '429': 'Bidding Rejected, too many request received from this user',
         '426': 'Bidding Rejected, other user won the (card / bid)',
         '461': 'Bidding Rejected, other user won the (card / bid)',
+    };
+
+    window.errorCodeLookUpShort = {
+        '521': 'Rejected',
+        '512': 'Rejected',
+        '429': 'Too many requests',
+        '426': 'Others won card/bid',
+        '461': 'Others won card/bid',
     };
 
     window.format_string = function (str, len) {
@@ -253,7 +257,7 @@
                 });
                 if (response.data.items.length > 0){
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
-                    writeToDebugLog('| rating   | player name               | bid    | buy    | time            | action');
+                    writeToDebugLog('| rating   | player name     | bid    | buy    | time            | action');
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
                 }
                 for (var i = 0; i < response.data.items.length; i++) {
@@ -386,6 +390,7 @@
                     writeToLog('[!!!] Autostopping bot as search failed, please check if you can access transfer market in Web App');
                     writeToLog('------------------------------------------------------------------------------------------');
                 }
+                window.play_audio('capatcha');
                 window.deactivateAutoBuyer(true);
             }
         }));
@@ -481,6 +486,7 @@
                         window.winCount++;
                         let sym = " W:" + window.format_string(window.winCount.toString(), 4);
                         writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
+                        window.play_audio('card_won');
                         window.sellRequestTimeout = window.setTimeout(function () {
                             services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                         }, window.getRandomWait());
@@ -492,7 +498,7 @@
                 } else {
                     window.lossCount++;
                     let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
-                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUp[data.status] || ''));
+                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
                 }
             }));
     };

@@ -388,6 +388,7 @@
                     writeToLog('[!!!] Autostopping bot as search failed, please check if you can access transfer market in Web App');
                     writeToLog('------------------------------------------------------------------------------------------');
                 }
+                window.play_audio('capatcha');
                 window.deactivateAutoBuyer(true);
             }
         }));
@@ -483,6 +484,7 @@
                         window.winCount++;
                         let sym = " W:" + window.format_string(window.winCount.toString(), 4);
                         writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
+                        window.play_audio('card_won');
                         window.sellRequestTimeout = window.setTimeout(function () {
                             services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
                         }, window.getRandomWait());

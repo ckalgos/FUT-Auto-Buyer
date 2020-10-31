@@ -81,6 +81,17 @@
         window.notify((isStopped) ? 'Autobuyer Stopped' : 'Autobuyer Paused');
     };
 
+    window.play_audio = function (event_type) {
+        var elem = document.getElementById("win_mp3");
+
+        if (event_type == "capatcha") {
+            elem = document.getElementById("capatcha_mp3");
+        }
+
+        elem.currentTime = 0;
+        elem.play();
+    };
+
     window.clearLog = function () {
         var $progressLog = jQuery('#progressAutobuyer');
         var $buyerLog = jQuery('#autoBuyerFoundLog');
@@ -277,7 +288,7 @@
                     let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
                     let log_init_text = 'Autobuyer Ready\n' +
                         time_txt + '------------------------------------------------------------------------------------------\n' +
-                        time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                        time_txt + ' Index  | Item name       | price  | op  | result  | comments\n' +
                         time_txt + '------------------------------------------------------------------------------------------\n';
                     $log.val(log_init_text)
                 }
@@ -539,7 +550,17 @@
                         '<div><br></div>' +
                         '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="preserve_changes">Preserve Changes</button>' +
-                        '</div>'
+                        '</div>' +
+                        '<audio id="win_mp3" hidden">\n' +
+                        '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.ogg" type="audio/ogg">\n' +
+                        '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.mp3" type="audio/mpeg">\n' +
+                        '  Your browser does not support the audio element.\n' +
+                        '</audio>' +
+                        '<audio id="capatcha_mp3" hidden">\n' +
+                        '  <source src="https://proxy.notificationsounds.com/wake-up-tones/alarm-frenzy-493/download/file-sounds-897-alarm-frenzy.ogg" type="audio/ogg">\n' +
+                        '  <source src="https://proxy.notificationsounds.com/wake-up-tones/alarm-frenzy-493/download/file-sounds-897-alarm-frenzy.mp3" type="audio/mpeg">\n' +
+                        '  Your browser does not support the audio element.\n' +
+                        '</audio>'
                     );
 
                     window.loadABDetails();
@@ -1198,13 +1219,13 @@
             let user_min_bid_txt = $('#ab_rand_min_bid_input').val();
             if (user_min_bid_txt == '') { user_min_bid_txt = '300' }
             let user_min_bid = Math.round(parseInt(user_min_bid_txt));
-            searchCriteria.minBid = window.getRandNum(0, user_min_bid);
+            searchCriteria.minBid = window.fixRandomPrice(window.getRandNum(0, user_min_bid));
         }
         if (window.useRandMinBuy) {
             let user_min_buy_txt = $('#ab_rand_min_buy_input').val();
             if (user_min_buy_txt == '') { user_min_buy_txt = '300' }
             let user_min_buy = Math.round(parseInt(user_min_buy_txt));
-            searchCriteria.minBuy = window.getRandNum(0, user_min_buy);
+            searchCriteria.minBuy = window.fixRandomPrice(window.getRandNum(0, user_min_buy));
         }
 
         window.mbid = searchCriteria.minBid;
@@ -1396,6 +1417,14 @@
             }
         }));
     };
+
+    window.fixRandomPrice = function (price) {
+        let range = JSUtils.find(UTCurrencyInputControl.PRICE_TIERS, function (e) {
+            return price >= e.min
+        });
+        var nearestPrice = Math.round(price / range.inc) * range.inc;
+        return Math.max(Math.min(nearestPrice, 14999000), 0); 
+    }
 
     window.watchBidItems = function () {
 

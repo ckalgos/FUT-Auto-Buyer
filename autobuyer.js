@@ -685,6 +685,12 @@
             if (window.useRandMinBid) {
                 settingsJson.abSettings.useRandMinBid = window.useRandMinBid;
             }
+            if (jQuery('#telegram_bot_token').val() !== '') {
+                settingsJson.abSettings.telegramBotToken = jQuery('#telegram_bot_token').val();
+            }
+            if (jQuery('#telegram_chat_id').val() !== '') {
+                settingsJson.abSettings.telegramChatID= jQuery('#telegram_chat_id').val();
+            }
 
             if (window.captchaCloseTab) {
                 settingsJson.abSettings.captchaCloseTab = window.captchaCloseTab;
@@ -802,6 +808,12 @@
         if (settingsJson.abSettings.useRandMinBid) {
             window.bidExact = settingsJson.abSettings.useRandMinBid;
             jQuery("#ab_rand_min_bid_toggle").addClass("toggled");
+        }
+        if (settingsJson.abSettings.telegramBotToken) {
+            jQuery('#telegram_bot_token').val(settingsJson.abSettings.telegramBotToken);
+        }
+        if (settingsJson.abSettings.telegramChatID) {
+            jQuery('#telegram_chat_id').val(settingsJson.abSettings.telegramChatID);
         }
 
         if (settingsJson.abSettings.captchaCloseTab) {

@@ -536,6 +536,26 @@
                         '   <h1 class="secondary">Captcha settings:</h1>' +
                         '</div>' +
                         '<div><br></div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Telegram Bot Token<br/><small>Token of your own bot</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="telegram_bot_token">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Telegram Chat ID<br/><small>Your Telegram ChatID </small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="telegram_chat_id">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Close Web App on Captcha Trigger</span>' +

@@ -95,7 +95,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 * To use this tool, the user should have access to the transfer market. 
 * Hence play the required number of games to get access to the transfer market before trying this tool. 
 
-<!-- Telegram-->
+<!-- Telegram -->
 ## Telegram Installation Guide
 
 * Install Telegram

@@ -107,6 +107,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 * Send /start to your bot
 * Visit this URL. https://api.telegram.org/botXXX:YYYYY/getUpdates (replace the XXX: YYYYY with your BOT HTTP API Token you just got from the Telegram B otFather)
 * Here you can find your chat id (this process can take some minutes) --> e.g. "chat":{"id":133333338,"first_name":"John","last_name":"Player"
+* Now you can add your bot token and chat id at the notification settings inside the bot GUI (near the Bottom)
 
 <!-- ROADMAP -->
 ## Roadmap

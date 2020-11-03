@@ -63,7 +63,7 @@
 		  		window.notify('Autobuyer Started');
 		  		let bot_token = jQuery('#telegram_bot_token').val();
             let bot_chatID = jQuery('#telegram_chat_id').val();
-            let bot_message = 'Bot Started';
+            let bot_message = 'Autobuyer Started';
             if(bot_token != null && bot_chatID != null){
                  let url = 'https://api.telegram.org/bot' + bot_token +
                             '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message;
@@ -1596,7 +1596,7 @@
                     let bot_token = jQuery('#telegram_bot_token').val();
             		  let bot_chatID = jQuery('#telegram_chat_id').val();
             		  let bot_buy = jQuery('#telegram_buy').val();
-                    let bot_message = " | " + player_name + '| ' + price_txt + ' | buy | success |';
+                    let bot_message = " | " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |';
                     if(bot_token != null && bot_chatID != null && bot_buy == 'Y'){
                         let url = 'https://api.telegram.org/bot' + bot_token +
                             '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message;

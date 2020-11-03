@@ -58,7 +58,7 @@
         window.autoBuyerActive = true;
         window.botStopped = false;
         window.purchasedCardCount = 0;
-        //Start Patrick
+        
         if(isStart){
 		  		window.notify('Autobuyer Started');
 		  		let bot_token = jQuery('#telegram_bot_token').val();
@@ -76,7 +76,7 @@
         else{
 				window.notfiy('Autobuyer Resumed');        
         }
-        //End Patrick
+        
         //window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
     };
 

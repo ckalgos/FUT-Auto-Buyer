@@ -58,7 +58,26 @@
         window.autoBuyerActive = true;
         window.botStopped = false;
         window.purchasedCardCount = 0;
-        window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
+        //Start Patrick
+        if(isStart){
+		  		window.notify('Autobuyer Started');
+		  		let bot_token = jQuery('#telegram_bot_token').val();
+            let bot_chatID = jQuery('#telegram_chat_id').val();
+            let bot_message = 'Bot Started';
+            if(bot_token != null && bot_chatID != null){
+                 let url = 'https://api.telegram.org/bot' + bot_token +
+                            '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message;
+
+                 var xhttp = new XMLHttpRequest();
+                 xhttp.open("GET", url, true);
+                 xhttp.send();
+             }     
+        }
+        else{
+				window.notfiy('Autobuyer Resumed');        
+        }
+        //End Patrick
+        //window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
     };
 
     window.deactivateAutoBuyer = function (isStopped) {
@@ -556,6 +575,16 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Telegram Buy Notification<br/><small>Type Y for notification </small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="telegram_buy">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Close Web App on Captcha Trigger</span>' +
@@ -691,6 +720,9 @@
             if (jQuery('#telegram_chat_id').val() !== '') {
                 settingsJson.abSettings.telegramChatID= jQuery('#telegram_chat_id').val();
             }
+            if (jQuery('#telegram_buy').val() !== '') {
+                settingsJson.abSettings.telegramBuy= jQuery('#telegram_buy').val();
+            }
 
             if (window.captchaCloseTab) {
                 settingsJson.abSettings.captchaCloseTab = window.captchaCloseTab;
@@ -814,6 +846,9 @@
         }
         if (settingsJson.abSettings.telegramChatID) {
             jQuery('#telegram_chat_id').val(settingsJson.abSettings.telegramChatID);
+        }
+        if (settingsJson.abSettings.telegramBuy) {
+            jQuery('#telegram_buy').val(settingsJson.abSettings.telegramBuy);
         }
 
         if (settingsJson.abSettings.captchaCloseTab) {
@@ -1428,8 +1463,8 @@
                     writeToLog('------------------------------------------------------------------------------------------');
                     writeToLog('[!!!] Autostopping bot since Captcha got triggered');
                     writeToLog('------------------------------------------------------------------------------------------');
-                    let bot_token = null; //Replace Null with Bot Token
-                    let bot_chatID = null; //Replace Null with your Chat ID
+                    let bot_token = jQuery('#telegram_bot_token').val();
+            		  let bot_chatID = jQuery('#telegram_chat_id').val();
                     let bot_message = 'Captcha, please solve the problem so that the bot can work again.';
                     if(bot_token != null && bot_chatID != null){
                         let url = 'https://api.telegram.org/bot' + bot_token +
@@ -1558,6 +1593,19 @@
                         let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
                         writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to unassigned' : ' | bid | success | waiting to expire'));
                     }
+                    let bot_token = jQuery('#telegram_bot_token').val();
+            		  let bot_chatID = jQuery('#telegram_chat_id').val();
+            		  let bot_buy = jQuery('#telegram_buy').val();
+                    let bot_message = " | " + player_name + '| ' + price_txt + ' | buy | success |';
+                    if(bot_token != null && bot_chatID != null && bot_buy == 'Y'){
+                        let url = 'https://api.telegram.org/bot' + bot_token +
+                            '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message;
+
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.open("GET", url, true);
+                        xhttp.send();
+                    }
+                    
                 } else {
                     window.lossCount++;
                     let sym = " L:" + window.format_string(window.lossCount.toString(), 4);

@@ -38,6 +38,20 @@
 
     let _searchViewModel = null;
 
+    window.sendNotificationToUser = function (message) {
+        if (window.toggleMessageNotification) {
+            let bot_token = jQuery('#telegram_bot_token').val();
+            let bot_chatID = jQuery('#telegram_chat_id').val();
+            if (bot_token && bot_chatID) {
+                let url = 'https://api.telegram.org/bot' + bot_token +
+                    '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + message;
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", url, true);
+                xhttp.send();
+            }
+        }
+    }
+
     window.activateAutoBuyer = function (isStart) {
         if (window.autoBuyerActive) {
             return;
@@ -59,25 +73,13 @@
         window.botStopped = false;
         window.purchasedCardCount = 0;
         
-        if(isStart){
-		  		window.notify('Autobuyer Started');
-		  		let bot_token = jQuery('#telegram_bot_token').val();
-            let bot_chatID = jQuery('#telegram_chat_id').val();
-            let bot_message = 'Autobuyer Started';
-            if(bot_token != null && bot_chatID != null){
-                 let url = 'https://api.telegram.org/bot' + bot_token +
-                            '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message;
-
-                 var xhttp = new XMLHttpRequest();
-                 xhttp.open("GET", url, true);
-                 xhttp.send();
-             }     
+        if (isStart) {
+            window.notify('Autobuyer Started');
+            window.sendNotificationToUser('Autobuyer Started');
         }
-        else{
-				window.notfiy('Autobuyer Resumed');        
+        else {
+            window.notfiy('Autobuyer Resumed');
         }
-        
-        //window.notify((isStart) ? 'Autobuyer Started' : 'Autobuyer Resumed');
     };
 
     window.deactivateAutoBuyer = function (isStopped) {
@@ -101,14 +103,16 @@
     };
 
     window.play_audio = function (event_type) {
-        var elem = document.getElementById("win_mp3");
+        if (window.soundEnabled) {
+            var elem = document.getElementById("win_mp3");
 
-        if (event_type == "capatcha") {
-            elem = document.getElementById("capatcha_mp3");
+            if (event_type == "capatcha") {
+                elem = document.getElementById("capatcha_mp3");
+            }
+
+            elem.currentTime = 0;
+            elem.play();
         }
-
-        elem.currentTime = 0;
-        elem.play();
     };
 
     window.clearLog = function () {
@@ -554,7 +558,32 @@
                         '<div class="search-price-header">' +
                         '   <h1 class="secondary">Captcha settings:</h1>' +
                         '</div>' +
+                        '<div style="width: 100%;" class="price-filter">' +
+                        '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                        '       <span class="ut-toggle-cell-view--label">Close Web App on Captcha Trigger</span>' +
+                        '           <div id="ab_close_tab_toggle" class="ut-toggle-control">' +
+                        '           <div class="ut-toggle-control--track">' +
+                        '           </div>' +
+                        '           <div class= "ut-toggle-control--grip" >' +
+                        '           </div>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
                         '<div><br></div>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Notification settings:</h1>' +
+                        '</div>' +
+                        '<div style="width: 100%;" class="price-filter">' +
+                        '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                        '       <span class="ut-toggle-cell-view--label">Sound Notification</span>' +
+                        '           <div id="ab_sound_toggle" class="ut-toggle-control">' +
+                        '           <div class="ut-toggle-control--track">' +
+                        '           </div>' +
+                        '           <div class= "ut-toggle-control--grip" >' +
+                        '           </div>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
                         '       <span class="secondary label">Telegram Bot Token<br/><small>Token of your own bot</small>:</span>' +
@@ -575,27 +604,17 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
-                        '<div class="price-filter">' +
-                        '   <div class="info">' +
-                        '       <span class="secondary label">Telegram Buy Notification<br/><small>Type Y for notification </small>:</span>' +
-                        '   </div>' +
-                        '   <div class="buttonInfo">' +
-                        '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="telegram_buy">' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</div>' +
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
-                        '       <span class="ut-toggle-cell-view--label">Close Web App on Captcha Trigger</span>' +
-                        '           <div id="ab_close_tab_toggle" class="ut-toggle-control">' +
+                        '       <span class="ut-toggle-cell-view--label">Send Notification</span>' +
+                        '           <div id="ab_message_notification_toggle" class="ut-toggle-control">' +
                         '           <div class="ut-toggle-control--track">' +
                         '           </div>' +
                         '           <div class= "ut-toggle-control--grip" >' +
                         '           </div>' +
                         '       </div>' +
                         '   </div>' +
-                        '</div>' +
+                        '</div>' + 
                         '<div><br></div>' +
                         '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="preserve_changes">Preserve Changes</button>' +
@@ -720,9 +739,13 @@
             if (jQuery('#telegram_chat_id').val() !== '') {
                 settingsJson.abSettings.telegramChatID= jQuery('#telegram_chat_id').val();
             }
-            if (jQuery('#telegram_buy').val() !== '') {
-                settingsJson.abSettings.telegramBuy= jQuery('#telegram_buy').val();
+
+            if (window.notificationEnabled) {
+                settingsJson.abSettings.notificationEnabled = window.notificationEnabled;
             }
+            if (window.soundEnabled) {
+                settingsJson.abSettings.soundEnabled = window.soundEnabled;
+            } 
 
             if (window.captchaCloseTab) {
                 settingsJson.abSettings.captchaCloseTab = window.captchaCloseTab;
@@ -847,14 +870,22 @@
         if (settingsJson.abSettings.telegramChatID) {
             jQuery('#telegram_chat_id').val(settingsJson.abSettings.telegramChatID);
         }
-        if (settingsJson.abSettings.telegramBuy) {
-            jQuery('#telegram_buy').val(settingsJson.abSettings.telegramBuy);
-        }
+        if (settingsJson.abSettings.notificationEnabled) {
+            window.notificationEnabled = settingsJson.abSettings.notificationEnabled;
+            jQuery("#ab_message_notification_toggle").addClass("toggled");
+        } 
 
         if (settingsJson.abSettings.captchaCloseTab) {
             window.captchaCloseTab = settingsJson.abSettings.captchaCloseTab;
             jQuery("#ab_close_tab_toggle").addClass("toggled");
         } 
+
+        if (settingsJson.abSettings.soundEnabled) {
+            window.soundEnabled = settingsJson.abSettings.soundEnabled;
+            jQuery("#ab_sound_toggle").addClass("toggled");
+        } 
+
+         
     }
 
     window.clearABSettings = function () {
@@ -884,11 +915,16 @@
         jQuery("#ab_rand_min_bid_toggle").removeClass("toggled");
         window.captchaCloseTab = false;
         jQuery("#ab_close_tab_toggle").removeClass("toggled");
+        window.notificationEnabled = false;
+        jQuery("#ab_message_notification_toggle").removeClass("toggled");
+        window.soundEnabled = false;
+        jQuery("#ab_sound_toggle").removeClass("toggled");
     }
 
     jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
     jQuery(document).on('click', '#clear_log_button', clearLog);
-    jQuery(document).on('click', 'button:contains("Reset")', clearABSettings);  
+    jQuery(document).on('click', 'button:contains("Reset")', clearABSettings);
+    jQuery(document).on('click', '#clear_log_button', clearLog);
 
     jQuery(document).on({
         mouseenter: function () {
@@ -980,13 +1016,37 @@
         }
     }
 
+    window.toggleSound = function () {
+        if (window.soundEnabled) {
+            window.soundEnabled = false;
+            jQuery("#ab_sound_toggle").removeClass("toggled");
+        } else {
+            window.soundEnabled = true;
+            jQuery("#ab_sound_toggle").addClass("toggled");
+        }
+    }
+    
+    window.toggleMessageNotification = function () {
+        if (window.notificationEnabled) {
+            window.notificationEnabled = false;
+            jQuery("#ab_message_notification_toggle").removeClass("toggled");
+        } else {
+            window.notificationEnabled = true;
+            jQuery("#ab_message_notification_toggle").addClass("toggled");
+        }
+    }
+
+
     jQuery(document).on('click', '#ab_bid_exact', toggleBidExact);
     jQuery(document).on('click', '#ab_sell_toggle', toggleRelist);
 
     jQuery(document).on('click', '#ab_rand_min_bid_toggle', toggleUseRandMinBid);
     jQuery(document).on('click', '#ab_rand_min_buy_toggle', toggleUseRandMinBuy);
     jQuery(document).on('click', '#ab_close_tab_toggle', toggleCloseTab);
-    //jQuery(document).on('click', '#ab_solve_captcha', toggleSolveCaptcha);
+    jQuery(document).on('click', '#ab_sound_toggle', toggleSound);
+    jQuery(document).on('click', '#ab_message_notification_toggle', toggleMessageNotification);
+    //jQuery(document).on('click', '#ab_solve_captcha', toggleSolveCaptcha);    
+    
 
     jQuery(document).on('keyup', '#ab_sell_price', function () {
         jQuery('#sell_after_tax').html((jQuery('#ab_sell_price').val() - ((parseInt(jQuery('#ab_sell_price').val()) / 100) * 5)).toLocaleString());
@@ -1456,24 +1516,16 @@
                 }
             } else if (!response.success) {
                 if (response.status == HttpStatusCode.CAPTCHA_REQUIRED) {
+
+                    window.sendNotificationToUser('Captcha, please solve the problem so that the bot can work again.');
+
                     if (window.captchaCloseTab) {
                         window.location.href = "about:blank";
                         return;
                     }
                     writeToLog('------------------------------------------------------------------------------------------');
                     writeToLog('[!!!] Autostopping bot since Captcha got triggered');
-                    writeToLog('------------------------------------------------------------------------------------------');
-                    let bot_token = jQuery('#telegram_bot_token').val();
-            		  let bot_chatID = jQuery('#telegram_chat_id').val();
-                    let bot_message = 'Captcha, please solve the problem so that the bot can work again.';
-                    if(bot_token != null && bot_chatID != null){
-                        let url = 'https://api.telegram.org/bot' + bot_token +
-                            '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message;
-
-                        var xhttp = new XMLHttpRequest();
-                        xhttp.open("GET", url, true);
-                        xhttp.send();
-                    }
+                    writeToLog('------------------------------------------------------------------------------------------'); 
                 } else {
                     writeToLog('------------------------------------------------------------------------------------------');
                     writeToLog('[!!!] Autostopping bot as search failed, please check if you can access transfer market in Web App');
@@ -1590,8 +1642,10 @@
                         }, window.getRandomWait());
                     } else {
                         window.bidCount++;
-                        let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
-                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to unassigned' : ' | bid | success | waiting to expire'));
+                        services.Item.move(player, enums.FUTItemPile.CLUB).observe(this, (function (sender, moveResponse) {
+                            let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
+                            writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
+                        }));
                     }
                     let bot_token = jQuery('#telegram_bot_token').val();
             		  let bot_chatID = jQuery('#telegram_chat_id').val();

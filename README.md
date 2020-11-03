@@ -29,6 +29,7 @@
 * [Installation](#installation) 
 * [Usage](#Usage)
 * [Prerequisites](#prerequisites) 
+* [Telegram Installation Guide](#Telegram) 
 * [Roadmap](#Roadmap)  
 * [Developer Guide](#DevGuide) 
 * [Contributing](#contributing) 
@@ -92,7 +93,21 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 ## Prerequisites
 
 * To use this tool, the user should have access to the transfer market. 
-* Hence play the required number of games to get access to the transfer market before trying this tool.   
+* Hence play the required number of games to get access to the transfer market before trying this tool. 
+
+<!-- Telegram -->
+## Telegram Installation Guide
+
+* Install Telegram
+* Add @BotFather as a contact in telegram
+* Send BotFather /newbot
+* Type in your individual details like name etc.
+* Follow the prompts, and finally copy it’s HTTP API Token
+* Add your bot as a contact
+* Send /start to your bot
+* Visit this URL. https://api.telegram.org/botXXX:YYYYY/getUpdates (replace the XXX: YYYYY with your BOT HTTP API Token you just got from the Telegram B otFather)
+* Here you can find your chat id (this process can take some minutes) --> e.g. "chat":{"id":133333338,"first_name":"John","last_name":"Player"
+* Now you can add your bot token and chat id at the notification settings inside the bot GUI (near the Bottom)
 
 <!-- ROADMAP -->
 ## Roadmap

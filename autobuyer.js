@@ -145,7 +145,7 @@
     window.sendNotificationToUser = function (message) {
         if (window.toggleMessageNotification) {
             let bot_token = jQuery('#telegram_bot_token').val();
-            let bot_chatID = jQuery('#telegram_chat_id').val();
+            let bot_chatID = jQuery('#telegram_chat_id').val(); 
             if (bot_token && bot_chatID) {
                 let url = 'https://api.telegram.org/bot' + bot_token +
                     '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + message;
@@ -710,6 +710,16 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Telegram Buy Notification<br/><small>Type A for buy/loss notification, B for buy only or L for lost notification only </small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="telegram_buy">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Send Notification</span>' +
@@ -867,6 +877,9 @@
             if (jQuery('#telegram_chat_id').val() !== '') {
                 settingsJson.abSettings.telegramChatID= jQuery('#telegram_chat_id').val();
             }
+            if (jQuery('#telegram_buy').val() !== '') {
+                settingsJson.abSettings.telegramBuy= jQuery('#telegram_buy').val();
+            }
 
             if (window.notificationEnabled) {
                 settingsJson.abSettings.notificationEnabled = window.notificationEnabled;
@@ -1001,6 +1014,9 @@
         }
         if (settingsJson.abSettings.telegramChatID) {
             jQuery('#telegram_chat_id').val(settingsJson.abSettings.telegramChatID);
+        }
+        if (settingsJson.abSettings.telegramBuy) {
+            jQuery('#telegram_buy').val(settingsJson.abSettings.telegramBuy);
         }
         if (settingsJson.abSettings.notificationEnabled) {
             window.notificationEnabled = settingsJson.abSettings.notificationEnabled;
@@ -1794,6 +1810,12 @@
                             writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
                         }));
                     }
+ 
+						  if(jQuery('#telegram_buy').val()=='B'||jQuery('#telegram_buy').val()=='A'){
+						  	window.sendNotificationToUser( "| " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |');
+						  }                    
+                    
+ 
                     let bot_token = jQuery('#telegram_bot_token').val();
             		  let bot_chatID = jQuery('#telegram_chat_id').val();
             		  let bot_buy = jQuery('#telegram_buy').val();
@@ -1807,10 +1829,14 @@
                         xhttp.send();
                     }
 
+ 
                 } else {
                     window.lossCount++;
                     let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
                     writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
+                    if(jQuery('#telegram_buy').val()=='L'||jQuery('#telegram_buy').val()=='A'){
+						  	window.sendNotificationToUser( "| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
+						  } 
                 }
             }));
         }, window.bidRandomWait());

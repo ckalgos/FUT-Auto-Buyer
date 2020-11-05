@@ -10,6 +10,7 @@
 // @grant       GM_xmlhttpRequest
 // @grant       GM_getValue
 // @grant       GM_setValue
+// @grant       GM_deleteValue
 // @grant       GM_listValues
 // ==/UserScript==
 
@@ -37,18 +38,18 @@
     window.captchaCloseTab = false;
     window.botStopped = true;
 
-    let _searchViewModel = null;
+    var _searchViewModel = null;
 
-	window.loadFilter = function () {
-          var filterName = $('select[name=filters] option').filter(':selected').val()
+    window.loadFilter = function () {
+        var filterName = $('select[name=filters] option').filter(':selected').val()
 
-         let settingsJson = GM_getValue(filterName);
+        let settingsJson = GM_getValue(filterName); 
 
         if (!settingsJson) {
             return;
         }
 
-        settingsJson = JSON.parse(settingsJson);
+        settingsJson = JSON.parse(settingsJson); 
 
         if (settingsJson.abSettings.buyPrice) {
             $("#ab_buy_price").val(settingsJson.abSettings.buyPrice);
@@ -87,11 +88,7 @@
         if (settingsJson.abSettings.waitTime) {
             jQuery('#ab_wait_time').val(settingsJson.abSettings.waitTime);
         }
-
-        if (settingsJson.abSettings.bidTime) {
-            jQuery('#ab_bid_time').val(settingsJson.abSettings.bidTime);
-        }
-
+         
         if (settingsJson.abSettings.maxPurchases) {
             jQuery('#ab_max_purchases').val(settingsJson.abSettings.maxPurchases);
         }
@@ -137,15 +134,41 @@
         if (settingsJson.abSettings.captchaCloseTab) {
             window.captchaCloseTab = settingsJson.abSettings.captchaCloseTab;
             jQuery("#ab_close_tab_toggle").addClass("toggled");
+        } 
+
+        if (settingsJson.abSettings.notificationEnabled) {
+            window.notificationEnabled = settingsJson.abSettings.notificationEnabled;
+            jQuery("#ab_message_notification_toggle").addClass("toggled");
         }
-     };
 
+        if (settingsJson.abSettings.soundEnabled) {
+            window.soundEnabled = settingsJson.abSettings.soundEnabled;
+            jQuery("#ab_sound_toggle").addClass("toggled");
+        }
 
+        if (settingsJson.abSettings.telegramBotToken) {
+            jQuery('#telegram_bot_token').val(settingsJson.abSettings.telegramBotToken);
+        }
+        if (settingsJson.abSettings.telegramChatID) {
+            jQuery('#telegram_chat_id').val(settingsJson.abSettings.telegramChatID);
+        }
+        if (settingsJson.abSettings.telegramBuy) {
+            jQuery('#telegram_buy').val(settingsJson.abSettings.telegramBuy);
+        }
 
+    };
+
+    window.sendPinEvents = function (pageId) {
+        services.PIN.sendData(enums.PIN.EVENT.PAGE_VIEW, {
+            type: PIN_PAGEVIEW_EVT_TYPE,
+            pgid: pageId
+        });
+    }
+     
     window.sendNotificationToUser = function (message) {
         if (window.toggleMessageNotification) {
             let bot_token = jQuery('#telegram_bot_token').val();
-            let bot_chatID = jQuery('#telegram_chat_id').val(); 
+            let bot_chatID = jQuery('#telegram_chat_id').val();
             if (bot_token && bot_chatID) {
                 let url = 'https://api.telegram.org/bot' + bot_token +
                     '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + message;
@@ -175,9 +198,10 @@
         window.defaultStopTime = window.searchCountBeforePause;
         window.autoBuyerActive = true;
         window.botStopped = false;
-        window.purchasedCardCount = 0;
 
         if (isStart) {
+            window.purchasedCardCount = 0;
+            window.firstSearch = true;
             window.notify('Autobuyer Started');
             window.sendNotificationToUser('Autobuyer Started');
         }
@@ -255,7 +279,7 @@
                 view.__root.style = "width: 50%; float: left;";
         }
     };
-
+     
     function addTabItem() {
         if (services.Localization && jQuery('h1.title').html() === services.Localization.localize("navbar.label.home")) {
             getAppMain().getRootViewController().showGameView = function showGameView() {
@@ -424,6 +448,11 @@
 
             if (jQuery('.search-prices').first().length) {
                 if (!jQuery('#ab_buy_price').length) {
+
+                    jQuery('.ut-item-search-view').first().prepend(
+                        '<div class="button-container">' +
+                        '<select id="filter-dropdown" name="filters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +
+                        '</div>');
                     jQuery('.search-prices').first().append(
                         '<div><br></div>' +
                         '<hr>' +
@@ -533,17 +562,7 @@
                         '           <input type="tel" class="numericInput" id="ab_wait_time" placeholder="7-15">' +
                         '       </div>' +
                         '   </div>' +
-                        '</div>' +
-                        '<div class="price-filter">' +
-                        '   <div class="info">' +
-                        '       <span class="secondary label">Buy Wait Time:<br/><small>(Random second range eg. 0-1)</small>:</span>' +
-                        '   </div>' +
-                        '   <div class="buttonInfo">' +
-                        '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_bid_time" placeholder="0-1">' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</div>' +
+                        '</div>' + 
                         '<div class="price-filter">' +
                         '   <div class="info">' +
                         '       <span class="secondary label">Max purchases per search request:</span>' +
@@ -734,13 +753,7 @@
                         '<div><br></div>' +
                         '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="preserve_changes">Save Filter</button>' +
-                        '</div>' +
-						'<div class="button-container">' +
-                        '<select id="filter-dropdown" name="filters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +
-                        '</div>' +
-						'<div class="button-container">' +
-                        '    <button class="btn-standard call-to-action" id="load_filter">Load Saved Filter</button>' +
-                        '</div>' +
+                        '</div>' + 
                         '<audio id="win_mp3" hidden">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.ogg" type="audio/ogg">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.mp3" type="audio/mpeg">\n' +
@@ -754,22 +767,20 @@
                     );
 
 
-	            let dropdown = $('#filter-dropdown');
+                    let dropdown = $('#filter-dropdown');
 
-				dropdown.empty();
+                    dropdown.empty();
 
-				dropdown.append('<option selected="true" disabled>Choose filter to load</option>');
-				dropdown.prop('selectedIndex', 0);
+                    dropdown.append('<option selected="true" disabled>Choose filter to load</option>');
+                    dropdown.prop('selectedIndex', 0);
 
-                var filterArray = GM_listValues();
-                //console.log(filterArray);
+                    var filterArray = GM_listValues();
+                    //console.log(filterArray);
 
-				// Populate dropdown with list of filters
-                for (var i = 0; i < filterArray.length; i++) {
-					dropdown.append($('<option></option>').attr('value', filterArray[i]).text(filterArray[i]));
-                }
-
-                    window.loadABDetails();
+                    // Populate dropdown with list of filters
+                    for (var i = 0; i < filterArray.length; i++) {
+                        dropdown.append($('<option></option>').attr('value', filterArray[i]).text(filterArray[i]));
+                    } 
                 }
             }
 
@@ -780,7 +791,7 @@
             window.setTimeout(createAutoBuyerInterface, 1000);
         }
     }
-	
+
     window.saveDetails = function () {
 
         jQuery("#preserve_changes").addClass("active");
@@ -828,10 +839,6 @@
                 settingsJson.abSettings.waitTime = jQuery('#ab_wait_time').val();
             }
 
-            if (jQuery('#ab_bid_time').val() !== '') {
-                settingsJson.abSettings.bidTime = jQuery('#ab_bid_time').val();
-            }
-
             if (jQuery('#ab_max_purchases').val() !== '') {
                 settingsJson.abSettings.maxPurchases = jQuery('#ab_max_purchases').val();
             }
@@ -875,10 +882,10 @@
                 settingsJson.abSettings.telegramBotToken = jQuery('#telegram_bot_token').val();
             }
             if (jQuery('#telegram_chat_id').val() !== '') {
-                settingsJson.abSettings.telegramChatID= jQuery('#telegram_chat_id').val();
+                settingsJson.abSettings.telegramChatID = jQuery('#telegram_chat_id').val();
             }
             if (jQuery('#telegram_buy').val() !== '') {
-                settingsJson.abSettings.telegramBuy= jQuery('#telegram_buy').val();
+                settingsJson.abSettings.telegramBuy = jQuery('#telegram_buy').val();
             }
 
             if (window.notificationEnabled) {
@@ -895,6 +902,8 @@
 
 
             var filterName = prompt("Enter a name for this filter");
+
+            $('#filter-dropdown').append($('<option></option>').attr('value', filterName).text(filterName));
 
             GM_setValue(filterName, JSON.stringify(settingsJson));
 
@@ -914,126 +923,7 @@
         settingsJson = JSON.parse(settingsJson);
 
         return settingsJson.searchCriteria;
-    }
-
-    window.loadABDetails = function () {
-
-        let settingsJson = GM_getValue("SavedSettings");
-
-        if (!settingsJson) {
-            return;
-        }
-
-        settingsJson = JSON.parse(settingsJson);
-
-        if (settingsJson.abSettings.buyPrice) {
-            $("#ab_buy_price").val(settingsJson.abSettings.buyPrice);
-        }
-
-        if (settingsJson.abSettings.cardCount) {
-            $("#ab_card_count").val(settingsJson.abSettings.cardCount);
-        }
-
-        if (settingsJson.abSettings.maxBid) {
-            $("#ab_max_bid_price").val(settingsJson.abSettings.maxBid);
-        }
-
-        if (settingsJson.abSettings.itemExpiring) {
-            $("#ab_item_expiring").val(settingsJson.abSettings.itemExpiring);
-        }
-
-        if (settingsJson.abSettings.bidExact) {
-            window.bidExact = settingsJson.abSettings.bidExact;
-            jQuery("#ab_bid_exact").addClass("toggled");
-        }
-
-        if (settingsJson.abSettings.sellPrice) {
-            jQuery('#ab_sell_price').val(settingsJson.abSettings.sellPrice);
-        }
-
-        if (settingsJson.abSettings.minDeleteCount) {
-            jQuery('#ab_min_delete_count').val(settingsJson.abSettings.minDeleteCount);
-        }
-
-        if (settingsJson.abSettings.reListEnabled) {
-            window.reListEnabled = settingsJson.abSettings.reListEnabled;
-            jQuery("#ab_sell_toggle").addClass("toggled");
-        }
-
-        if (settingsJson.abSettings.waitTime) {
-            jQuery('#ab_wait_time').val(settingsJson.abSettings.waitTime);
-        }
-
-        if (settingsJson.abSettings.bidTime) {
-            jQuery('#ab_bid_time').val(settingsJson.abSettings.bidTime);
-        }
-
-        if (settingsJson.abSettings.maxPurchases) {
-            jQuery('#ab_max_purchases').val(settingsJson.abSettings.maxPurchases);
-        }
-
-        if (settingsJson.abSettings.pauseCycle) {
-            jQuery('#ab_cycle_amount').val(settingsJson.abSettings.pauseCycle);
-        }
-
-        if (settingsJson.abSettings.pauseFor) {
-            jQuery('#ab_pause_for').val(settingsJson.abSettings.pauseFor);
-        }
-
-        if (settingsJson.abSettings.stopAfter) {
-            jQuery('#ab_stop_after').val(settingsJson.abSettings.stopAfter);
-        }
-
-        if (settingsJson.abSettings.minRate) {
-            jQuery('#ab_min_rate').val(settingsJson.abSettings.minRate);
-        }
-
-        if (settingsJson.abSettings.maxRate) {
-            jQuery('#ab_max_rate').val(settingsJson.abSettings.maxRate);
-        }
-
-        if (settingsJson.abSettings.randMinBid) {
-            jQuery('#ab_rand_min_bid_input').val(settingsJson.abSettings.randMinBid);
-        }
-
-        if (settingsJson.abSettings.randMinBuy) {
-            jQuery('#ab_rand_min_buy_input').val(settingsJson.abSettings.randMinBuy);
-        }
-
-        if (settingsJson.abSettings.useRandMinBuy) {
-            window.useRandMinBuy = settingsJson.abSettings.useRandMinBuy;
-            jQuery("#ab_rand_min_buy_toggle").addClass("toggled");
-        }
-
-        if (settingsJson.abSettings.useRandMinBid) {
-            window.bidExact = settingsJson.abSettings.useRandMinBid;
-            jQuery("#ab_rand_min_bid_toggle").addClass("toggled");
-        }
-        if (settingsJson.abSettings.telegramBotToken) {
-            jQuery('#telegram_bot_token').val(settingsJson.abSettings.telegramBotToken);
-        }
-        if (settingsJson.abSettings.telegramChatID) {
-            jQuery('#telegram_chat_id').val(settingsJson.abSettings.telegramChatID);
-        }
-        if (settingsJson.abSettings.telegramBuy) {
-            jQuery('#telegram_buy').val(settingsJson.abSettings.telegramBuy);
-        }
-        if (settingsJson.abSettings.notificationEnabled) {
-            window.notificationEnabled = settingsJson.abSettings.notificationEnabled;
-            jQuery("#ab_message_notification_toggle").addClass("toggled");
-        }
-
-        if (settingsJson.abSettings.captchaCloseTab) {
-            window.captchaCloseTab = settingsJson.abSettings.captchaCloseTab;
-            jQuery("#ab_close_tab_toggle").addClass("toggled");
-        }
-
-        if (settingsJson.abSettings.soundEnabled) {
-            window.soundEnabled = settingsJson.abSettings.soundEnabled;
-            jQuery("#ab_sound_toggle").addClass("toggled");
-        }
-
-    }
+    } 
 
     window.clearABSettings = function () {
         $("#ab_buy_price").val('');
@@ -1046,8 +936,7 @@
         jQuery('#ab_min_delete_count').val('');
         window.reListEnabled = false;
         jQuery("#ab_sell_toggle").removeClass("toggled");
-        jQuery('#ab_wait_time').val('');
-        jQuery('#ab_bid_time').val('');
+        jQuery('#ab_wait_time').val(''); 
         jQuery('#ab_max_purchases').val('');
         jQuery('#ab_cycle_amount').val('');
         jQuery('#ab_pause_for').val('');
@@ -1086,17 +975,11 @@
     }, "#preserve_changes");
 
 
-        jQuery(document).on({
-        mouseenter: function () {
-            jQuery("#load_filter").addClass("hover");
-        },
-        mouseleave: function () {
-            jQuery("#load_filter").removeClass("hover");
-        },
-        click: function () {
+    jQuery(document).on({ 
+        change: function () {
             loadFilter()
         }
-    }, "#load_filter");
+    }, "#filter-dropdown");
 
     window.toggleBidExact = function () {
         if (window.bidExact) {
@@ -1217,7 +1100,11 @@
             return;
         }
 
-        window.updateTransferList();
+        sendPinEvents("Hub - Transfers");
+
+        setTimeout(function () {
+            window.updateTransferList();
+        }, 300);
     };
 
     window.writeToLog = function (message) {
@@ -1257,18 +1144,7 @@
         window.searchCount++;
         return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000);
     };
-
-    window.bidRandomWait = function () {
-        var addedTime = 0;
-
-        var wait = [0, 1];
-        if (jQuery('#ab_bid_time').val()) {
-            wait = jQuery('#ab_bid_time').val().split('-').map(a => parseInt(a));
-        }
-        window.searchCount++;
-        return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000);
-    };
-
+     
     window.getTimerProgress = function (timer) {
         var time = (new Date()).getTime();
 
@@ -1320,7 +1196,7 @@
     window.getRandNum = function (min, max) {
         return Math.round((Math.random() * (max - min) + min));
     };
-    window.getItemName = function(itemObj){
+    window.getItemName = function (itemObj) {
         return window.format_string(itemObj._staticData.name, 15);
     };
     window.winCount = 0;
@@ -1473,8 +1349,6 @@
         }
     };
 
-
-
     window.searchFutMarket = function (sender, event, data) {
         if (!window.autoBuyerActive) {
             return;
@@ -1510,12 +1384,18 @@
             if (user_min_bid_txt == '') { user_min_bid_txt = '300' }
             let user_min_bid = Math.round(parseInt(user_min_bid_txt));
             searchCriteria.minBid = window.fixRandomPrice(window.getRandNum(0, user_min_bid));
+            window.currentPage = 1;
         }
         if (window.useRandMinBuy) {
             let user_min_buy_txt = $('#ab_rand_min_buy_input').val();
             if (user_min_buy_txt == '') { user_min_buy_txt = '300' }
             let user_min_buy = Math.round(parseInt(user_min_buy_txt));
             searchCriteria.minBuy = window.fixRandomPrice(window.getRandNum(0, user_min_buy));
+            window.currentPage = 1;
+        }
+
+        if (window.currentPage === 1) {
+            sendPinEvents("Transfer Market Search");
         }
 
         window.mbid = searchCriteria.minBid;
@@ -1529,7 +1409,7 @@
 
         services.Item.searchTransferMarket(searchCriteria, window.currentPage).observe(this, (function (sender, response) {
             if (response.success && window.autoBuyerActive) {
-
+                sendPinEvents("Transfer Market Results - List View");
                 window.searchCountBeforePause--;
 
                 let min_rate_txt = jQuery('#ab_min_rate').val();
@@ -1567,8 +1447,11 @@
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
                     writeToDebugLog('| rating   | player name     | bid    | buy    | time            | action');
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
+                    sendPinEvents("Item - Detail View");
+                    window.firstSearch = true;
                 }
-                for (var i = 0; i < response.data.items.length; i++) {
+
+                for (let i = 0; i < response.data.items.length; i++) {
                     let action_txt = 'none';
                     let player = response.data.items[i];
                     let auction = player._auction;
@@ -1628,8 +1511,6 @@
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         buyPlayer(player, buyNowPrice, true);
                         maxPurchases--;
-                        setTimeout(function () {
-                        }, 500);
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
 
@@ -1672,7 +1553,7 @@
                         action_txt = 'skip >>>';
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                     }
-
+                    window.firstSearch = false;
                 }
                 if (response.data.items.length > 0) {
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
@@ -1784,47 +1665,45 @@
     };
 
     window.buyPlayer = function (player, price, isBin) {
-        setTimeout(function () {
-            services.Item.bid(player, price).observe(this, (function (sender, data) {
-                let price_txt = window.format_string(price.toString(), 6)
-                let player_name = window.getItemName(player);
-                if (data.success) {
+        services.Item.bid(player, price).observe(this, (function (sender, data) {
+            let price_txt = window.format_string(price.toString(), 6)
+            let player_name = window.getItemName(player);
+            if (data.success) {
 
-                    if (isBin) {
-                        window.purchasedCardCount++;
-                    }
-
-                    var sellPrice = parseInt(jQuery('#ab_sell_price').val());
-                    if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
-                        window.winCount++;
-                        let sym = " W:" + window.format_string(window.winCount.toString(), 4);
-                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
-                        window.play_audio('card_won');
-                        window.sellRequestTimeout = window.setTimeout(function () {
-                            services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
-                        }, window.getRandomWait());
-                    } else {
-                        window.bidCount++;
-                        services.Item.move(player, enums.FUTItemPile.CLUB).observe(this, (function (sender, moveResponse) {
-                            let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
-                            writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
-                        }));
-                    }
- 
-						  if(jQuery('#telegram_buy').val()=='B'||jQuery('#telegram_buy').val()=='A'){
-						  	window.sendNotificationToUser( "| " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |');
-						  }                    
-                    
-                } else {
-                    window.lossCount++;
-                    let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
-                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
-                    if(jQuery('#telegram_buy').val()=='L'||jQuery('#telegram_buy').val()=='A'){
-						  	window.sendNotificationToUser( "| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
-						  } 
+                if (isBin) {
+                    window.purchasedCardCount++;
                 }
-            }));
-        }, window.bidRandomWait());
+
+                var sellPrice = parseInt(jQuery('#ab_sell_price').val());
+                if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
+                    window.winCount++;
+                    let sym = " W:" + window.format_string(window.winCount.toString(), 4);
+                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
+                    window.play_audio('card_won');
+                    window.sellRequestTimeout = window.setTimeout(function () {
+                        services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
+                    }, window.getRandomWait());
+                } else {
+                    window.bidCount++;
+                    services.Item.move(player, enums.FUTItemPile.CLUB).observe(this, (function (sender, moveResponse) {
+                        let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
+                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
+                    }));
+                }
+
+                if (jQuery('#telegram_buy').val() == 'B' || jQuery('#telegram_buy').val() == 'A') {
+                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |');
+                }
+
+            } else {
+                window.lossCount++;
+                let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
+                writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
+                if (jQuery('#telegram_buy').val() == 'L' || jQuery('#telegram_buy').val() == 'A') {
+                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
+                }
+            }
+        }));
     };
 
     window.getSellBidPrice = function (bin) {
@@ -1868,15 +1747,29 @@
     };
 
     window.updateTransferList = function () {
+        sendPinEvents("Transfer List - List View");
         services.Item.requestTransferItems().observe(this, function (t, response) {
+            let sendEvent = true;
             let soldItems = response.data.items.filter(function (item) {
                 return item.getAuctionData().isSold();
             });
 
             window.futStatistics.soldItems = soldItems.length;
+
+            if (sendEvent && window.futStatistics.soldItems) {
+                sendPinEvents("Item - Detail View");
+                sendEvent = false;
+            }
+
             window.futStatistics.unsoldItems = response.data.items.filter(function (item) {
                 return !item.getAuctionData().isSold() && item.getAuctionData().isExpired();
             }).length;
+
+
+            if (sendEvent && window.futStatistics.unsoldItems) {
+                sendPinEvents("Item - Detail View");
+                sendEvent = false;
+            }
 
             if (window.futStatistics.unsoldItems && window.reListEnabled) {
                 services.Item.relistExpiredAuctions().observe(this, function (t, response) {
@@ -1887,9 +1780,19 @@
                 return item.getAuctionData().isSelling();
             }).length;
 
+            if (sendEvent && window.futStatistics.activeTransfers) {
+                sendPinEvents("Item - Detail View");
+                sendEvent = false;
+            }
+
             window.futStatistics.availableItems = response.data.items.filter(function (item) {
                 return item.getAuctionData().isInactive();
             }).length;
+
+            if (sendEvent && window.futStatistics.availableItems) {
+                sendPinEvents("Item - Detail View");
+                sendEvent = false;
+            }
 
             var minSoldCount = 10;
             if ($('#ab_min_delete_count').val() !== '') {
@@ -1902,6 +1805,8 @@
                 writeToLog('------------------------------------------------------------------------------------------');
                 window.clearSoldItems();
             }
+
+            sendPinEvents("Hub - Transfers");
         });
     };
 

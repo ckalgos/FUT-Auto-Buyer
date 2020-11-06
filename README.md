@@ -61,6 +61,17 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 ### Bid Price
 * If specified the autobuyer will bid on the card matching the search critieria for the price less than or equal to specified price.
 
+### Bid Exact
+* By default tool will bid for the lowest possible price and gradually increase the bid , if this flag is enabled bot will directly bid for the specified bid price.
+
+### Bid items expiring in:
+* If specified tool will only bid on items expiring in the given time range.
+* Default Value (`1H`) (S for seconds, M for Minutes, H for hours).
+
+### Relist Unsold Items:
+* If enabled bot will periodically check and relist expired item for the previous specified price
+### * Note : This is relist all expired items , not only the item which bot list. So check the Transfer List before enabling this to avoid losing cards
+
 ### Wait Time
 * The autobuyer will wait for the specified time before making the next search request.
 * Default Value (`7 - 15`).
@@ -86,9 +97,25 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 * The tool will pause for the specified interval, if the the number of search request in the given cycle matches the specified cycle amount.
 * Default Value (`0S`) (S for seconds, M for Minutes, H for hours). 
 
-### Cycle Amount 
+### Pause Cycle 
 * Indicates the amount of search request to be made before pausing the tool.
 * Default Value (`10`). 
+
+### Rating Filtering
+* If specified tool will bid only on items which has rating with in the specified range.
+* Default Value (`10` - `100`). 
+
+### Random Min Bid
+* If enabled tool will randomize min bid for each search to avoid cached result. 
+
+### Random Min Buy
+* If enabled tool will randomize min buy for each search to avoid cached result. 
+
+### Close On Captcha Trigger
+* If enabled tool will close the web app when Captcha gets triggered. 
+
+### Sound Notification
+* If enabled tool will gives sound notification for actions like buy card / captcha trigger etc... 
 
 ## Prerequisites
 

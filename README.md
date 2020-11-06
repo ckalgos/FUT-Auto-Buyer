@@ -29,9 +29,9 @@
 * [Installation](#installation) 
 * [Usage](#Usage)
 * [Prerequisites](#prerequisites) 
-* [Telegram Installation Guide](#Telegram) 
+* [Telegram Installation Guide](#Telegram-Installation-Guide) 
 * [Roadmap](#Roadmap)  
-* [Developer Guide](#DevGuide) 
+* [Developer Guide](#Developer-Guide) 
 * [Contributing](#contributing) 
 * [Contact](#contact)
 
@@ -119,7 +119,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 * Hence play the required number of games to get access to the transfer market before trying this tool. 
 
 <!-- Telegram -->
-## Telegram Installation Guide
+## Telegram-Installation-Guide
 
 * Install Telegram
 * Add @BotFather as a contact in telegram

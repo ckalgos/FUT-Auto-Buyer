@@ -70,7 +70,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 
 ### Relist Unsold Items:
 * If enabled bot will periodically check and relist expired item for the previous specified price
-### * Note : This is relist all expired items , not only the item which bot list. So check the Transfer List before enabling this to avoid losing cards
+### * Note : This will relist all expired items , not only the item which bot list. So check the Transfer List before enabling this to avoid losing cards
 
 ### Wait Time
 * The autobuyer will wait for the specified time before making the next search request.
@@ -87,10 +87,6 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 ### Stop After
 * If specified the tool will automatically stop after running the tool foe the specified interval.
 * Default Value (`1H`) (S for seconds, M for Minutes, H for hours).
-
-### Expires In
-* Will only Bid on Cards which expires with in this value.
-* Default Value (`1H`). 
 
 ### Pause For
 * The parameter has a dependency on Cycle Amount 

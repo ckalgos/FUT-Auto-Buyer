@@ -150,7 +150,7 @@ If you are looking for help or any new feature request, join our discord group
 <!-- DevGuide -->
 ## Developer-Guide
 
-Will be added soon.
+<a href="https://discord.gg/AHqdCWRw69">Join this discord channel</a> 
 
 <!-- CONTRIBUTING -->
 ## Contributing

@@ -36,6 +36,7 @@
     window.useRandMinBuy = false;
     window.useRandMinBid = false;
     window.captchaCloseTab = false;
+    window.toggleMessageNotification = false;
     window.botStopped = true;
 
     var _searchViewModel = null;
@@ -166,7 +167,7 @@
     }
      
     window.sendNotificationToUser = function (message) {
-        if (window.toggleMessageNotification) {
+        if (window.notificationEnabled) {
             let bot_token = jQuery('#telegram_bot_token').val();
             let bot_chatID = jQuery('#telegram_chat_id').val();
             if (bot_token && bot_chatID) {
@@ -203,7 +204,6 @@
             window.purchasedCardCount = 0;
             window.firstSearch = true;
             window.notify('Autobuyer Started');
-            window.sendNotificationToUser('Autobuyer Started');
         }
         else {
             window.notfiy('Autobuyer Resumed');
@@ -739,6 +739,9 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
+								'<div class="button-container">' +
+                        '    <button class="btn-standard call-to-action" id="test_notification">Test Notification</button>' +
+                        '</div>' +                        
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Send Notification</span>' +
@@ -973,6 +976,28 @@
             saveDetails()
         }
     }, "#preserve_changes");
+    
+    jQuery(document).on({
+        mouseenter: function () {
+            jQuery("#test_notification").addClass("hover");
+        },
+        mouseleave: function () {
+            jQuery("#test_notification").removeClass("hover");
+        },
+        click: function () {
+            let bot_token = jQuery('#telegram_bot_token').val();
+            let bot_chatID = jQuery('#telegram_chat_id').val();
+            let message = "Test Notification Arrived";
+            if (bot_token && bot_chatID) {
+                let url = 'https://api.telegram.org/bot' + bot_token +
+                    '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + message;
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", url, true);
+                xhttp.send();
+            }
+            window.notify("Test Notification Sent");
+        }
+    }, "#test_notification");
 
 
     jQuery(document).on({ 

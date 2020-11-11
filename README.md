@@ -56,6 +56,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 ### Sell Price 
 * If specified the autobuyer will list the bought item for the specified price.
 * The tool will list all the cards in transfer target, make sure to move your cards to the club before running the tool to avoid losing the card. 
+* Give Sell Price as -1 to move to transfer list without selling.
 
 ### Buy Price
 * If specified the autobuyer will buy the card matching the search critieria for the price less than or equal to specified price.

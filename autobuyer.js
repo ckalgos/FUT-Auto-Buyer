@@ -1710,45 +1710,47 @@
     };
 
     window.buyPlayer = function (player, price, isBin) {
-        services.Item.bid(player, price).observe(this, (function (sender, data) {
-            let price_txt = window.format_string(price.toString(), 6)
-            let player_name = window.getItemName(player);
-            if (data.success) {
+        let myPromise = new Promise((resolve,reject) => {
+            services.Item.bid(player, price).observe(this, (function (sender, data) {
+                let price_txt = window.format_string(price.toString(), 6)
+                let player_name = window.getItemName(player);
+                if (data.success) {
 
-                if (isBin) {
-                    window.purchasedCardCount++;
-                }
+                    if (isBin) {
+                        window.purchasedCardCount++;
+                    }
 
-                var sellPrice = parseInt(jQuery('#ab_sell_price').val());
-                if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
-                    window.winCount++;
-                    let sym = " W:" + window.format_string(window.winCount.toString(), 4);
-                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
-                    window.play_audio('card_won');
-                    window.sellRequestTimeout = window.setTimeout(function () {
-                        services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
-                    }, window.getRandomWait());
+                    var sellPrice = parseInt(jQuery('#ab_sell_price').val());
+                    if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
+                        window.winCount++;
+                        let sym = " W:" + window.format_string(window.winCount.toString(), 4);
+                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
+                        window.play_audio('card_won');
+                        window.sellRequestTimeout = window.setTimeout(function () {
+                            services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
+                        }, window.getRandomWait());
+                    } else {
+                        window.bidCount++;
+                        services.Item.move(player, enums.FUTItemPile.CLUB).observe(this, (function (sender, moveResponse) {
+                            let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
+                            writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
+                        }));
+                    }
+
+                    if (jQuery('#telegram_buy').val() == 'B' || jQuery('#telegram_buy').val() == 'A') {
+                        window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |');
+                    }
+
                 } else {
-                    window.bidCount++;
-                    services.Item.move(player, enums.FUTItemPile.CLUB).observe(this, (function (sender, moveResponse) {
-                        let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
-                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
-                    }));
+                    window.lossCount++;
+                    let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
+                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
+                    if (jQuery('#telegram_buy').val() == 'L' || jQuery('#telegram_buy').val() == 'A') {
+                        window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
+                    }
                 }
-
-                if (jQuery('#telegram_buy').val() == 'B' || jQuery('#telegram_buy').val() == 'A') {
-                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |');
-                }
-
-            } else {
-                window.lossCount++;
-                let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
-                writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
-                if (jQuery('#telegram_buy').val() == 'L' || jQuery('#telegram_buy').val() == 'A') {
-                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
-                }
-            }
-        }));
+            }));
+        });
     };
 
     window.getSellBidPrice = function (bin) {

@@ -44,13 +44,13 @@
     window.loadFilter = function () {
         var filterName = $('select[name=filters] option').filter(':selected').val()
 
-        let settingsJson = GM_getValue(filterName); 
+        let settingsJson = GM_getValue(filterName);
 
         if (!settingsJson) {
             return;
         }
 
-        settingsJson = JSON.parse(settingsJson); 
+        settingsJson = JSON.parse(settingsJson);
 
         if (settingsJson.abSettings.buyPrice) {
             $("#ab_buy_price").val(settingsJson.abSettings.buyPrice);
@@ -89,7 +89,7 @@
         if (settingsJson.abSettings.waitTime) {
             jQuery('#ab_wait_time').val(settingsJson.abSettings.waitTime);
         }
-         
+
         if (settingsJson.abSettings.maxPurchases) {
             jQuery('#ab_max_purchases').val(settingsJson.abSettings.maxPurchases);
         }
@@ -135,7 +135,7 @@
         if (settingsJson.abSettings.captchaCloseTab) {
             window.captchaCloseTab = settingsJson.abSettings.captchaCloseTab;
             jQuery("#ab_close_tab_toggle").addClass("toggled");
-        } 
+        }
 
         if (settingsJson.abSettings.notificationEnabled) {
             window.notificationEnabled = settingsJson.abSettings.notificationEnabled;
@@ -165,7 +165,7 @@
             pgid: pageId
         });
     }
-     
+
     window.sendNotificationToUser = function (message) {
         if (window.notificationEnabled) {
             let bot_token = jQuery('#telegram_bot_token').val();
@@ -256,7 +256,7 @@
             //getAppMain().superclass(),
             this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch),
                 window.updateObject(this._viewmodel.searchCriteria, window.loadSearchCriteriaDetails()),
-                this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
+            this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
 
             _searchViewModel = this._viewmodel;
 
@@ -272,14 +272,14 @@
                 view.addTarget(this, this._eMaxBidPriceChanged, UTMarketSearchFiltersView.Event.MAX_BID_PRICE_CHANGE),
                 view.addTarget(this, this._eMinBuyPriceChanged, UTMarketSearchFiltersView.Event.MIN_BUY_PRICE_CHANGE),
                 view.addTarget(this, this._eMaxBuyPriceChanged, UTMarketSearchFiltersView.Event.MAX_BUY_PRICE_CHANGE),
-                this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
-                    view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
+            this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
+                view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
                 this._squadContext ? isPhone() || view.addClass("narrow") : view.addClass("floating"),
                 view.getPlayerNameSearch().addTarget(this, this._ePlayerNameChanged, enums.Event.CHANGE),
                 view.__root.style = "width: 50%; float: left;";
         }
     };
-     
+
     function addTabItem() {
         if (services.Localization && jQuery('h1.title').html() === services.Localization.localize("navbar.label.home")) {
             getAppMain().getRootViewController().showGameView = function showGameView() {
@@ -432,7 +432,7 @@
                     '</div>'
                 );
 
-                jQuery(view.__root.parentElement).append('<div id="SearchWrapper" style="width: 50%; right: 50%"><textarea readonly id="progressAutobuyer" style="font-size: 15px; width: 100%;height: 58%;"></textarea><label>Search Results:</label><br/><textarea readonly id="autoBuyerFoundLog" style="font-size: 10px; width: 100%;height: 26%;"></textarea></div>');
+                jQuery(view.__root.parentElement).append('<div id="SearchWrapper" style="width: 50%; right: 50%"><textarea readonly id="progressAutobuyer" style="font-size: 15px; width: 100%;height: 38%;"></textarea><label>Search Results:</label><br/><textarea readonly id="autoBuyerFoundLog" style="font-size: 10px; width: 100%;height: 46%;"></textarea></div>');
 
                 var $log = jQuery('#progressAutobuyer');
                 if ($log.val() == '') {
@@ -562,7 +562,7 @@
                         '           <input type="tel" class="numericInput" id="ab_wait_time" placeholder="7-15">' +
                         '       </div>' +
                         '   </div>' +
-                        '</div>' + 
+                        '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
                         '       <span class="secondary label">Max purchases per search request:</span>' +
@@ -739,9 +739,9 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
-								'<div class="button-container">' +
+                        '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="test_notification">Test Notification</button>' +
-                        '</div>' +                        
+                        '</div>' +
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Send Notification</span>' +
@@ -756,7 +756,7 @@
                         '<div><br></div>' +
                         '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="preserve_changes">Save Filter</button>' +
-                        '</div>' + 
+                        '</div>' +
                         '<audio id="win_mp3" hidden">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.ogg" type="audio/ogg">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.mp3" type="audio/mpeg">\n' +
@@ -783,7 +783,7 @@
                     // Populate dropdown with list of filters
                     for (var i = 0; i < filterArray.length; i++) {
                         dropdown.append($('<option></option>').attr('value', filterArray[i]).text(filterArray[i]));
-                    } 
+                    }
                 }
             }
 
@@ -926,7 +926,7 @@
         settingsJson = JSON.parse(settingsJson);
 
         return settingsJson.searchCriteria;
-    } 
+    }
 
     window.clearABSettings = function () {
         $("#ab_buy_price").val('');
@@ -939,7 +939,7 @@
         jQuery('#ab_min_delete_count').val('');
         window.reListEnabled = false;
         jQuery("#ab_sell_toggle").removeClass("toggled");
-        jQuery('#ab_wait_time').val(''); 
+        jQuery('#ab_wait_time').val('');
         jQuery('#ab_max_purchases').val('');
         jQuery('#ab_cycle_amount').val('');
         jQuery('#ab_pause_for').val('');
@@ -976,7 +976,7 @@
             saveDetails()
         }
     }, "#preserve_changes");
-    
+
     jQuery(document).on({
         mouseenter: function () {
             jQuery("#test_notification").addClass("hover");
@@ -1000,7 +1000,7 @@
     }, "#test_notification");
 
 
-    jQuery(document).on({ 
+    jQuery(document).on({
         change: function () {
             loadFilter()
         }
@@ -1169,7 +1169,7 @@
         window.searchCount++;
         return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000);
     };
-     
+
     window.getTimerProgress = function (timer) {
         var time = (new Date()).getTime();
 
@@ -1287,6 +1287,8 @@
 
             window.pauseIfRequired();
 
+            window.autoClearLog();
+
             var time = (new Date()).getTime();
 
             if (window.timers.search.finish == 0 || window.timers.search.finish <= time) {
@@ -1373,6 +1375,12 @@
             }
         }
     };
+
+    window.autoClearLog = function () {
+        if(window.searchCount % 100 == 0){
+            window.clearLog();
+        }
+    }
 
     window.searchFutMarket = function (sender, event, data) {
         if (!window.autoBuyerActive) {
@@ -1475,7 +1483,7 @@
                     sendPinEvents("Item - Detail View");
                     window.firstSearch = true;
                 }
-
+                let timeout = 0;
                 for (let i = 0; i < response.data.items.length; i++) {
                     let action_txt = 'none';
                     let player = response.data.items[i];
@@ -1534,7 +1542,10 @@
                     if (rating_ok && window.autoBuyerActive && buyNowPrice <= userBuyNowPrice && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId)) {
                         action_txt = 'attempt buy: ' + buy_txt;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
-                        buyPlayer(player, buyNowPrice, true);
+                        setTimeout(() => {
+                            buyPlayer(player, buyNowPrice, true);
+                        },timeout);
+                        timeout += 200;
                         maxPurchases--;
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
@@ -1553,7 +1564,10 @@
 
                         action_txt = 'attempt bid: ' + bidPrice;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
-                        buyPlayer(player, checkPrice);
+                        setTimeout(() => {
+                            buyPlayer(player, checkPrice);
+                        },timeout)
+                        timeout += 200;
                         maxPurchases--;
                         //setTimeout(function (){}, 1000);
                         if (!window.bids.includes(auction.tradeId)) {
@@ -1589,7 +1603,9 @@
                     window.sendNotificationToUser('Captcha, please solve the problem so that the bot can work again.');
 
                     if (window.captchaCloseTab) {
-                        window.location.href = "about:blank";
+                        setTimeout(() => {
+                            window.location.href = "about:blank";
+                        },5000);
                         return;
                     }
                     writeToLog('------------------------------------------------------------------------------------------');
@@ -1635,6 +1651,7 @@
                             return item._auction._bidState === "outbid" && item._auction._tradeState === "active";
                         });
 
+                        let timeout = 0;
                         for (var i = 0; i < outBidItems.length; i++) {
 
                             let player = outBidItems[i];
@@ -1650,7 +1667,10 @@
 
                             if (window.autoBuyerActive && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
                                 writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + checkPrice);
-                                buyPlayer(player, checkPrice);
+                                setTimeout(() => {
+                                    buyPlayer(player, checkPrice);
+                                },timeout);
+                                timeout += 200;
                                 if (!window.bids.includes(auction.tradeId)) {
                                     window.bids.push(auction.tradeId);
 
@@ -1690,45 +1710,47 @@
     };
 
     window.buyPlayer = function (player, price, isBin) {
-        services.Item.bid(player, price).observe(this, (function (sender, data) {
-            let price_txt = window.format_string(price.toString(), 6)
-            let player_name = window.getItemName(player);
-            if (data.success) {
+        let myPromise = new Promise((resolve,reject) => {
+            services.Item.bid(player, price).observe(this, (function (sender, data) {
+                let price_txt = window.format_string(price.toString(), 6)
+                let player_name = window.getItemName(player);
+                if (data.success) {
 
-                if (isBin) {
-                    window.purchasedCardCount++;
-                }
+                    if (isBin) {
+                        window.purchasedCardCount++;
+                    }
 
-                var sellPrice = parseInt(jQuery('#ab_sell_price').val());
-                if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
-                    window.winCount++;
-                    let sym = " W:" + window.format_string(window.winCount.toString(), 4);
-                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
-                    window.play_audio('card_won');
-                    window.sellRequestTimeout = window.setTimeout(function () {
-                        services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
-                    }, window.getRandomWait());
+                    var sellPrice = parseInt(jQuery('#ab_sell_price').val());
+                    if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
+                        window.winCount++;
+                        let sym = " W:" + window.format_string(window.winCount.toString(), 4);
+                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
+                        window.play_audio('card_won');
+                        window.sellRequestTimeout = window.setTimeout(function () {
+                            services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
+                        }, window.getRandomWait());
+                    } else {
+                        window.bidCount++;
+                        services.Item.move(player, enums.FUTItemPile.CLUB).observe(this, (function (sender, moveResponse) {
+                            let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
+                            writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
+                        }));
+                    }
+
+                    if (jQuery('#telegram_buy').val() == 'B' || jQuery('#telegram_buy').val() == 'A') {
+                        window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |');
+                    }
+
                 } else {
-                    window.bidCount++;
-                    services.Item.move(player, enums.FUTItemPile.CLUB).observe(this, (function (sender, moveResponse) {
-                        let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
-                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
-                    }));
+                    window.lossCount++;
+                    let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
+                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
+                    if (jQuery('#telegram_buy').val() == 'L' || jQuery('#telegram_buy').val() == 'A') {
+                        window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
+                    }
                 }
-
-                if (jQuery('#telegram_buy').val() == 'B' || jQuery('#telegram_buy').val() == 'A') {
-                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |');
-                }
-
-            } else {
-                window.lossCount++;
-                let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
-                writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
-                if (jQuery('#telegram_buy').val() == 'L' || jQuery('#telegram_buy').val() == 'A') {
-                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
-                }
-            }
-        }));
+            }));
+        });
     };
 
     window.getSellBidPrice = function (bin) {

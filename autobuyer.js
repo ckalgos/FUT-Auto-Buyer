@@ -206,7 +206,7 @@
             window.notify('Autobuyer Started');
         }
         else {
-            window.notfiy('Autobuyer Resumed');
+            window.notify('Autobuyer Resumed');
         }
     };
 

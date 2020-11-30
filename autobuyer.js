@@ -1748,12 +1748,6 @@
                     if (jQuery('#telegram_buy').val() == 'L' || jQuery('#telegram_buy').val() == 'A') {
                         window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
                     }
-
-                    //Remove from active bids when bidding
-                    if(!isBin){
-                        let auction = player._auction;
-                        window.bids = window.bids.filter((val) => auction.tradeId != val);
-                    }
                 }
             }));
         });

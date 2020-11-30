@@ -4,8 +4,8 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url] 
-[![LinkedIn][linkedin-shield]][linkedin-url] 
 [![Total Downloads](https://img.shields.io/github/downloads/chithakumar13/Fifa21-AutoBuyer/total.svg)]()
+[![LinkedIn][linkedin-shield]][linkedin-url] 
 <p align="center"> 
   <h3 align="center">Fifa21 AutoBuyer</h3>
 

@@ -160,7 +160,7 @@
     };
 
     window.sendPinEvents = function (pageId) {
-        services.PIN.sendData(enums.PIN.EVENT.PAGE_VIEW, {
+        services.PIN.sendData(PINEventType.PAGE_VIEW, {
             type: PIN_PAGEVIEW_EVT_TYPE,
             pgid: pageId
         });

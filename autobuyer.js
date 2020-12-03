@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      2.0.2
+// @version      2.0.3
 // @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
@@ -160,7 +160,7 @@
     };
 
     window.sendPinEvents = function (pageId) {
-        services.PIN.sendData(enums.PIN.EVENT.PAGE_VIEW, {
+        services.PIN.sendData(PINEventType.PAGE_VIEW, {
             type: PIN_PAGEVIEW_EVT_TYPE,
             pgid: pageId
         });

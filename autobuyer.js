@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      2.0.3
-// @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
+// @version      2.0.4 
+// @updateURL    https://github.com/chithakumar13/Fifa21-AutoBuyer/blob/master/autobuyer.js
+// @downloadURL  https://github.com/chithakumar13/Fifa21-AutoBuyer/blob/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
 // @match        https://www.ea.com/*/fifa/ultimate-team/web-app/*
@@ -17,8 +18,10 @@
 (function () {
     'use strict';
 
+    window.controllerInstance = null;
     window.UTAutoBuyerViewController = function () {
         UTMarketSearchFiltersViewController.call(this);
+        window.controllerInstance = this;
         this._jsClassName = "UTAutoBuyerViewController";
     };
 
@@ -32,7 +35,7 @@
     window.currentChemistry = -1;
     window.purchasedCardCount = 0;
     window.bidExact = false;
-
+    window.selectedFilters = [];
     window.useRandMinBuy = false;
     window.useRandMinBid = false;
     window.captchaCloseTab = false;
@@ -42,13 +45,19 @@
     var _searchViewModel = null;
 
     window.loadFilter = function () {
-        var filterName = $('select[name=filters] option').filter(':selected').val()
+        var filterName = $('select[name=filters] option').filter(':selected').val();
+        loadFilterByName(filterName);
+    };
+
+    window.loadFilterByName = function(filterName) {        
 
         let settingsJson = GM_getValue(filterName); 
 
         if (!settingsJson) {
             return;
         }
+
+        window.clearABSettings();
 
         settingsJson = JSON.parse(settingsJson); 
 
@@ -155,9 +164,23 @@
         }
         if (settingsJson.abSettings.telegramBuy) {
             jQuery('#telegram_buy').val(settingsJson.abSettings.telegramBuy);
+        }        
+       
+        let savedCriteria = settingsJson.searchCriteria || {};
+        
+        window.controllerInstance._viewmodel.playerData = {};
+
+        if (!jQuery.isEmptyObject(savedCriteria)) {
+            Object.assign(window.controllerInstance._viewmodel.searchCriteria, savedCriteria.criteria);
+            Object.assign(window.controllerInstance._viewmodel.playerData, savedCriteria.playerData);
         }
 
-    };
+        if(jQuery.isEmptyObject(window.controllerInstance._viewmodel.playerData)){
+            window.controllerInstance._viewmodel.playerData = null;
+        }
+
+        window.controllerInstance.viewDidAppear();
+    }
 
     window.sendPinEvents = function (pageId) {
         services.PIN.sendData(PINEventType.PAGE_VIEW, {
@@ -165,7 +188,7 @@
             pgid: pageId
         });
     }
-     
+    
     window.sendNotificationToUser = function (message) {
         if (window.notificationEnabled) {
             let bot_token = jQuery('#telegram_bot_token').val();
@@ -250,13 +273,13 @@
         $buyerLog.val("");
     };
 
-    utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController)
+    utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController); 
+
     window.UTAutoBuyerViewController.prototype.init = function init() {
         if (!this.initialized) {
             //getAppMain().superclass(),
-            this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch),
-                window.updateObject(this._viewmodel.searchCriteria, window.loadSearchCriteriaDetails()),
-                this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
+            this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch), 
+            this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
 
             _searchViewModel = this._viewmodel;
 
@@ -695,6 +718,7 @@
                         '   </div>' +
                         '</div>' +
                         '<div><br></div>' +
+                        '<hr>' +
                         '<div class="search-price-header">' +
                         '   <h1 class="secondary">Notification settings:</h1>' +
                         '</div>' +
@@ -738,10 +762,7 @@
                         '           <input type="text" class="numericInput" id="telegram_buy">' +
                         '       </div>' +
                         '   </div>' +
-                        '</div>' +
-								'<div class="button-container">' +
-                        '    <button class="btn-standard call-to-action" id="test_notification">Test Notification</button>' +
-                        '</div>' +                        
+                        '</div>' +			        
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Send Notification</span>' +
@@ -752,11 +773,25 @@
                         '           </div>' +
                         '       </div>' +
                         '   </div>' +
-                        '</div>' +
+                        '</div>' +		    
+                        '<div><br></div>' +  
+                        '<div class="button-container">' +
+                        '    <button class="btn-standard call-to-action" id="test_notification">Test Notification</button>' +
+                        '</div>' +  
                         '<div><br></div>' +
+                        '<hr>' +            
                         '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="preserve_changes">Save Filter</button>' +
                         '</div>' + 
+                        '<div><br></div>' +
+                        '<hr>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Multi-Filter settings:</h1>' +
+                        '</div>' +
+                        '<div class="button-container">' +
+                        '       <select multiple="multiple" class="multiselect-filter" id="selected-filters" name="selectedFilters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826; overflow-y : scroll"></select>' +
+                        '       <label style="white-space: nowrap;" id="select-filterCount">No Filter Selected</label>'+ 
+                        '</div>' +
                         '<audio id="win_mp3" hidden">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.ogg" type="audio/ogg">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.mp3" type="audio/mpeg">\n' +
@@ -771,8 +806,10 @@
 
 
                     let dropdown = $('#filter-dropdown');
+                    let filterdropdown = $('#selected-filters');
 
                     dropdown.empty();
+                    filterdropdown.empty();
 
                     dropdown.append('<option selected="true" disabled>Choose filter to load</option>');
                     dropdown.prop('selectedIndex', 0);
@@ -783,6 +820,7 @@
                     // Populate dropdown with list of filters
                     for (var i = 0; i < filterArray.length; i++) {
                         dropdown.append($('<option></option>').attr('value', filterArray[i]).text(filterArray[i]));
+                        filterdropdown.append($('<option></option>').attr('value', filterArray[i]).text(filterArray[i]));
                     } 
                 }
             }
@@ -802,7 +840,7 @@
         setTimeout(function () {
 
             let settingsJson = {};
-            settingsJson.searchCriteria = _searchViewModel.searchCriteria;
+            settingsJson.searchCriteria = { criteria : _searchViewModel.searchCriteria , playerData : _searchViewModel.playerData};
 
             settingsJson.abSettings = {};
 
@@ -902,33 +940,23 @@
                 settingsJson.abSettings.captchaCloseTab = window.captchaCloseTab;
             }
 
-
-
             var filterName = prompt("Enter a name for this filter");
 
-            $('#filter-dropdown').append($('<option></option>').attr('value', filterName).text(filterName));
-
-            GM_setValue(filterName, JSON.stringify(settingsJson));
-
-            jQuery("#preserve_changes").removeClass("active");
-
-            window.notify("Changes saved successfully");
+            if (filterName) {
+                $('#filter-dropdown').append($('<option></option>').attr('value', filterName).text(filterName));
+                $('#selected-filters').append($('<option></option>').attr('value', filterName).text(filterName));
+                $(`select[name=filters] option[value="${filterName}"]`).attr("selected",true);
+                GM_setValue(filterName, JSON.stringify(settingsJson));
+                jQuery("#preserve_changes").removeClass("active");
+                window.notify("Changes saved successfully");
+            } else {
+                jQuery("#preserve_changes").removeClass("active");
+                window.notify("Filter Name Required",enums.UINotificationType.NEGATIVE);
+            }
         }, 200);
-    }
-
-    window.loadSearchCriteriaDetails = function () {
-        let settingsJson = GM_getValue("SavedSettings");
-
-        if (!settingsJson) {
-            return;
-        }
-
-        settingsJson = JSON.parse(settingsJson);
-
-        return settingsJson.searchCriteria;
     } 
 
-    window.clearABSettings = function () {
+    window.clearABSettings = function (e) {
         $("#ab_buy_price").val('');
         $("#ab_card_count").val('');
         $("#ab_max_bid_price").val('');
@@ -948,6 +976,9 @@
         jQuery('#ab_max_rate').val('');
         jQuery('#ab_rand_min_bid_input').val('');
         jQuery('#ab_rand_min_buy_input').val('');
+        jQuery('#telegram_bot_token').val('');
+        jQuery('#telegram_chat_id').val('');
+        jQuery('#telegram_buy').val('');
         window.useRandMinBuy = false;
         jQuery("#ab_rand_min_buy_toggle").removeClass("toggled");
         window.bidExact = false;
@@ -957,7 +988,13 @@
         window.notificationEnabled = false;
         jQuery("#ab_message_notification_toggle").removeClass("toggled");
         window.soundEnabled = false;
-        jQuery("#ab_sound_toggle").removeClass("toggled");
+        jQuery("#ab_sound_toggle").removeClass("toggled"); 
+
+        if (e) {
+            jQuery("#selected-filters").find('option').attr("selected",false);
+            window.setFilters();
+            jQuery("#filter-dropdown").prop('selectedIndex', 0);
+        }
     }
 
     jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
@@ -999,12 +1036,26 @@
         }
     }, "#test_notification");
 
+    window.setFilters = function () {
+        window.selectedFilters = $('select[name=selectedFilters]').val() || [];
+        if (window.selectedFilters.length) {
+            jQuery('#select-filterCount').text('(' + window.selectedFilters.length + ') Filter Selected');
+        } else {
+            jQuery('#select-filterCount').text('No Filter Selected');
+        }
+    }
 
     jQuery(document).on({ 
         change: function () {
             loadFilter()
         }
-    }, "#filter-dropdown");
+    }, "#filter-dropdown"); 
+  
+    jQuery(document).on({  
+        click: function () {
+            setFilters();
+        },
+    }, "#selected-filters");    
 
     window.toggleBidExact = function () {
         if (window.bidExact) {
@@ -1034,22 +1085,7 @@
             window.useRandMinBuy = true;
             jQuery("#ab_rand_min_buy_toggle").addClass("toggled");
         }
-    };
-
-    window.updateObject = function (defaultObject) {
-        for (var i = 1; i < arguments.length; i++) {
-            for (var prop in arguments[i]) {
-                var val = arguments[i][prop];
-                if (defaultObject) {
-                    if (typeof val == "object")
-                        updateObject(defaultObject[prop], val);
-                    else
-                        defaultObject[prop] = val;
-                }
-            }
-        }
-        return defaultObject;
-    }
+    }; 
 
     window.toggleRelist = function () {
         if (window.reListEnabled) {
@@ -1155,8 +1191,9 @@
         $log.scrollTop($log[0].scrollHeight);
     };
 
-    window.notify = function (message) {
-        services.Notification.queue([message, enums.UINotificationType.POSITIVE])
+    window.notify = function (message, notificationType) {
+        notificationType = notificationType || enums.UINotificationType.POSITIVE;
+        services.Notification.queue([message, notificationType])
     };
 
     window.getRandomWait = function () {
@@ -1379,15 +1416,19 @@
             return;
         }
 
+        let isSeachEventDone = false;
+        if(window.selectedFilters && window.selectedFilters.length){
+            let filterName = window.selectedFilters[window.getRandNum(0, window.selectedFilters.length - 1)];
+            window.loadFilterByName(filterName);
+            isSeachEventDone = true;
+            window.currentPage = 1; 
+            writeToDebugLog('---------------------------  Running for filter ' + filterName+'  ---------------------------------------------');                   
+        }
+
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
 
-        services.Item.clearTransferMarketCache();
-
-        //accessobjects.Captcha.getCaptchaData().observe(this, (function (sender, response) {
-        //    debugger;
-        //    var data = response;
-        //}));
-
+        services.Item.clearTransferMarketCache(); 
+        
         var expiresIn = 3600;
         if ($('#ab_item_expiring').val() !== '') {
             var expiresInString = "1H";
@@ -1419,7 +1460,7 @@
             window.currentPage = 1;
         }
 
-        if (window.currentPage === 1) {
+        if (!isSeachEventDone && window.currentPage === 1) {
             sendPinEvents("Transfer Market Search");
         }
 

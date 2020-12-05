@@ -39,6 +39,7 @@
     window.useRandMinBuy = false;
     window.useRandMinBid = false;
     window.captchaCloseTab = false;
+    window.isSearchInProgress = false;
     window.toggleMessageNotification = false;
     window.botStopped = true;
     window.userWatchItems = [];
@@ -229,7 +230,7 @@
                 window.purchasedCardCount = 0;
                 window.firstSearch = true;
                 window.userWatchItems = response.data.items.filter((item) => item._auction).map((item) => item._auction.tradeId) || [];
-                
+                window.isSearchInProgress = false;
                 if (window.userWatchItems.length) {
                     writeToDebugLog(`Found ${window.userWatchItems.length} items in users watch list and ignored from selling`);
                 }
@@ -255,6 +256,7 @@
         if (isStopped) {
             window.purchasedCardCount = 0;
             window.botStopped = true;
+            window.isSearchInProgress = false;
         }
 
         window.defaultStopTime = window.searchCountBeforePause;
@@ -1334,7 +1336,7 @@
 
             var time = (new Date()).getTime();
 
-            if (window.timers.search.finish == 0 || window.timers.search.finish <= time) {
+            if (!window.isSearchInProgress && (window.timers.search.finish == 0 || window.timers.search.finish <= time)) {
 
                 let searchRequest = 1;
 
@@ -1357,7 +1359,7 @@
                 window.timers.transferList = window.createTimeout(time, 30000);
             }
 
-            if (window.timers.bidCheck.finish == 0 || window.timers.bidCheck.finish <= time) {
+            if (!window.selectedFilters.length && (window.timers.bidCheck.finish == 0 || window.timers.bidCheck.finish <= time)) {    
                 window.watchBidItems();
 
                 window.timers.bidCheck = window.createTimeout(time, 20000);
@@ -1425,6 +1427,8 @@
         }
 
         let isSeachEventDone = false;
+        window.isSearchInProgress = true;
+
         if(window.selectedFilters && window.selectedFilters.length){
             let filterName = window.selectedFilters[window.getRandNum(0, window.selectedFilters.length - 1)];
             window.loadFilterByName(filterName);
@@ -1523,6 +1527,8 @@
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
                     sendPinEvents("Item - Detail View");
                     window.firstSearch = true;
+                }else{
+                    window.isSearchInProgress = false;
                 }
 
                 for (let i = 0; i < response.data.items.length; i++) {
@@ -1542,6 +1548,8 @@
                     let priceToBid = (window.bidExact) ? bidPrice : ((isBid) ? window.getSellBidPrice(bidPrice) : bidPrice);
                     let checkPrice = (window.bidExact) ? priceToBid : ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid);
                     let userBuyNowPrice = parseInt(jQuery('#ab_buy_price').val());
+
+                    var sellPrice = parseInt(jQuery('#ab_sell_price').val()); 
 
                     let bid_buy_txt = "(bid: " + window.format_string(currentBid.toString(), 6) + " / buy:" + window.format_string(buyNowPrice.toString(), 7) + ")"
                     let player_name = window.getItemName(player);
@@ -1583,7 +1591,7 @@
                     if (rating_ok && window.autoBuyerActive && buyNowPrice <= userBuyNowPrice && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId)) {
                         action_txt = 'attempt buy: ' + buy_txt;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
-                        buyPlayer(player, buyNowPrice, true);
+                        buyPlayer(player, buyNowPrice, sellPrice, true);
                         maxPurchases--;
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
@@ -1602,7 +1610,7 @@
 
                         action_txt = 'attempt bid: ' + bidPrice;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
-                        buyPlayer(player, checkPrice);
+                        buyPlayer(player, checkPrice, sellPrice);
                         maxPurchases--;
                         //setTimeout(function (){}, 1000);
                         if (!window.bids.includes(auction.tradeId)) {
@@ -1631,6 +1639,7 @@
                 }
                 if (response.data.items.length > 0) {
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
+                    window.isSearchInProgress = false;
                 }
             } else if (!response.success) {
                 if (response.status == HttpStatusCode.CAPTCHA_REQUIRED) {
@@ -1651,6 +1660,7 @@
                 }
                 window.play_audio('capatcha');
                 window.deactivateAutoBuyer(true);
+                window.isSearchInProgress = false;
             }
         }));
     };
@@ -1670,7 +1680,8 @@
         services.Item.requestWatchedItems().observe(this, function (t, response) {
 
             var bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
-            var sellPrice = parseInt(jQuery('#ab_sell_price').val());
+             
+            var sellPrice = parseInt(jQuery('#ab_sell_price').val()); 
 
             let activeItems = response.data.items.filter(function (item) {
                 return item._auction && item._auction._tradeState === "active";
@@ -1699,7 +1710,7 @@
 
                             if (window.autoBuyerActive && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
                                 writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + checkPrice);
-                                buyPlayer(player, checkPrice);
+                                buyPlayer(player, checkPrice,sellPrice);
                                 if (!window.bids.includes(auction.tradeId)) {
                                     window.bids.push(auction.tradeId);
 
@@ -1738,7 +1749,7 @@
         });
     };
 
-    window.buyPlayer = function (player, price, isBin) {
+    window.buyPlayer = function (player, price, sellPrice, isBin) {
         services.Item.bid(player, price).observe(this, (function (sender, data) {
             let price_txt = window.format_string(price.toString(), 6)
             let player_name = window.getItemName(player);
@@ -1748,7 +1759,6 @@
                     window.purchasedCardCount++;
                 }
 
-                var sellPrice = parseInt(jQuery('#ab_sell_price').val());
                 if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
                     window.winCount++;
                     let sym = " W:" + window.format_string(window.winCount.toString(), 4);
@@ -1777,6 +1787,7 @@
                     window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
                 }
             }
+            window.isSearchInProgress = false;
         }));
     };
 

@@ -2,8 +2,8 @@
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
 // @version      2.0.4 
-// @updateURL    https://github.com/chithakumar13/Fifa21-AutoBuyer/blob/master/autobuyer.js
-// @downloadURL  https://github.com/chithakumar13/Fifa21-AutoBuyer/blob/master/autobuyer.js
+// @updateURL    https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
+// @downloadURL  https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
 // @match        https://www.ea.com/*/fifa/ultimate-team/web-app/*
@@ -41,6 +41,7 @@
     window.captchaCloseTab = false;
     window.toggleMessageNotification = false;
     window.botStopped = true;
+    window.userWatchItems = [];
 
     var _searchViewModel = null;
 
@@ -212,25 +213,32 @@
             return;
         }
 
-        window.botStartTime = new Date();
-        window.searchCountBeforePause = 10;
-        window.currentChemistry = -1;
-        window.currentPage = 1;
-        if ($('#ab_cycle_amount').val() !== '') {
-            window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
-        }
-        window.defaultStopTime = window.searchCountBeforePause;
-        window.autoBuyerActive = true;
-        window.botStopped = false;
+        services.Item.requestWatchedItems().observe(this, function (t, response) {
+            window.botStartTime = new Date();
+            window.searchCountBeforePause = 10;
+            window.currentChemistry = -1;
+            window.currentPage = 1;
+            if ($('#ab_cycle_amount').val() !== '') {
+                window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
+            }
+            window.defaultStopTime = window.searchCountBeforePause;
+            window.autoBuyerActive = true;
+            window.botStopped = false;
 
-        if (isStart) {
-            window.purchasedCardCount = 0;
-            window.firstSearch = true;
-            window.notify('Autobuyer Started');
-        }
-        else {
-            window.notfiy('Autobuyer Resumed');
-        }
+            if (isStart) {
+                window.purchasedCardCount = 0;
+                window.firstSearch = true;
+                window.userWatchItems = response.data.items.filter((item) => item._auction).map((item) => item._auction.tradeId) || [];
+                
+                if (window.userWatchItems.length) {
+                    writeToDebugLog(`Found ${window.userWatchItems.length} items in users watch list and ignored from selling`);
+                }
+                window.notify('Autobuyer Started');
+            }
+            else {
+                window.notify('Autobuyer Resumed');
+            } 
+        });
     };
 
     window.deactivateAutoBuyer = function (isStopped) {
@@ -1706,7 +1714,7 @@
                     if (window.autoBuyerActive && sellPrice && !isNaN(sellPrice)) {
 
                         let boughtItems = response.data.items.filter(function (item) {
-                            return item.getAuctionData().isWon() && !window.sellBids.includes(item._auction.tradeId);
+                            return item.getAuctionData().isWon() && !window.userWatchItems.includes(item._auction.tradeId) && !window.sellBids.includes(item._auction.tradeId);
                         });
 
                         for (var i = 0; i < boughtItems.length; i++) {

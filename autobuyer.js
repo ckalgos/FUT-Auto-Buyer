@@ -49,6 +49,10 @@
         if (filterName != 'Choose filter to load') {
             $(`#filter-dropdown option[value="${filterName}"]`).remove();
             $(`#selected-filters option[value="${filterName}"]`).remove();
+            GM_deleteValue(filterName);
+            jQuery("#selected-filters").find('option').attr("selected",false);
+            window.setFilters();
+            jQuery("#filter-dropdown").prop('selectedIndex', 0);
             window.notify("Changes saved successfully");
         }
     };

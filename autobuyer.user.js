@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      2.0.4 
+// @version      2.0.5
 // @updateURL    https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @downloadURL  https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @description  FUT Snipping Tool
@@ -38,6 +38,7 @@
     window.selectedFilters = [];
     window.useRandMinBuy = false;
     window.useRandMinBid = false;
+    window.addDelayAfterBuy = false;
     window.captchaCloseTab = false;
     window.isSearchInProgress = false;
     window.toggleMessageNotification = false;
@@ -49,6 +50,26 @@
     window.loadFilter = function () {
         var filterName = $('select[name=filters] option').filter(':selected').val();
         loadFilterByName(filterName);
+    };
+
+    window.deleteFilter = function () {
+        var filterName = $('select[name=filters] option').filter(':selected').val();
+        if (filterName != 'Choose filter to load') {
+            $(`#filter-dropdown option[value="${filterName}"]`).remove();
+            $(`#selected-filters option[value="${filterName}"]`).remove();
+            jQuery("#selected-filters").find('option').attr("selected",false);
+            window.setFilters();
+            jQuery("#filter-dropdown").prop('selectedIndex', 0);
+
+            window.clearABSettings();
+            window.controllerInstance._viewmodel.playerData = null;
+            
+            Object.assign(window.controllerInstance._viewmodel.searchCriteria, window.controllerInstance._viewmodel.defaultSearchCriteria);
+            window.controllerInstance.viewDidAppear();
+    
+            GM_deleteValue(filterName);
+            window.notify("Changes saved successfully");
+        }
     };
 
     window.loadFilterByName = function(filterName) {        
@@ -141,6 +162,11 @@
         if (settingsJson.abSettings.useRandMinBid) {
             window.bidExact = settingsJson.abSettings.useRandMinBid;
             jQuery("#ab_rand_min_bid_toggle").addClass("toggled");
+        } 
+
+        if (settingsJson.abSettings.addDelayAfterBuy) {
+            window.addDelayAfterBuy = settingsJson.abSettings.addDelayAfterBuy;
+            jQuery("#ab_add_buy_delay").addClass("toggled");
         }
 
         if (settingsJson.abSettings.captchaCloseTab) {
@@ -483,9 +509,13 @@
                 if (!jQuery('#ab_buy_price').length) {
 
                     jQuery('.ut-item-search-view').first().prepend(
+                        '<div style="width:100%;display: flex;">'+
                         '<div class="button-container">' +
-                        '<select id="filter-dropdown" name="filters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +
-                        '</div>');
+                        '<select id="filter-dropdown" name="filters" style="width:100%;padding: 10px;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +                      
+                        '</div>'+ 
+                        '<div style="width:50%;margin-top: 1%;" class="button-container">' +
+                        '<button style="width:50%" class="btn-standard call-to-action" id="delete_filter">Delete Filter</button>' +
+                        '</div> </div>');
                     jQuery('.search-prices').first().append(
                         '<div><br></div>' +
                         '<hr>' +
@@ -633,6 +663,17 @@
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
                         '           <input type="text" class="numericInput" id="ab_stop_after" placeholder="1H">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                        '       <span class="ut-toggle-cell-view--label">Add Delay After Buy<br/><small>(Adds 1 Sec Delay after trying <br/> to buy / bid a card)</small></span>' +
+                        '           <div id="ab_add_buy_delay" class="ut-toggle-control">' +
+                        '           <div class="ut-toggle-control--track">' +
+                        '           </div>' +
+                        '           <div class= "ut-toggle-control--grip" >' +
+                        '           </div>' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -929,6 +970,11 @@
             if (window.useRandMinBid) {
                 settingsJson.abSettings.useRandMinBid = window.useRandMinBid;
             }
+
+            if (window.addDelayAfterBuy) {
+                settingsJson.abSettings.addDelayAfterBuy = window.addDelayAfterBuy;
+            }
+
             if (jQuery('#telegram_bot_token').val() !== '') {
                 settingsJson.abSettings.telegramBotToken = jQuery('#telegram_bot_token').val();
             }
@@ -990,6 +1036,8 @@
         jQuery('#telegram_chat_id').val('');
         jQuery('#telegram_buy').val('');
         window.useRandMinBuy = false;
+        window.useRandMinBid = false;
+        window.addDelayAfterBuy = false;
         jQuery("#ab_rand_min_buy_toggle").removeClass("toggled");
         window.bidExact = false;
         jQuery("#ab_rand_min_bid_toggle").removeClass("toggled");
@@ -1010,8 +1058,7 @@
     jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
     jQuery(document).on('click', '#clear_log_button', clearLog);
     jQuery(document).on('click', 'button:contains("Reset")', clearABSettings);
-    jQuery(document).on('click', '#clear_log_button', clearLog);
-
+ 
     jQuery(document).on({
         mouseenter: function () {
             jQuery("#preserve_changes").addClass("hover");
@@ -1055,6 +1102,18 @@
         }
     }
 
+    jQuery(document).on({
+        mouseenter: function () {
+            jQuery("#delete_filter").addClass("hover");
+        },
+        mouseleave: function () {
+            jQuery("#delete_filter").removeClass("hover");
+        },
+        click: function () {
+            deleteFilter()
+        }
+    }, "#delete_filter");
+
     jQuery(document).on({ 
         change: function () {
             loadFilter()
@@ -1084,6 +1143,16 @@
         } else {
             window.useRandMinBid = true;
             jQuery("#ab_rand_min_bid_toggle").addClass("toggled");
+        }
+    };
+
+    window.toggleAddDelayAfterBuy = function () {
+        if (window.addDelayAfterBuy) {
+            window.addDelayAfterBuy = false;
+            jQuery("#ab_add_buy_delay").removeClass("toggled");
+        } else {
+            window.addDelayAfterBuy = true;
+            jQuery("#ab_add_buy_delay").addClass("toggled");
         }
     };
 
@@ -1155,6 +1224,7 @@
     jQuery(document).on('click', '#ab_sell_toggle', toggleRelist);
 
     jQuery(document).on('click', '#ab_rand_min_bid_toggle', toggleUseRandMinBid);
+    jQuery(document).on('click', '#ab_add_buy_delay', toggleAddDelayAfterBuy);
     jQuery(document).on('click', '#ab_rand_min_buy_toggle', toggleUseRandMinBuy);
     jQuery(document).on('click', '#ab_close_tab_toggle', toggleCloseTab);
     jQuery(document).on('click', '#ab_sound_toggle', toggleSound);
@@ -1228,6 +1298,10 @@
         jQuery('#ab_statistics_progress').css('width', window.getTimerProgress(window.timers.transferList));
 
         jQuery('#ab_request_count').html(window.searchCount);
+
+        if(!(window.searchCount % 20 )){
+            clearLog();
+        }
 
         jQuery('#ab_coins').html(window.futStatistics.coins);
 
@@ -1590,8 +1664,9 @@
 
                     if (rating_ok && window.autoBuyerActive && buyNowPrice <= userBuyNowPrice && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId)) {
                         action_txt = 'attempt buy: ' + buy_txt;
-                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
-                        buyPlayer(player, buyNowPrice, sellPrice, true);
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);   
+                        buyPlayer(player, buyNowPrice, sellPrice, true);                     
+                        window.addDelayAfterBuy && window.waitSync(1);
                         maxPurchases--;
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
@@ -1611,6 +1686,7 @@
                         action_txt = 'attempt bid: ' + bidPrice;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                         buyPlayer(player, checkPrice, sellPrice);
+                        window.addDelayAfterBuy && window.waitSync(1);
                         maxPurchases--;
                         //setTimeout(function (){}, 1000);
                         if (!window.bids.includes(auction.tradeId)) {
@@ -1711,6 +1787,7 @@
                             if (window.autoBuyerActive && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
                                 writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + checkPrice);
                                 buyPlayer(player, checkPrice,sellPrice);
+                                window.addDelayAfterBuy && window.waitSync(1);
                                 if (!window.bids.includes(auction.tradeId)) {
                                     window.bids.push(auction.tradeId);
 
@@ -1894,6 +1971,25 @@
             sendPinEvents("Hub - Transfers");
         });
     };
+    
+    window.waitSync = function (seconds = 1) {
+
+        var isDone = false;
+        var start = new Date().getTime();
+        var msToWait = seconds * 1000;
+
+        do {
+            var now = new Date().getTime();
+            var delta = now - start;
+
+            if (delta >= msToWait) {
+                isDone = true;
+            }
+        }
+
+        while (!isDone)
+        return;
+    }
 
     window.clearSoldItems = function () {
         services.Item.clearSoldItems().observe(this, function (t, response) {

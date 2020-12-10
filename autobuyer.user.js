@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      2.0.5
+// @version      2.0.6
 // @updateURL    https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @downloadURL  https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @description  FUT Snipping Tool
@@ -44,6 +44,7 @@
     window.toggleMessageNotification = false;
     window.botStopped = true;
     window.userWatchItems = [];
+    window.eachFilterSearch = null; 
 
     var _searchViewModel = null;
 
@@ -94,7 +95,7 @@
 
         if (settingsJson.abSettings.maxBid) {
             $("#ab_max_bid_price").val(settingsJson.abSettings.maxBid);
-        }
+        } 
 
         if (settingsJson.abSettings.itemExpiring) {
             $("#ab_item_expiring").val(settingsJson.abSettings.itemExpiring);
@@ -648,11 +649,11 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Pause For:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
+                        '       <span class="secondary label">Pause For:<br/><small>(S for seconds, M for Minutes, H for hours eg. 0-0S)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_pause_for" placeholder="0S">' +
+                        '           <input type="text" class="numericInput" id="ab_pause_for" placeholder="0-0S">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -843,6 +844,31 @@
                         '       <select multiple="multiple" class="multiselect-filter" id="selected-filters" name="selectedFilters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826; overflow-y : scroll"></select>' +
                         '       <label style="white-space: nowrap;" id="select-filterCount">No Filter Selected</label>'+ 
                         '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Number of search For Filter:<br/><small>Count of searches to be performed before switching to different filter</small></span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_number_filter_search" placeholder="1">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div><br></div>' +
+                        '<hr>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Common settings:</h1>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Error Codes to stop bot (CSV) :<br/><small>(Eg. 412,421,521)</small></span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_stop_error_codes" placeholder="">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
                         '<audio id="win_mp3" hidden">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.ogg" type="audio/ogg">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.mp3" type="audio/mpeg">\n' +
@@ -906,7 +932,7 @@
             if (jQuery('#ab_max_bid_price').val() !== '') {
                 settingsJson.abSettings.maxBid = jQuery('#ab_max_bid_price').val();
             }
-
+ 
             if (jQuery('#ab_item_expiring').val() !== '') {
                 settingsJson.abSettings.itemExpiring = jQuery('#ab_item_expiring').val();
             }
@@ -1015,7 +1041,7 @@
     window.clearABSettings = function (e) {
         $("#ab_buy_price").val('');
         $("#ab_card_count").val('');
-        $("#ab_max_bid_price").val('');
+        $("#ab_max_bid_price").val(''); 
         $("#ab_item_expiring").val('');
         window.bidExact = false;
         jQuery("#ab_bid_exact").removeClass("toggled");
@@ -1297,11 +1323,7 @@
         jQuery('#ab_search_progress').css('width', window.getTimerProgress(window.timers.search));
         jQuery('#ab_statistics_progress').css('width', window.getTimerProgress(window.timers.transferList));
 
-        jQuery('#ab_request_count').html(window.searchCount);
-
-        if(!(window.searchCount % 20 )){
-            clearLog();
-        }
+        jQuery('#ab_request_count').html(window.searchCount); 
 
         jQuery('#ab_coins').html(window.futStatistics.coins);
 
@@ -1473,12 +1495,18 @@
 
     window.pauseIfRequired = function () {
         if (window.searchCountBeforePause <= 0) {
-            var pauseFor = "0S";
+            var pauseFor = "0-0S";
             if ($('#ab_pause_for').val()) {
                 pauseFor = $('#ab_pause_for').val();
             }
             let interval = pauseFor[pauseFor.length - 1].toUpperCase();
-            let time = parseInt(pauseFor.substring(0, pauseFor.length - 1));
+            let time = pauseFor.substring(0, pauseFor.length - 1);
+
+            var waitTime = [0, 0];
+            if (time) {
+                waitTime = time.split('-').map(a => parseInt(a));
+            } 
+            time = Math.round((Math.random() * (waitTime[1] - waitTime[0]) + waitTime[0]));
 
             let multipler = (interval === "M") ? 60 : ((interval === "H") ? 3600 : 1)
             if (time) {
@@ -1501,15 +1529,27 @@
         }
 
         let isSeachEventDone = false;
-        window.isSearchInProgress = true;
+        window.isSearchInProgress = true;     
 
-        if(window.selectedFilters && window.selectedFilters.length){
+        if(window.selectedFilters && window.selectedFilters.length && !window.eachFilterSearch){
+
             let filterName = window.selectedFilters[window.getRandNum(0, window.selectedFilters.length - 1)];
             window.loadFilterByName(filterName);
             isSeachEventDone = true;
             window.currentPage = 1; 
             writeToDebugLog('---------------------------  Running for filter ' + filterName+'  ---------------------------------------------');                   
         }
+        
+        if (!window.eachFilterSearch) {
+            if (jQuery('#ab_number_filter_search').val() !== '') {
+                window.eachFilterSearch = parseInt(jQuery('#ab_number_filter_search').val());
+            }
+            else {
+                window.eachFilterSearch = 1
+            }
+        }
+
+        window.eachFilterSearch--;
 
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
 
@@ -1862,6 +1902,17 @@
                 writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
                 if (jQuery('#telegram_buy').val() == 'L' || jQuery('#telegram_buy').val() == 'A') {
                     window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
+                }
+
+                if(jQuery('#ab_stop_error_codes').val()){
+                    var errorCodes = jQuery('#ab_stop_error_codes').val().split(",");
+
+                    if(errorCodes.indexOf(data.status + "") != -1){
+                        writeToLog('------------------------------------------------------------------------------------------');
+                        writeToLog(`[!!!] Autostopping bot since error code ${data.status} has occured`);
+                        writeToLog('------------------------------------------------------------------------------------------');                        
+                        window.deactivateAutoBuyer(true); 
+                    }
                 }
             }
             window.isSearchInProgress = false;

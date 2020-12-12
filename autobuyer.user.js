@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      2.0.6
+// @version      2.0.7
 // @updateURL    https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @downloadURL  https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @description  FUT Snipping Tool
@@ -44,7 +44,7 @@
     window.toggleMessageNotification = false;
     window.botStopped = true;
     window.userWatchItems = [];
-    window.eachFilterSearch = null; 
+    window.eachFilterSearch = null;
 
     var _searchViewModel = null;
 
@@ -58,24 +58,24 @@
         if (filterName != 'Choose filter to load') {
             $(`#filter-dropdown option[value="${filterName}"]`).remove();
             $(`#selected-filters option[value="${filterName}"]`).remove();
-            jQuery("#selected-filters").find('option').attr("selected",false);
+            jQuery("#selected-filters").find('option').attr("selected", false);
             window.setFilters();
             jQuery("#filter-dropdown").prop('selectedIndex', 0);
 
             window.clearABSettings();
             window.controllerInstance._viewmodel.playerData = null;
-            
+
             Object.assign(window.controllerInstance._viewmodel.searchCriteria, window.controllerInstance._viewmodel.defaultSearchCriteria);
             window.controllerInstance.viewDidAppear();
-    
+
             GM_deleteValue(filterName);
             window.notify("Changes saved successfully");
         }
     };
 
-    window.loadFilterByName = function(filterName) {        
+    window.loadFilterByName = function (filterName) {
 
-        let settingsJson = GM_getValue(filterName); 
+        let settingsJson = GM_getValue(filterName);
 
         if (!settingsJson) {
             return;
@@ -83,7 +83,7 @@
 
         window.clearABSettings();
 
-        settingsJson = JSON.parse(settingsJson); 
+        settingsJson = JSON.parse(settingsJson);
 
         if (settingsJson.abSettings.buyPrice) {
             $("#ab_buy_price").val(settingsJson.abSettings.buyPrice);
@@ -95,7 +95,7 @@
 
         if (settingsJson.abSettings.maxBid) {
             $("#ab_max_bid_price").val(settingsJson.abSettings.maxBid);
-        } 
+        }
 
         if (settingsJson.abSettings.itemExpiring) {
             $("#ab_item_expiring").val(settingsJson.abSettings.itemExpiring);
@@ -122,7 +122,7 @@
         if (settingsJson.abSettings.waitTime) {
             jQuery('#ab_wait_time').val(settingsJson.abSettings.waitTime);
         }
-         
+
         if (settingsJson.abSettings.maxPurchases) {
             jQuery('#ab_max_purchases').val(settingsJson.abSettings.maxPurchases);
         }
@@ -161,9 +161,9 @@
         }
 
         if (settingsJson.abSettings.useRandMinBid) {
-            window.bidExact = settingsJson.abSettings.useRandMinBid;
+            window.useRandMinBid = settingsJson.abSettings.useRandMinBid;
             jQuery("#ab_rand_min_bid_toggle").addClass("toggled");
-        } 
+        }
 
         if (settingsJson.abSettings.addDelayAfterBuy) {
             window.addDelayAfterBuy = settingsJson.abSettings.addDelayAfterBuy;
@@ -173,7 +173,7 @@
         if (settingsJson.abSettings.captchaCloseTab) {
             window.captchaCloseTab = settingsJson.abSettings.captchaCloseTab;
             jQuery("#ab_close_tab_toggle").addClass("toggled");
-        } 
+        }
 
         if (settingsJson.abSettings.notificationEnabled) {
             window.notificationEnabled = settingsJson.abSettings.notificationEnabled;
@@ -193,10 +193,10 @@
         }
         if (settingsJson.abSettings.telegramBuy) {
             jQuery('#telegram_buy').val(settingsJson.abSettings.telegramBuy);
-        }        
-       
+        }
+
         let savedCriteria = settingsJson.searchCriteria || {};
-        
+
         window.controllerInstance._viewmodel.playerData = {};
 
         if (!jQuery.isEmptyObject(savedCriteria)) {
@@ -204,7 +204,7 @@
             Object.assign(window.controllerInstance._viewmodel.playerData, savedCriteria.playerData);
         }
 
-        if(jQuery.isEmptyObject(window.controllerInstance._viewmodel.playerData)){
+        if (jQuery.isEmptyObject(window.controllerInstance._viewmodel.playerData)) {
             window.controllerInstance._viewmodel.playerData = null;
         }
 
@@ -217,7 +217,7 @@
             pgid: pageId
         });
     }
-    
+
     window.sendNotificationToUser = function (message) {
         if (window.notificationEnabled) {
             let bot_token = jQuery('#telegram_bot_token').val();
@@ -265,7 +265,7 @@
             }
             else {
                 window.notify('Autobuyer Resumed');
-            } 
+            }
         });
     };
 
@@ -310,13 +310,13 @@
         $buyerLog.val("");
     };
 
-    utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController); 
+    utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController);
 
     window.UTAutoBuyerViewController.prototype.init = function init() {
         if (!this.initialized) {
             //getAppMain().superclass(),
-            this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch), 
-            this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
+            this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch),
+                this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
 
             _searchViewModel = this._viewmodel;
 
@@ -339,7 +339,7 @@
                 view.__root.style = "width: 50%; float: left;";
         }
     };
-     
+
     function addTabItem() {
         if (services.Localization && jQuery('h1.title').html() === services.Localization.localize("navbar.label.home")) {
             getAppMain().getRootViewController().showGameView = function showGameView() {
@@ -447,6 +447,101 @@
         }
     };
 
+    window.findMinBin = async function () {
+        window.notify("Calculating price, please wait...", enums.UINotificationType.POSITIVE);
+
+        jQuery('.ut-click-shield').addClass('showing');
+        jQuery(".loaderIcon ").css("display", "block");
+
+        let minBuy = await window.calcBin();
+
+        if (minBuy) {
+            window.notify("Succesfully computed the price", enums.UINotificationType.POSITIVE);
+        }
+        else {
+            window.notify("Unable to calculate price", enums.UINotificationType.NEGATIVE);
+        }
+
+        jQuery('#ab_buy_price').val(minBuy + '');
+        jQuery('.ut-click-shield').removeClass('showing');
+        jQuery(".loaderIcon ").css("display", "none");
+    }
+
+    window.calcBin = async function () {
+        let criteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
+        criteria.maxBuy = null;
+
+        let allPrices = [];
+        let itemsToConsider = 5;
+        let isMinFound = false;
+        let currentCount = 0;
+        while (!isMinFound) {
+            if (++currentCount === 10) {
+                isMinFound = true;
+            }
+            else {
+                sendPinEvents("Transfer Market Search");
+
+                services.Item.clearTransferMarketCache();
+
+                let items = await window.getBinSearchResult({...criteria});
+                if (items.length) {
+
+                    allPrices = allPrices.concat(items.map(i => i._auction.buyNowPrice));
+                    const currentMin = Math.min(...items.map(i => i._auction.buyNowPrice));
+
+                    if (items.length < 5) {
+                        isMinFound = true;
+                    }
+
+                    let currentCalcBin = window.fixRandomPrice(window.getSellBidPrice(currentMin));
+
+                    if (currentCalcBin === criteria.maxBuy) {
+                        isMinFound = true;
+                    } else {
+                        criteria.maxBuy = window.fixRandomPrice(window.getSellBidPrice(currentMin));
+                    }
+                    await window.waitAsync(2); 
+                }
+                else {
+                    isMinFound = true;
+                }
+            }
+        }
+        allPrices = allPrices.sort((a, b) => a - b).slice(0, itemsToConsider);
+
+        if (allPrices.length) {
+            return window.fixRandomPrice(calcAverage(allPrices));
+        }
+
+        return null;
+    }
+
+    window.getBinSearchResult = function (criteria) {
+        return new Promise((resolve, reject) => {
+            services.Item.searchTransferMarket(criteria, 1).observe(
+                this, (function (sender, response) {
+                    if (response.success) {
+                        sendPinEvents("Transfer Market Results - List View");
+                        sendPinEvents("Item - Detail View");
+                        resolve(response.data.items);
+                    } else {
+                        resolve([]);
+                    }
+                })
+            );
+        });
+    }
+
+    window.calcAverage = function (arr) {
+        var sum = 0;
+        for (var i = 0; i < arr.length; i++) {
+            sum += parseInt(arr[i], 10);
+        }
+
+        return sum / arr.length;
+    }
+
     window.createAutoBuyerInterface = function () {
         if (services.Localization && jQuery('h1.title').html() === services.Localization.localize("navbar.label.home")) {
             window.hasLoadedAll = true;
@@ -510,10 +605,10 @@
                 if (!jQuery('#ab_buy_price').length) {
 
                     jQuery('.ut-item-search-view').first().prepend(
-                        '<div style="width:100%;display: flex;">'+
+                        '<div style="width:100%;display: flex;">' +
                         '<div class="button-container">' +
-                        '<select id="filter-dropdown" name="filters" style="width:100%;padding: 10px;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +                      
-                        '</div>'+ 
+                        '<select id="filter-dropdown" name="filters" style="width:100%;padding: 10px;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +
+                        '</div>' +
                         '<div style="width:50%;margin-top: 1%;" class="button-container">' +
                         '<button style="width:50%" class="btn-standard call-to-action" id="delete_filter">Delete Filter</button>' +
                         '</div> </div>');
@@ -575,7 +670,11 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
-
+                        '<div class="price-filter">' +
+                            '<div class="button-container">' +
+                            '    <button class="btn-standard call-to-action" id="calc_bin_price">Calculate Buy Price</button>' +
+                            '</div>' +
+                        '</div>' +
                         '<div><br></div>' +
                         '<hr>' +
                         '<div class="search-price-header">' +
@@ -626,7 +725,7 @@
                         '           <input type="tel" class="numericInput" id="ab_wait_time" placeholder="7-15">' +
                         '       </div>' +
                         '   </div>' +
-                        '</div>' + 
+                        '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
                         '       <span class="secondary label">Max purchases per search request:</span>' +
@@ -814,7 +913,7 @@
                         '           <input type="text" class="numericInput" id="telegram_buy">' +
                         '       </div>' +
                         '   </div>' +
-                        '</div>' +			        
+                        '</div>' +
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Send Notification</span>' +
@@ -825,16 +924,16 @@
                         '           </div>' +
                         '       </div>' +
                         '   </div>' +
-                        '</div>' +		    
-                        '<div><br></div>' +  
+                        '</div>' +
+                        '<div><br></div>' +
                         '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="test_notification">Test Notification</button>' +
-                        '</div>' +  
+                        '</div>' +
                         '<div><br></div>' +
-                        '<hr>' +            
+                        '<hr>' +
                         '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="preserve_changes">Save Filter</button>' +
-                        '</div>' + 
+                        '</div>' +
                         '<div><br></div>' +
                         '<hr>' +
                         '<div class="search-price-header">' +
@@ -842,7 +941,7 @@
                         '</div>' +
                         '<div class="button-container">' +
                         '       <select multiple="multiple" class="multiselect-filter" id="selected-filters" name="selectedFilters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826; overflow-y : scroll"></select>' +
-                        '       <label style="white-space: nowrap;" id="select-filterCount">No Filter Selected</label>'+ 
+                        '       <label style="white-space: nowrap;" id="select-filterCount">No Filter Selected</label>' +
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
@@ -861,7 +960,7 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Error Codes to stop bot (CSV) :<br/><small>(Eg. 412,421,521)</small></span>' +
+                        '       <span class="secondary label">Error Codes to stop bot (csv) :<br/><small>(Eg. 412,421,521)</small></span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
@@ -898,7 +997,7 @@
                     for (var i = 0; i < filterArray.length; i++) {
                         dropdown.append($('<option></option>').attr('value', filterArray[i]).text(filterArray[i]));
                         filterdropdown.append($('<option></option>').attr('value', filterArray[i]).text(filterArray[i]));
-                    } 
+                    }
                 }
             }
 
@@ -917,7 +1016,7 @@
         setTimeout(function () {
 
             let settingsJson = {};
-            settingsJson.searchCriteria = { criteria : _searchViewModel.searchCriteria , playerData : _searchViewModel.playerData};
+            settingsJson.searchCriteria = { criteria: _searchViewModel.searchCriteria, playerData: _searchViewModel.playerData };
 
             settingsJson.abSettings = {};
 
@@ -932,7 +1031,7 @@
             if (jQuery('#ab_max_bid_price').val() !== '') {
                 settingsJson.abSettings.maxBid = jQuery('#ab_max_bid_price').val();
             }
- 
+
             if (jQuery('#ab_item_expiring').val() !== '') {
                 settingsJson.abSettings.itemExpiring = jQuery('#ab_item_expiring').val();
             }
@@ -1021,27 +1120,47 @@
             if (window.captchaCloseTab) {
                 settingsJson.abSettings.captchaCloseTab = window.captchaCloseTab;
             }
-
-            var filterName = prompt("Enter a name for this filter");
+                        
+            var currentFilterName = $('select[name=filters] option').filter(':selected').val();
+            if (currentFilterName === 'Choose filter to load') {
+                currentFilterName = undefined;
+            }
+            var filterName = prompt("Enter a name for this filter", currentFilterName);
 
             if (filterName) {
-                $('#filter-dropdown').append($('<option></option>').attr('value', filterName).text(filterName));
-                $('#selected-filters').append($('<option></option>').attr('value', filterName).text(filterName));
-                $(`select[name=filters] option[value="${filterName}"]`).attr("selected",true);
+                filterName = filterName.toUpperCase();
+                window.checkAndOption('#filter-dropdown',filterName);
+                window.checkAndOption('#selected-filters',filterName); 
+
+                $(`select[name=filters] option[value="${filterName}"]`).attr("selected", true);
                 GM_setValue(filterName, JSON.stringify(settingsJson));
                 jQuery("#preserve_changes").removeClass("active");
                 window.notify("Changes saved successfully");
             } else {
                 jQuery("#preserve_changes").removeClass("active");
-                window.notify("Filter Name Required",enums.UINotificationType.NEGATIVE);
+                window.notify("Filter Name Required", enums.UINotificationType.NEGATIVE);
             }
         }, 200);
-    } 
+    }
+
+    window.checkAndOption = function(dropdownSelector, optionName){
+        let exist = false;
+        $(`${dropdownSelector} option`).each(function () {
+            if (this.value === optionName) {
+                exist = true;
+                return false;
+            }
+        });
+
+        if(!exist){
+            $(dropdownSelector).append($('<option></option>').attr('value', optionName).text(optionName));
+        }
+    }
 
     window.clearABSettings = function (e) {
         $("#ab_buy_price").val('');
         $("#ab_card_count").val('');
-        $("#ab_max_bid_price").val(''); 
+        $("#ab_max_bid_price").val('');
         $("#ab_item_expiring").val('');
         window.bidExact = false;
         jQuery("#ab_bid_exact").removeClass("toggled");
@@ -1049,7 +1168,7 @@
         jQuery('#ab_min_delete_count').val('');
         window.reListEnabled = false;
         jQuery("#ab_sell_toggle").removeClass("toggled");
-        jQuery('#ab_wait_time').val(''); 
+        jQuery('#ab_wait_time').val('');
         jQuery('#ab_max_purchases').val('');
         jQuery('#ab_cycle_amount').val('');
         jQuery('#ab_pause_for').val('');
@@ -1072,10 +1191,10 @@
         window.notificationEnabled = false;
         jQuery("#ab_message_notification_toggle").removeClass("toggled");
         window.soundEnabled = false;
-        jQuery("#ab_sound_toggle").removeClass("toggled"); 
+        jQuery("#ab_sound_toggle").removeClass("toggled");
 
         if (e) {
-            jQuery("#selected-filters").find('option').attr("selected",false);
+            jQuery("#selected-filters").find('option').attr("selected", false);
             window.setFilters();
             jQuery("#filter-dropdown").prop('selectedIndex', 0);
         }
@@ -1084,7 +1203,9 @@
     jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
     jQuery(document).on('click', '#clear_log_button', clearLog);
     jQuery(document).on('click', 'button:contains("Reset")', clearABSettings);
- 
+    jQuery(document).on('click', '#calc_bin_price', findMinBin);
+
+
     jQuery(document).on({
         mouseenter: function () {
             jQuery("#preserve_changes").addClass("hover");
@@ -1096,7 +1217,7 @@
             saveDetails()
         }
     }, "#preserve_changes");
-    
+
     jQuery(document).on({
         mouseenter: function () {
             jQuery("#test_notification").addClass("hover");
@@ -1140,17 +1261,17 @@
         }
     }, "#delete_filter");
 
-    jQuery(document).on({ 
+    jQuery(document).on({
         change: function () {
             loadFilter()
         }
-    }, "#filter-dropdown"); 
-  
-    jQuery(document).on({  
+    }, "#filter-dropdown");
+
+    jQuery(document).on({
         click: function () {
             setFilters();
         },
-    }, "#selected-filters");    
+    }, "#selected-filters");
 
     window.toggleBidExact = function () {
         if (window.bidExact) {
@@ -1190,7 +1311,7 @@
             window.useRandMinBuy = true;
             jQuery("#ab_rand_min_buy_toggle").addClass("toggled");
         }
-    }; 
+    };
 
     window.toggleRelist = function () {
         if (window.reListEnabled) {
@@ -1312,7 +1433,7 @@
         window.searchCount++;
         return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000);
     };
-     
+
     window.getTimerProgress = function (timer) {
         var time = (new Date()).getTime();
 
@@ -1323,7 +1444,7 @@
         jQuery('#ab_search_progress').css('width', window.getTimerProgress(window.timers.search));
         jQuery('#ab_statistics_progress').css('width', window.getTimerProgress(window.timers.transferList));
 
-        jQuery('#ab_request_count').html(window.searchCount); 
+        jQuery('#ab_request_count').html(window.searchCount);
 
         jQuery('#ab_coins').html(window.futStatistics.coins);
 
@@ -1455,7 +1576,7 @@
                 window.timers.transferList = window.createTimeout(time, 30000);
             }
 
-            if (!window.selectedFilters.length && (window.timers.bidCheck.finish == 0 || window.timers.bidCheck.finish <= time)) {    
+            if (!window.selectedFilters.length && (window.timers.bidCheck.finish == 0 || window.timers.bidCheck.finish <= time)) {
                 window.watchBidItems();
 
                 window.timers.bidCheck = window.createTimeout(time, 20000);
@@ -1505,7 +1626,7 @@
             var waitTime = [0, 0];
             if (time) {
                 waitTime = time.split('-').map(a => parseInt(a));
-            } 
+            }
             time = Math.round((Math.random() * (waitTime[1] - waitTime[0]) + waitTime[0]));
 
             let multipler = (interval === "M") ? 60 : ((interval === "H") ? 3600 : 1)
@@ -1529,17 +1650,17 @@
         }
 
         let isSeachEventDone = false;
-        window.isSearchInProgress = true;     
+        window.isSearchInProgress = true;
 
-        if(window.selectedFilters && window.selectedFilters.length && !window.eachFilterSearch){
+        if (window.selectedFilters && window.selectedFilters.length && !window.eachFilterSearch) {
 
             let filterName = window.selectedFilters[window.getRandNum(0, window.selectedFilters.length - 1)];
             window.loadFilterByName(filterName);
             isSeachEventDone = true;
-            window.currentPage = 1; 
-            writeToDebugLog('---------------------------  Running for filter ' + filterName+'  ---------------------------------------------');                   
+            window.currentPage = 1;
+            writeToDebugLog('---------------------------  Running for filter ' + filterName + '  ---------------------------------------------');
         }
-        
+
         if (!window.eachFilterSearch) {
             if (jQuery('#ab_number_filter_search').val() !== '') {
                 window.eachFilterSearch = parseInt(jQuery('#ab_number_filter_search').val());
@@ -1553,8 +1674,8 @@
 
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
 
-        services.Item.clearTransferMarketCache(); 
-        
+        services.Item.clearTransferMarketCache();
+
         var expiresIn = 3600;
         if ($('#ab_item_expiring').val() !== '') {
             var expiresInString = "1H";
@@ -1601,7 +1722,7 @@
 
         services.Item.searchTransferMarket(searchCriteria, window.currentPage).observe(this, (function (sender, response) {
             if (response.success && window.autoBuyerActive) {
-                sendPinEvents("Transfer Market Results - List View");
+                (window.currentPage === 1) && sendPinEvents("Transfer Market Results - List View");
                 window.searchCountBeforePause--;
 
                 let min_rate_txt = jQuery('#ab_min_rate').val();
@@ -1639,9 +1760,9 @@
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
                     writeToDebugLog('| rating   | player name     | bid    | buy    | time            | action');
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
-                    sendPinEvents("Item - Detail View");
+                    (window.currentPage === 1) && sendPinEvents("Item - Detail View");
                     window.firstSearch = true;
-                }else{
+                } else {
                     window.isSearchInProgress = false;
                 }
 
@@ -1663,7 +1784,7 @@
                     let checkPrice = (window.bidExact) ? priceToBid : ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid);
                     let userBuyNowPrice = parseInt(jQuery('#ab_buy_price').val());
 
-                    var sellPrice = parseInt(jQuery('#ab_sell_price').val()); 
+                    var sellPrice = parseInt(jQuery('#ab_sell_price').val());
 
                     let bid_buy_txt = "(bid: " + window.format_string(currentBid.toString(), 6) + " / buy:" + window.format_string(buyNowPrice.toString(), 7) + ")"
                     let player_name = window.getItemName(player);
@@ -1704,8 +1825,8 @@
 
                     if (rating_ok && window.autoBuyerActive && buyNowPrice <= userBuyNowPrice && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId)) {
                         action_txt = 'attempt buy: ' + buy_txt;
-                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);   
-                        buyPlayer(player, buyNowPrice, sellPrice, true);                     
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
+                        buyPlayer(player, buyNowPrice, sellPrice, true);
                         window.addDelayAfterBuy && window.waitSync(1);
                         maxPurchases--;
                         if (!window.bids.includes(auction.tradeId)) {
@@ -1748,7 +1869,7 @@
                             continue;
                         }
 
-                        action_txt = 'skip >>>';
+                        action_txt = 'skip >>> (Cached Item)';
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                     }
                     window.firstSearch = false;
@@ -1796,8 +1917,8 @@
         services.Item.requestWatchedItems().observe(this, function (t, response) {
 
             var bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
-             
-            var sellPrice = parseInt(jQuery('#ab_sell_price').val()); 
+
+            var sellPrice = parseInt(jQuery('#ab_sell_price').val());
 
             let activeItems = response.data.items.filter(function (item) {
                 return item._auction && item._auction._tradeState === "active";
@@ -1826,7 +1947,7 @@
 
                             if (window.autoBuyerActive && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
                                 writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + checkPrice);
-                                buyPlayer(player, checkPrice,sellPrice);
+                                buyPlayer(player, checkPrice, sellPrice);
                                 window.addDelayAfterBuy && window.waitSync(1);
                                 if (!window.bids.includes(auction.tradeId)) {
                                     window.bids.push(auction.tradeId);
@@ -1904,14 +2025,14 @@
                     window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
                 }
 
-                if(jQuery('#ab_stop_error_codes').val()){
+                if (jQuery('#ab_stop_error_codes').val()) {
                     var errorCodes = jQuery('#ab_stop_error_codes').val().split(",");
 
-                    if(errorCodes.indexOf(data.status + "") != -1){
+                    if (errorCodes.indexOf(data.status + "") != -1) {
                         writeToLog('------------------------------------------------------------------------------------------');
                         writeToLog(`[!!!] Autostopping bot since error code ${data.status} has occured`);
-                        writeToLog('------------------------------------------------------------------------------------------');                        
-                        window.deactivateAutoBuyer(true); 
+                        writeToLog('------------------------------------------------------------------------------------------');
+                        window.deactivateAutoBuyer(true);
                     }
                 }
             }
@@ -2022,7 +2143,7 @@
             sendPinEvents("Hub - Transfers");
         });
     };
-    
+
     window.waitSync = function (seconds = 1) {
 
         var isDone = false;
@@ -2040,6 +2161,10 @@
 
         while (!isDone)
         return;
+    }
+
+    window.waitAsync = async function (seconds = 1) {
+        await new Promise(resolve => setTimeout(resolve, seconds * 1000))
     }
 
     window.clearSoldItems = function () {

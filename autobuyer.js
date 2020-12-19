@@ -106,6 +106,10 @@
             jQuery('#ab_stop_after').val(settingsJson.abSettings.stopAfter);
         }
 
+        if (settingsJson.abSettings.stopAfterConsecutive) {
+            jQuery('#ab_stop_after_consecutive').val(settingsJson.abSettings.stopAfterConsecutive);
+        }
+
         if (settingsJson.abSettings.minRate) {
             jQuery('#ab_min_rate').val(settingsJson.abSettings.minRate);
         }
@@ -234,7 +238,7 @@
         if (window.soundEnabled) {
             var elem = document.getElementById("win_mp3");
 
-            if (event_type == "capatcha") {
+            if (event_type == "capatcha" || event_type == "soft_ban") {
                 elem = document.getElementById("capatcha_mp3");
             }
 
@@ -603,6 +607,16 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Stop After:<br/><small>number of consecutive failures</small>:</span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="ab_stop_after_consecutive" placeholder="20">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
                         '<div><br></div>' +
                         '<hr>' +
                         '<div class="search-price-header">' +
@@ -856,6 +870,10 @@
 
             if (jQuery('#ab_stop_after').val() !== '') {
                 settingsJson.abSettings.stopAfter = jQuery('#ab_stop_after').val();
+            }
+
+            if (jQuery('#ab_stop_after_consecutive').val() !== '') {
+                settingsJson.abSettings.stopAfterConsecutive = jQuery('#ab_stop_after_consecutive').val();
             }
 
             if (jQuery('#ab_min_rate').val() !== '') {
@@ -1229,6 +1247,8 @@
     window.bidCount = 0;
     window.searchCount = 0;
 
+    window.consecutiveLossCount = 0;
+
     window.errorCodeLookUp = {
         '521': 'Server Rejected the request',
         '512': 'Server Rejected the request',
@@ -1545,7 +1565,7 @@
                         setTimeout(() => {
                             buyPlayer(player, buyNowPrice, true);
                         },timeout);
-                        timeout += 200;
+                        timeout += 400;
                         maxPurchases--;
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
@@ -1567,7 +1587,7 @@
                         setTimeout(() => {
                             buyPlayer(player, checkPrice);
                         },timeout)
-                        timeout += 200;
+                        timeout += 400;
                         maxPurchases--;
                         //setTimeout(function (){}, 1000);
                         if (!window.bids.includes(auction.tradeId)) {
@@ -1622,6 +1642,25 @@
         }));
     };
 
+    window.stopIfPossibleSoftBan = () =>{
+
+        let stopAfter = 20;
+        if ($('#ab_stop_after_consecutive').val()) {
+            stopAfter = $('#ab_stop_after_consecutive').val();
+        }
+
+        if(window.consecutiveLossCount < stopAfter){
+            return;
+        }
+
+        writeToLog('------------------------------------------------------------------------------------------');
+        writeToLog('[!!!] Autostopping possible soft ban. Please Investigate!');
+        writeToLog('------------------------------------------------------------------------------------------');
+        window.sendNotificationToUser('Possible SOFT BAN. Please Investigate!');
+        window.play_audio('soft_ban');
+        window.deactivateAutoBuyer(true);
+    }
+
     window.fixRandomPrice = function (price) {
         let range = JSUtils.find(UTCurrencyInputControl.PRICE_TIERS, function (e) {
             return price >= e.min
@@ -1670,7 +1709,7 @@
                                 setTimeout(() => {
                                     buyPlayer(player, checkPrice);
                                 },timeout);
-                                timeout += 200;
+                                timeout += 400;
                                 if (!window.bids.includes(auction.tradeId)) {
                                     window.bids.push(auction.tradeId);
 
@@ -1716,6 +1755,8 @@
                 let player_name = window.getItemName(player);
                 if (data.success) {
 
+                    // reset consecutive losses
+                    window.consecutiveLossCount = 0;
                     if (isBin) {
                         window.purchasedCardCount++;
                     }
@@ -1743,11 +1784,14 @@
 
                 } else {
                     window.lossCount++;
+                    window.consecutiveLossCount++;
                     let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
                     writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
                     if (jQuery('#telegram_buy').val() == 'L' || jQuery('#telegram_buy').val() == 'A') {
                         window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
                     }
+
+                    window.stopIfPossibleSoftBan();
                 }
             }));
         });

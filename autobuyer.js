@@ -1658,6 +1658,7 @@
         writeToLog('------------------------------------------------------------------------------------------');
         window.sendNotificationToUser('Possible SOFT BAN. Please Investigate!');
         window.play_audio('soft_ban');
+        window.consecutiveLossCount = 0;
         window.deactivateAutoBuyer(true);
     }
 

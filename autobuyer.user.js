@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      2.0.3
-// @updateURL    https://github.com/chithakumar13/Fifa-AutoBuyer/blob/master/autobuyer.js
+// @version      2.0.7
+// @updateURL    https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
+// @downloadURL  https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @description  FUT Snipping Tool
 // @author       CK Algos
 // @match        https://www.ea.com/*/fifa/ultimate-team/web-app/*
@@ -17,8 +18,10 @@
 (function () {
     'use strict';
 
+    window.controllerInstance = null;
     window.UTAutoBuyerViewController = function () {
         UTMarketSearchFiltersViewController.call(this);
+        window.controllerInstance = this;
         this._jsClassName = "UTAutoBuyerViewController";
     };
 
@@ -32,23 +35,53 @@
     window.currentChemistry = -1;
     window.purchasedCardCount = 0;
     window.bidExact = false;
-
+    window.selectedFilters = [];
     window.useRandMinBuy = false;
     window.useRandMinBid = false;
+    window.addDelayAfterBuy = false;
     window.captchaCloseTab = false;
+    window.isSearchInProgress = false;
     window.toggleMessageNotification = false;
     window.botStopped = true;
+    window.userWatchItems = [];
+    window.eachFilterSearch = null;
 
     var _searchViewModel = null;
 
     window.loadFilter = function () {
-        var filterName = $('select[name=filters] option').filter(':selected').val()
+        var filterName = $('select[name=filters] option').filter(':selected').val();
+        loadFilterByName(filterName);
+    };
+
+    window.deleteFilter = function () {
+        var filterName = $('select[name=filters] option').filter(':selected').val();
+        if (filterName != 'Choose filter to load') {
+            $(`#filter-dropdown option[value="${filterName}"]`).remove();
+            $(`#selected-filters option[value="${filterName}"]`).remove();
+            jQuery("#selected-filters").find('option').attr("selected", false);
+            window.setFilters();
+            jQuery("#filter-dropdown").prop('selectedIndex', 0);
+
+            window.clearABSettings();
+            window.controllerInstance._viewmodel.playerData = null;
+
+            Object.assign(window.controllerInstance._viewmodel.searchCriteria, window.controllerInstance._viewmodel.defaultSearchCriteria);
+            window.controllerInstance.viewDidAppear();
+
+            GM_deleteValue(filterName);
+            window.notify("Changes saved successfully");
+        }
+    };
+
+    window.loadFilterByName = function (filterName) {
 
         let settingsJson = GM_getValue(filterName);
 
         if (!settingsJson) {
             return;
         }
+
+        window.clearABSettings();
 
         settingsJson = JSON.parse(settingsJson);
 
@@ -132,8 +165,13 @@
         }
 
         if (settingsJson.abSettings.useRandMinBid) {
-            window.bidExact = settingsJson.abSettings.useRandMinBid;
+            window.useRandMinBid = settingsJson.abSettings.useRandMinBid;
             jQuery("#ab_rand_min_bid_toggle").addClass("toggled");
+        }
+
+        if (settingsJson.abSettings.addDelayAfterBuy) {
+            window.addDelayAfterBuy = settingsJson.abSettings.addDelayAfterBuy;
+            jQuery("#ab_add_buy_delay").addClass("toggled");
         }
 
         if (settingsJson.abSettings.captchaCloseTab) {
@@ -161,7 +199,21 @@
             jQuery('#telegram_buy').val(settingsJson.abSettings.telegramBuy);
         }
 
-    };
+        let savedCriteria = settingsJson.searchCriteria || {};
+
+        window.controllerInstance._viewmodel.playerData = {};
+
+        if (!jQuery.isEmptyObject(savedCriteria)) {
+            Object.assign(window.controllerInstance._viewmodel.searchCriteria, savedCriteria.criteria);
+            Object.assign(window.controllerInstance._viewmodel.playerData, savedCriteria.playerData);
+        }
+
+        if (jQuery.isEmptyObject(window.controllerInstance._viewmodel.playerData)) {
+            window.controllerInstance._viewmodel.playerData = null;
+        }
+
+        window.controllerInstance.viewDidAppear();
+    }
 
     window.sendPinEvents = function (pageId) {
         services.PIN.sendData(PINEventType.PAGE_VIEW, {
@@ -193,25 +245,32 @@
             return;
         }
 
-        window.botStartTime = new Date();
-        window.searchCountBeforePause = 10;
-        window.currentChemistry = -1;
-        window.currentPage = 1;
-        if ($('#ab_cycle_amount').val() !== '') {
-            window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
-        }
-        window.defaultStopTime = window.searchCountBeforePause;
-        window.autoBuyerActive = true;
-        window.botStopped = false;
+        services.Item.requestWatchedItems().observe(this, function (t, response) {
+            window.botStartTime = new Date();
+            window.searchCountBeforePause = 10;
+            window.currentChemistry = -1;
+            window.currentPage = 1;
+            if ($('#ab_cycle_amount').val() !== '') {
+                window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
+            }
+            window.defaultStopTime = window.searchCountBeforePause;
+            window.autoBuyerActive = true;
+            window.botStopped = false;
 
-        if (isStart) {
-            window.purchasedCardCount = 0;
-            window.firstSearch = true;
-            window.notify('Autobuyer Started');
-        }
-        else {
-            window.notify('Autobuyer Resumed');
-        }
+            if (isStart) {
+                window.purchasedCardCount = 0;
+                window.firstSearch = true;
+                window.userWatchItems = response.data.items.filter((item) => item._auction).map((item) => item._auction.tradeId) || [];
+                window.isSearchInProgress = false;
+                if (window.userWatchItems.length) {
+                    writeToDebugLog(`Found ${window.userWatchItems.length} items in users watch list and ignored from selling`);
+                }
+                window.notify('Autobuyer Started');
+            }
+            else {
+                window.notify('Autobuyer Resumed');
+            }
+        });
     };
 
     window.deactivateAutoBuyer = function (isStopped) {
@@ -228,6 +287,7 @@
         if (isStopped) {
             window.purchasedCardCount = 0;
             window.botStopped = true;
+            window.isSearchInProgress = false;
         }
 
         window.defaultStopTime = window.searchCountBeforePause;
@@ -254,13 +314,13 @@
         $buyerLog.val("");
     };
 
-    utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController)
+    utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController);
+
     window.UTAutoBuyerViewController.prototype.init = function init() {
         if (!this.initialized) {
             //getAppMain().superclass(),
             this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch),
-                window.updateObject(this._viewmodel.searchCriteria, window.loadSearchCriteriaDetails()),
-            this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
+                this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
 
             _searchViewModel = this._viewmodel;
 
@@ -391,6 +451,101 @@
         }
     };
 
+    window.findMinBin = async function () {
+        window.notify("Calculating price, please wait...", enums.UINotificationType.POSITIVE);
+
+        jQuery('.ut-click-shield').addClass('showing');
+        jQuery(".loaderIcon ").css("display", "block");
+
+        let minBuy = await window.calcBin();
+
+        if (minBuy) {
+            window.notify("Succesfully computed the price", enums.UINotificationType.POSITIVE);
+        }
+        else {
+            window.notify("Unable to calculate price", enums.UINotificationType.NEGATIVE);
+        }
+
+        jQuery('#ab_buy_price').val(minBuy + '');
+        jQuery('.ut-click-shield').removeClass('showing');
+        jQuery(".loaderIcon ").css("display", "none");
+    }
+
+    window.calcBin = async function () {
+        let criteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
+        criteria.maxBuy = null;
+
+        let allPrices = [];
+        let itemsToConsider = 5;
+        let isMinFound = false;
+        let currentCount = 0;
+        while (!isMinFound) {
+            if (++currentCount === 10) {
+                isMinFound = true;
+            }
+            else {
+                sendPinEvents("Transfer Market Search");
+
+                services.Item.clearTransferMarketCache();
+
+                let items = await window.getBinSearchResult({...criteria});
+                if (items.length) {
+
+                    allPrices = allPrices.concat(items.map(i => i._auction.buyNowPrice));
+                    const currentMin = Math.min(...items.map(i => i._auction.buyNowPrice));
+
+                    if (items.length < 5) {
+                        isMinFound = true;
+                    }
+
+                    let currentCalcBin = window.fixRandomPrice(window.getSellBidPrice(currentMin));
+
+                    if (currentCalcBin === criteria.maxBuy) {
+                        isMinFound = true;
+                    } else {
+                        criteria.maxBuy = window.fixRandomPrice(window.getSellBidPrice(currentMin));
+                    }
+                    await window.waitAsync(2);
+                }
+                else {
+                    isMinFound = true;
+                }
+            }
+        }
+        allPrices = allPrices.sort((a, b) => a - b).slice(0, itemsToConsider);
+
+        if (allPrices.length) {
+            return window.fixRandomPrice(calcAverage(allPrices));
+        }
+
+        return null;
+    }
+
+    window.getBinSearchResult = function (criteria) {
+        return new Promise((resolve, reject) => {
+            services.Item.searchTransferMarket(criteria, 1).observe(
+                this, (function (sender, response) {
+                    if (response.success) {
+                        sendPinEvents("Transfer Market Results - List View");
+                        sendPinEvents("Item - Detail View");
+                        resolve(response.data.items);
+                    } else {
+                        resolve([]);
+                    }
+                })
+            );
+        });
+    }
+
+    window.calcAverage = function (arr) {
+        var sum = 0;
+        for (var i = 0; i < arr.length; i++) {
+            sum += parseInt(arr[i], 10);
+        }
+
+        return sum / arr.length;
+    }
+
     window.createAutoBuyerInterface = function () {
         if (services.Localization && jQuery('h1.title').html() === services.Localization.localize("navbar.label.home")) {
             window.hasLoadedAll = true;
@@ -454,9 +609,13 @@
                 if (!jQuery('#ab_buy_price').length) {
 
                     jQuery('.ut-item-search-view').first().prepend(
+                        '<div style="width:100%;display: flex;">' +
                         '<div class="button-container">' +
-                        '<select id="filter-dropdown" name="filters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +
-                        '</div>');
+                        '<select id="filter-dropdown" name="filters" style="width:100%;padding: 10px;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +
+                        '</div>' +
+                        '<div style="width:50%;margin-top: 1%;" class="button-container">' +
+                        '<button style="width:50%" class="btn-standard call-to-action" id="delete_filter">Delete Filter</button>' +
+                        '</div> </div>');
                     jQuery('.search-prices').first().append(
                         '<div><br></div>' +
                         '<hr>' +
@@ -515,7 +674,11 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
-
+                        '<div class="price-filter">' +
+                            '<div class="button-container">' +
+                            '    <button class="btn-standard call-to-action" id="calc_bin_price">Calculate Buy Price</button>' +
+                            '</div>' +
+                        '</div>' +
                         '<div><br></div>' +
                         '<hr>' +
                         '<div class="search-price-header">' +
@@ -589,11 +752,11 @@
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Pause For:<br/><small>(S for seconds, M for Minutes, H for hours)</small>:</span>' +
+                        '       <span class="secondary label">Pause For:<br/><small>(S for seconds, M for Minutes, H for hours eg. 0-0S)</small>:</span>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_pause_for" placeholder="0S">' +
+                        '           <input type="text" class="numericInput" id="ab_pause_for" placeholder="0-0S">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -604,6 +767,17 @@
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
                         '           <input type="text" class="numericInput" id="ab_stop_after" placeholder="1H">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                        '       <span class="ut-toggle-cell-view--label">Add Delay After Buy<br/><small>(Adds 1 Sec Delay after trying <br/> to buy / bid a card)</small></span>' +
+                        '           <div id="ab_add_buy_delay" class="ut-toggle-control">' +
+                        '           <div class="ut-toggle-control--track">' +
+                        '           </div>' +
+                        '           <div class= "ut-toggle-control--grip" >' +
+                        '           </div>' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -709,6 +883,7 @@
                         '   </div>' +
                         '</div>' +
                         '<div><br></div>' +
+                        '<hr>' +
                         '<div class="search-price-header">' +
                         '   <h1 class="secondary">Notification settings:</h1>' +
                         '</div>' +
@@ -753,9 +928,6 @@
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
-                        '<div class="button-container">' +
-                        '    <button class="btn-standard call-to-action" id="test_notification">Test Notification</button>' +
-                        '</div>' +
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Send Notification</span>' +
@@ -769,7 +941,46 @@
                         '</div>' +
                         '<div><br></div>' +
                         '<div class="button-container">' +
+                        '    <button class="btn-standard call-to-action" id="test_notification">Test Notification</button>' +
+                        '</div>' +
+                        '<div><br></div>' +
+                        '<hr>' +
+                        '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="preserve_changes">Save Filter</button>' +
+                        '</div>' +
+                        '<div><br></div>' +
+                        '<hr>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Multi-Filter settings:</h1>' +
+                        '</div>' +
+                        '<div class="button-container">' +
+                        '       <select multiple="multiple" class="multiselect-filter" id="selected-filters" name="selectedFilters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826; overflow-y : scroll"></select>' +
+                        '       <label style="white-space: nowrap;" id="select-filterCount">No Filter Selected</label>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Number of search For Filter:<br/><small>Count of searches to be performed before switching to different filter</small></span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_number_filter_search" placeholder="1">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div><br></div>' +
+                        '<hr>' +
+                        '<div class="search-price-header">' +
+                        '   <h1 class="secondary">Common settings:</h1>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Error Codes to stop bot (csv) :<br/><small>(Eg. 412,421,521)</small></span>' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="tel" class="numericInput" id="ab_stop_error_codes" placeholder="">' +
+                        '       </div>' +
+                        '   </div>' +
                         '</div>' +
                         '<audio id="win_mp3" hidden">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.ogg" type="audio/ogg">\n' +
@@ -785,8 +996,10 @@
 
 
                     let dropdown = $('#filter-dropdown');
+                    let filterdropdown = $('#selected-filters');
 
                     dropdown.empty();
+                    filterdropdown.empty();
 
                     dropdown.append('<option selected="true" disabled>Choose filter to load</option>');
                     dropdown.prop('selectedIndex', 0);
@@ -797,6 +1010,7 @@
                     // Populate dropdown with list of filters
                     for (var i = 0; i < filterArray.length; i++) {
                         dropdown.append($('<option></option>').attr('value', filterArray[i]).text(filterArray[i]));
+                        filterdropdown.append($('<option></option>').attr('value', filterArray[i]).text(filterArray[i]));
                     }
                 }
             }
@@ -816,7 +1030,7 @@
         setTimeout(function () {
 
             let settingsJson = {};
-            settingsJson.searchCriteria = _searchViewModel.searchCriteria;
+            settingsJson.searchCriteria = { criteria: _searchViewModel.searchCriteria, playerData: _searchViewModel.playerData };
 
             settingsJson.abSettings = {};
 
@@ -899,6 +1113,11 @@
             if (window.useRandMinBid) {
                 settingsJson.abSettings.useRandMinBid = window.useRandMinBid;
             }
+
+            if (window.addDelayAfterBuy) {
+                settingsJson.abSettings.addDelayAfterBuy = window.addDelayAfterBuy;
+            }
+
             if (jQuery('#telegram_bot_token').val() !== '') {
                 settingsJson.abSettings.telegramBotToken = jQuery('#telegram_bot_token').val();
             }
@@ -920,33 +1139,43 @@
                 settingsJson.abSettings.captchaCloseTab = window.captchaCloseTab;
             }
 
+            var currentFilterName = $('select[name=filters] option').filter(':selected').val();
+            if (currentFilterName === 'Choose filter to load') {
+                currentFilterName = undefined;
+            }
+            var filterName = prompt("Enter a name for this filter", currentFilterName);
 
+            if (filterName) {
+                filterName = filterName.toUpperCase();
+                window.checkAndOption('#filter-dropdown',filterName);
+                window.checkAndOption('#selected-filters',filterName);
 
-            var filterName = prompt("Enter a name for this filter");
-
-            $('#filter-dropdown').append($('<option></option>').attr('value', filterName).text(filterName));
-
-            GM_setValue(filterName, JSON.stringify(settingsJson));
-
-            jQuery("#preserve_changes").removeClass("active");
-
-            window.notify("Changes saved successfully");
+                $(`select[name=filters] option[value="${filterName}"]`).attr("selected", true);
+                GM_setValue(filterName, JSON.stringify(settingsJson));
+                jQuery("#preserve_changes").removeClass("active");
+                window.notify("Changes saved successfully");
+            } else {
+                jQuery("#preserve_changes").removeClass("active");
+                window.notify("Filter Name Required", enums.UINotificationType.NEGATIVE);
+            }
         }, 200);
     }
 
-    window.loadSearchCriteriaDetails = function () {
-        let settingsJson = GM_getValue("SavedSettings");
+    window.checkAndOption = function(dropdownSelector, optionName){
+        let exist = false;
+        $(`${dropdownSelector} option`).each(function () {
+            if (this.value === optionName) {
+                exist = true;
+                return false;
+            }
+        });
 
-        if (!settingsJson) {
-            return;
+        if(!exist){
+            $(dropdownSelector).append($('<option></option>').attr('value', optionName).text(optionName));
         }
-
-        settingsJson = JSON.parse(settingsJson);
-
-        return settingsJson.searchCriteria;
     }
 
-    window.clearABSettings = function () {
+    window.clearABSettings = function (e) {
         $("#ab_buy_price").val('');
         $("#ab_card_count").val('');
         $("#ab_max_bid_price").val('');
@@ -966,7 +1195,12 @@
         jQuery('#ab_max_rate').val('');
         jQuery('#ab_rand_min_bid_input').val('');
         jQuery('#ab_rand_min_buy_input').val('');
+        jQuery('#telegram_bot_token').val('');
+        jQuery('#telegram_chat_id').val('');
+        jQuery('#telegram_buy').val('');
         window.useRandMinBuy = false;
+        window.useRandMinBid = false;
+        window.addDelayAfterBuy = false;
         jQuery("#ab_rand_min_buy_toggle").removeClass("toggled");
         window.bidExact = false;
         jQuery("#ab_rand_min_bid_toggle").removeClass("toggled");
@@ -976,12 +1210,19 @@
         jQuery("#ab_message_notification_toggle").removeClass("toggled");
         window.soundEnabled = false;
         jQuery("#ab_sound_toggle").removeClass("toggled");
+
+        if (e) {
+            jQuery("#selected-filters").find('option').attr("selected", false);
+            window.setFilters();
+            jQuery("#filter-dropdown").prop('selectedIndex', 0);
+        }
     }
 
     jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
     jQuery(document).on('click', '#clear_log_button', clearLog);
     jQuery(document).on('click', 'button:contains("Reset")', clearABSettings);
-    jQuery(document).on('click', '#clear_log_button', clearLog);
+    jQuery(document).on('click', '#calc_bin_price', findMinBin);
+
 
     jQuery(document).on({
         mouseenter: function () {
@@ -1017,12 +1258,38 @@
         }
     }, "#test_notification");
 
+    window.setFilters = function () {
+        window.selectedFilters = $('select[name=selectedFilters]').val() || [];
+        if (window.selectedFilters.length) {
+            jQuery('#select-filterCount').text('(' + window.selectedFilters.length + ') Filter Selected');
+        } else {
+            jQuery('#select-filterCount').text('No Filter Selected');
+        }
+    }
+
+    jQuery(document).on({
+        mouseenter: function () {
+            jQuery("#delete_filter").addClass("hover");
+        },
+        mouseleave: function () {
+            jQuery("#delete_filter").removeClass("hover");
+        },
+        click: function () {
+            deleteFilter()
+        }
+    }, "#delete_filter");
 
     jQuery(document).on({
         change: function () {
             loadFilter()
         }
     }, "#filter-dropdown");
+
+    jQuery(document).on({
+        click: function () {
+            setFilters();
+        },
+    }, "#selected-filters");
 
     window.toggleBidExact = function () {
         if (window.bidExact) {
@@ -1044,6 +1311,16 @@
         }
     };
 
+    window.toggleAddDelayAfterBuy = function () {
+        if (window.addDelayAfterBuy) {
+            window.addDelayAfterBuy = false;
+            jQuery("#ab_add_buy_delay").removeClass("toggled");
+        } else {
+            window.addDelayAfterBuy = true;
+            jQuery("#ab_add_buy_delay").addClass("toggled");
+        }
+    };
+
     window.toggleUseRandMinBuy = function () {
         if (window.useRandMinBuy) {
             window.useRandMinBuy = false;
@@ -1053,21 +1330,6 @@
             jQuery("#ab_rand_min_buy_toggle").addClass("toggled");
         }
     };
-
-    window.updateObject = function (defaultObject) {
-        for (var i = 1; i < arguments.length; i++) {
-            for (var prop in arguments[i]) {
-                var val = arguments[i][prop];
-                if (defaultObject) {
-                    if (typeof val == "object")
-                        updateObject(defaultObject[prop], val);
-                    else
-                        defaultObject[prop] = val;
-                }
-            }
-        }
-        return defaultObject;
-    }
 
     window.toggleRelist = function () {
         if (window.reListEnabled) {
@@ -1127,6 +1389,7 @@
     jQuery(document).on('click', '#ab_sell_toggle', toggleRelist);
 
     jQuery(document).on('click', '#ab_rand_min_bid_toggle', toggleUseRandMinBid);
+    jQuery(document).on('click', '#ab_add_buy_delay', toggleAddDelayAfterBuy);
     jQuery(document).on('click', '#ab_rand_min_buy_toggle', toggleUseRandMinBuy);
     jQuery(document).on('click', '#ab_close_tab_toggle', toggleCloseTab);
     jQuery(document).on('click', '#ab_sound_toggle', toggleSound);
@@ -1173,8 +1436,9 @@
         $log.scrollTop($log[0].scrollHeight);
     };
 
-    window.notify = function (message) {
-        services.Notification.queue([message, enums.UINotificationType.POSITIVE])
+    window.notify = function (message, notificationType) {
+        notificationType = notificationType || enums.UINotificationType.POSITIVE;
+        services.Notification.queue([message, notificationType])
     };
 
     window.getRandomWait = function () {
@@ -1311,7 +1575,7 @@
 
             var time = (new Date()).getTime();
 
-            if (window.timers.search.finish == 0 || window.timers.search.finish <= time) {
+            if (!window.isSearchInProgress && (window.timers.search.finish == 0 || window.timers.search.finish <= time)) {
 
                 let searchRequest = 1;
 
@@ -1334,7 +1598,7 @@
                 window.timers.transferList = window.createTimeout(time, 30000);
             }
 
-            if (window.timers.bidCheck.finish == 0 || window.timers.bidCheck.finish <= time) {
+            if (!window.selectedFilters.length && (window.timers.bidCheck.finish == 0 || window.timers.bidCheck.finish <= time)) {
                 window.watchBidItems();
 
                 window.timers.bidCheck = window.createTimeout(time, 20000);
@@ -1374,12 +1638,18 @@
 
     window.pauseIfRequired = function () {
         if (window.searchCountBeforePause <= 0) {
-            var pauseFor = "0S";
+            var pauseFor = "0-0S";
             if ($('#ab_pause_for').val()) {
                 pauseFor = $('#ab_pause_for').val();
             }
             let interval = pauseFor[pauseFor.length - 1].toUpperCase();
-            let time = parseInt(pauseFor.substring(0, pauseFor.length - 1));
+            let time = pauseFor.substring(0, pauseFor.length - 1);
+
+            var waitTime = [0, 0];
+            if (time) {
+                waitTime = time.split('-').map(a => parseInt(a));
+            }
+            time = Math.round((Math.random() * (waitTime[1] - waitTime[0]) + waitTime[0]));
 
             let multipler = (interval === "M") ? 60 : ((interval === "H") ? 3600 : 1)
             if (time) {
@@ -1407,14 +1677,32 @@
             return;
         }
 
+        let isSeachEventDone = false;
+        window.isSearchInProgress = true;
+
+        if (window.selectedFilters && window.selectedFilters.length && !window.eachFilterSearch) {
+
+            let filterName = window.selectedFilters[window.getRandNum(0, window.selectedFilters.length - 1)];
+            window.loadFilterByName(filterName);
+            isSeachEventDone = true;
+            window.currentPage = 1;
+            writeToDebugLog('---------------------------  Running for filter ' + filterName + '  ---------------------------------------------');
+        }
+
+        if (!window.eachFilterSearch) {
+            if (jQuery('#ab_number_filter_search').val() !== '') {
+                window.eachFilterSearch = parseInt(jQuery('#ab_number_filter_search').val());
+            }
+            else {
+                window.eachFilterSearch = 1
+            }
+        }
+
+        window.eachFilterSearch--;
+
         var searchCriteria = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._viewmodel.searchCriteria;
 
         services.Item.clearTransferMarketCache();
-
-        //accessobjects.Captcha.getCaptchaData().observe(this, (function (sender, response) {
-        //    debugger;
-        //    var data = response;
-        //}));
 
         var expiresIn = 3600;
         if ($('#ab_item_expiring').val() !== '') {
@@ -1447,7 +1735,7 @@
             window.currentPage = 1;
         }
 
-        if (window.currentPage === 1) {
+        if (!isSeachEventDone && window.currentPage === 1) {
             sendPinEvents("Transfer Market Search");
         }
 
@@ -1462,7 +1750,7 @@
 
         services.Item.searchTransferMarket(searchCriteria, window.currentPage).observe(this, (function (sender, response) {
             if (response.success && window.autoBuyerActive) {
-                sendPinEvents("Transfer Market Results - List View");
+                (window.currentPage === 1) && sendPinEvents("Transfer Market Results - List View");
                 window.searchCountBeforePause--;
 
                 let min_rate_txt = jQuery('#ab_min_rate').val();
@@ -1500,10 +1788,12 @@
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
                     writeToDebugLog('| rating   | player name     | bid    | buy    | time            | action');
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
-                    sendPinEvents("Item - Detail View");
+                    (window.currentPage === 1) && sendPinEvents("Item - Detail View");
                     window.firstSearch = true;
+                } else {
+                    window.isSearchInProgress = false;
                 }
-                let timeout = 0;
+
                 for (let i = 0; i < response.data.items.length; i++) {
                     let action_txt = 'none';
                     let player = response.data.items[i];
@@ -1521,6 +1811,8 @@
                     let priceToBid = (window.bidExact) ? bidPrice : ((isBid) ? window.getSellBidPrice(bidPrice) : bidPrice);
                     let checkPrice = (window.bidExact) ? priceToBid : ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid);
                     let userBuyNowPrice = parseInt(jQuery('#ab_buy_price').val());
+
+                    var sellPrice = parseInt(jQuery('#ab_sell_price').val());
 
                     let bid_buy_txt = "(bid: " + window.format_string(currentBid.toString(), 6) + " / buy:" + window.format_string(buyNowPrice.toString(), 7) + ")"
                     let player_name = window.getItemName(player);
@@ -1562,10 +1854,8 @@
                     if (rating_ok && window.autoBuyerActive && buyNowPrice <= userBuyNowPrice && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId)) {
                         action_txt = 'attempt buy: ' + buy_txt;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
-                        setTimeout(() => {
-                            buyPlayer(player, buyNowPrice, true);
-                        },timeout);
-                        timeout += 400;
+                        buyPlayer(player, buyNowPrice, sellPrice, true);
+                        window.addDelayAfterBuy && window.waitSync(1);
                         maxPurchases--;
                         if (!window.bids.includes(auction.tradeId)) {
                             window.bids.push(auction.tradeId);
@@ -1584,10 +1874,8 @@
 
                         action_txt = 'attempt bid: ' + bidPrice;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
-                        setTimeout(() => {
-                            buyPlayer(player, checkPrice);
-                        },timeout)
-                        timeout += 400;
+                        buyPlayer(player, checkPrice, sellPrice);
+                        window.addDelayAfterBuy && window.waitSync(1);
                         maxPurchases--;
                         //setTimeout(function (){}, 1000);
                         if (!window.bids.includes(auction.tradeId)) {
@@ -1609,13 +1897,14 @@
                             continue;
                         }
 
-                        action_txt = 'skip >>>';
+                        action_txt = 'skip >>> (Cached Item)';
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
                     }
                     window.firstSearch = false;
                 }
                 if (response.data.items.length > 0) {
                     writeToDebugLog('----------------------------------------------------------------------------------------------------------------------');
+                    window.isSearchInProgress = false;
                 }
             } else if (!response.success) {
                 if (response.status == HttpStatusCode.CAPTCHA_REQUIRED) {
@@ -1638,6 +1927,7 @@
                 }
                 window.play_audio('capatcha');
                 window.deactivateAutoBuyer(true);
+                window.isSearchInProgress = false;
             }
         }));
     };
@@ -1677,6 +1967,7 @@
         services.Item.requestWatchedItems().observe(this, function (t, response) {
 
             var bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
+
             var sellPrice = parseInt(jQuery('#ab_sell_price').val());
 
             let activeItems = response.data.items.filter(function (item) {
@@ -1691,7 +1982,6 @@
                             return item._auction._bidState === "outbid" && item._auction._tradeState === "active";
                         });
 
-                        let timeout = 0;
                         for (var i = 0; i < outBidItems.length; i++) {
 
                             let player = outBidItems[i];
@@ -1707,10 +1997,8 @@
 
                             if (window.autoBuyerActive && currentBid <= priceToBid && checkPrice <= window.futStatistics.coinsNumber) {
                                 writeToDebugLog('Bidding on outbidded item -> Bidding Price :' + checkPrice);
-                                setTimeout(() => {
-                                    buyPlayer(player, checkPrice);
-                                },timeout);
-                                timeout += 400;
+                                buyPlayer(player, checkPrice, sellPrice);
+                                window.addDelayAfterBuy && window.waitSync(1);
                                 if (!window.bids.includes(auction.tradeId)) {
                                     window.bids.push(auction.tradeId);
 
@@ -1725,7 +2013,7 @@
                     if (window.autoBuyerActive && sellPrice && !isNaN(sellPrice)) {
 
                         let boughtItems = response.data.items.filter(function (item) {
-                            return item.getAuctionData().isWon() && !window.sellBids.includes(item._auction.tradeId);
+                            return item.getAuctionData().isWon() && !window.userWatchItems.includes(item._auction.tradeId) && !window.sellBids.includes(item._auction.tradeId);
                         });
 
                         for (var i = 0; i < boughtItems.length; i++) {
@@ -1749,7 +2037,7 @@
         });
     };
 
-    window.buyPlayer = function (player, price, isBin) {
+    window.buyPlayer =  function (player, price, sellPrice, isBin) {
         let myPromise = new Promise((resolve,reject) => {
             services.Item.bid(player, price).observe(this, (function (sender, data) {
                 let price_txt = window.format_string(price.toString(), 6)
@@ -1762,7 +2050,6 @@
                         window.purchasedCardCount++;
                     }
 
-                    var sellPrice = parseInt(jQuery('#ab_sell_price').val());
                     if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
                         window.winCount++;
                         let sym = " W:" + window.format_string(window.winCount.toString(), 4);
@@ -1792,10 +2079,21 @@
                         window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
                     }
 
-                    window.stopIfPossibleSoftBan();
+                    if (jQuery('#ab_stop_error_codes').val()) {
+                        var errorCodes = jQuery('#ab_stop_error_codes').val().split(",");
+
+                        if (errorCodes.indexOf(data.status + "") != -1) {
+                            writeToLog('------------------------------------------------------------------------------------------');
+                            writeToLog(`[!!!] Autostopping bot since error code ${data.status} has occured`);
+                            writeToLog('------------------------------------------------------------------------------------------');
+                            window.deactivateAutoBuyer(true);
+                        }
+                    }
                 }
+                window.isSearchInProgress = false;
             }));
         });
+        return myPromise;
     };
 
     window.getSellBidPrice = function (bin) {
@@ -1901,6 +2199,29 @@
             sendPinEvents("Hub - Transfers");
         });
     };
+
+    window.waitSync = function (seconds = 1) {
+
+        var isDone = false;
+        var start = new Date().getTime();
+        var msToWait = seconds * 1000;
+
+        do {
+            var now = new Date().getTime();
+            var delta = now - start;
+
+            if (delta >= msToWait) {
+                isDone = true;
+            }
+        }
+
+        while (!isDone)
+        return;
+    }
+
+    window.waitAsync = async function (seconds = 1) {
+        await new Promise(resolve => setTimeout(resolve, seconds * 1000))
+    }
 
     window.clearSoldItems = function () {
         services.Item.clearSoldItems().observe(this, function (t, response) {

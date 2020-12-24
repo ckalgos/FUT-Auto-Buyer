@@ -95,7 +95,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 ### Pause For
 * The parameter has a dependency on Cycle Amount 
 * The tool will pause for the specified interval, if the the number of search request in the given cycle matches the specified cycle amount.
-* Default Value (`0S`) (S for seconds, M for Minutes, H for hours). 
+* Default Value (`0-0S`) (S for seconds, M for Minutes, H for hours). 
 
 ### Pause Cycle 
 * Indicates the amount of search request to be made before pausing the tool.
@@ -113,6 +113,13 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 
 ### Close On Captcha Trigger
 * If enabled tool will close the web app when Captcha gets triggered. 
+
+### Delay After Buy
+* If enabled tool will add 1 second delay after each buy request.
+
+### Error Codes to stop bot
+* List of error code on which bot should stop, value should be in csv format.
+* Ex - 421,461,512
 
 ### Sound Notification
 * If enabled tool will gives sound notification for actions like buy card / captcha trigger etc... 

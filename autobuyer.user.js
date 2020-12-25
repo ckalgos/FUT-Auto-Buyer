@@ -1445,9 +1445,9 @@
         var addedTime = 0;
 
         var wait = [7, 15];
-        if (jQuery('#ab_wait_time').val()) {
-            wait = jQuery('#ab_wait_time').val().split('-').map(a => parseInt(a));
-        }
+        // if (jQuery('#ab_wait_time').val()) {
+        //     wait = jQuery('#ab_wait_time').val().split('-').map(a => parseInt(a));
+        // }
         window.searchCount++;
         return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000);
     };
@@ -2089,6 +2089,7 @@
                             window.deactivateAutoBuyer(true);
                         }
                     }
+                    window.stopIfPossibleSoftBan();
                 }
                 window.isSearchInProgress = false;
             }));

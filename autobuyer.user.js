@@ -48,6 +48,63 @@
 
     var _searchViewModel = null;
 
+    // DIV names
+var nameFilterDropdown = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameSelectedFilter = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbBuyPrice = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbCardCount = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbMaxBid = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbItemExpiring = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbBidExact = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbSellPrice = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbMinDeleteCount = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbSellToggle = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbWaitTime = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbMaxPurchases = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbCycleAmount = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbPauseFor = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbStopAfter = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbMinRate = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbMaxRate = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbRandMinBidInput = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbRandMinBuyInput = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbRandMinBuyToggle = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbRandMinBidToggle = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbAddBuyDelay = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbCloseTabToggle = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbMessageNotificationToggle = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbSoundToggle = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameTelegramBotToken = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameTelegramChatId = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameTelegramBuy = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameProgressAutobuyer = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAutoBuyerFoundLog = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameSearchCancelButton = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameInfoWrapper = '#elem' + Math.round(Math.random()*1000000000000000),
+    namePreserveChanges = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameClearLogButton = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameCalcBinPrice = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameTestNotification = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameSelectFilterCount = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameDeleteFilter = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbSolveCaptcha = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameSellAfterTax = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbSearchProgress = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbStatisticsProgress = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbRequestCount = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbCoins = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbStatus = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbSoldItems = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbUnsoldItems = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbAvailableItems = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbActiveTransfers = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbNumberFilterSearch = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameAbStopErrorCode = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameSearchWrapper = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameWinMp3 = '#elem' + Math.round(Math.random()*1000000000000000),
+    nameCapatchaMp3 = '#elem' + Math.round(Math.random()*1000000000000000);
+
+
     window.loadFilter = function () {
         var filterName = $('select[name=filters] option').filter(':selected').val();
         loadFilterByName(filterName);
@@ -56,11 +113,11 @@
     window.deleteFilter = function () {
         var filterName = $('select[name=filters] option').filter(':selected').val();
         if (filterName != 'Choose filter to load') {
-            $(`#filter-dropdown option[value="${filterName}"]`).remove();
-            $(`#selected-filters option[value="${filterName}"]`).remove();
-            jQuery("#selected-filters").find('option').attr("selected", false);
+            $(nameFilterDropdown + ` option[value="${filterName}"]`).remove();
+            $(nameSelectedFilter + ` option[value="${filterName}"]`).remove();
+            jQuery(nameSelectedFilter).find('option').attr("selected", false);
             window.setFilters();
-            jQuery("#filter-dropdown").prop('selectedIndex', 0);
+            jQuery(nameFilterDropdown).prop('selectedIndex', 0);
 
             window.clearABSettings();
             window.controllerInstance._viewmodel.playerData = null;
@@ -86,113 +143,113 @@
         settingsJson = JSON.parse(settingsJson);
 
         if (settingsJson.abSettings.buyPrice) {
-            $("#ab_buy_price").val(settingsJson.abSettings.buyPrice);
+            $(nameAbBuyPrice).val(settingsJson.abSettings.buyPrice);
         }
 
         if (settingsJson.abSettings.cardCount) {
-            $("#ab_card_count").val(settingsJson.abSettings.cardCount);
+            $(nameAbCardCount).val(settingsJson.abSettings.cardCount);
         }
 
         if (settingsJson.abSettings.maxBid) {
-            $("#ab_max_bid_price").val(settingsJson.abSettings.maxBid);
+            $(nameAbMaxBid).val(settingsJson.abSettings.maxBid);
         }
 
         if (settingsJson.abSettings.itemExpiring) {
-            $("#ab_item_expiring").val(settingsJson.abSettings.itemExpiring);
+            $(nameAbItemExpiring).val(settingsJson.abSettings.itemExpiring);
         }
 
         if (settingsJson.abSettings.bidExact) {
             window.bidExact = settingsJson.abSettings.bidExact;
-            jQuery("#ab_bid_exact").addClass("toggled");
+            jQuery(nameAbBidExact).addClass("toggled");
         }
 
         if (settingsJson.abSettings.sellPrice) {
-            jQuery('#ab_sell_price').val(settingsJson.abSettings.sellPrice);
+            jQuery(nameAbSellPrice).val(settingsJson.abSettings.sellPrice);
         }
 
         if (settingsJson.abSettings.minDeleteCount) {
-            jQuery('#ab_min_delete_count').val(settingsJson.abSettings.minDeleteCount);
+            jQuery().val(settingsJson.abSettings.minDeleteCount);
         }
 
         if (settingsJson.abSettings.reListEnabled) {
             window.reListEnabled = settingsJson.abSettings.reListEnabled;
-            jQuery("#ab_sell_toggle").addClass("toggled");
+            jQuery(nameAbSellToggle).addClass("toggled");
         }
 
         if (settingsJson.abSettings.waitTime) {
-            jQuery('#ab_wait_time').val(settingsJson.abSettings.waitTime);
+            jQuery(nameAbWaitTime).val(settingsJson.abSettings.waitTime);
         }
 
         if (settingsJson.abSettings.maxPurchases) {
-            jQuery('#ab_max_purchases').val(settingsJson.abSettings.maxPurchases);
+            jQuery(nameAbMaxPurchases).val(settingsJson.abSettings.maxPurchases);
         }
 
         if (settingsJson.abSettings.pauseCycle) {
-            jQuery('#ab_cycle_amount').val(settingsJson.abSettings.pauseCycle);
+            jQuery(nameAbCycleAmount).val(settingsJson.abSettings.pauseCycle);
         }
 
         if (settingsJson.abSettings.pauseFor) {
-            jQuery('#ab_pause_for').val(settingsJson.abSettings.pauseFor);
+            jQuery(nameAbPauseFor).val(settingsJson.abSettings.pauseFor);
         }
 
         if (settingsJson.abSettings.stopAfter) {
-            jQuery('#ab_stop_after').val(settingsJson.abSettings.stopAfter);
+            jQuery(nameAbStopAfter).val(settingsJson.abSettings.stopAfter);
         }
 
         if (settingsJson.abSettings.minRate) {
-            jQuery('#ab_min_rate').val(settingsJson.abSettings.minRate);
+            jQuery(nameAbMinRate).val(settingsJson.abSettings.minRate);
         }
 
         if (settingsJson.abSettings.maxRate) {
-            jQuery('#ab_max_rate').val(settingsJson.abSettings.maxRate);
+            jQuery(nameAbMaxRate).val(settingsJson.abSettings.maxRate);
         }
 
         if (settingsJson.abSettings.randMinBid) {
-            jQuery('#ab_rand_min_bid_input').val(settingsJson.abSettings.randMinBid);
+            jQuery(nameAbRandMinBidInput).val(settingsJson.abSettings.randMinBid);
         }
 
         if (settingsJson.abSettings.randMinBuy) {
-            jQuery('#ab_rand_min_buy_input').val(settingsJson.abSettings.randMinBuy);
+            jQuery(nameAbRandMinBuyInput).val(settingsJson.abSettings.randMinBuy);
         }
 
         if (settingsJson.abSettings.useRandMinBuy) {
             window.useRandMinBuy = settingsJson.abSettings.useRandMinBuy;
-            jQuery("#ab_rand_min_buy_toggle").addClass("toggled");
+            jQuery(nameAbRandMinBuyToggle).addClass("toggled");
         }
 
         if (settingsJson.abSettings.useRandMinBid) {
             window.useRandMinBid = settingsJson.abSettings.useRandMinBid;
-            jQuery("#ab_rand_min_bid_toggle").addClass("toggled");
+            jQuery(nameAbRandMinBidToggle).addClass("toggled");
         }
 
         if (settingsJson.abSettings.addDelayAfterBuy) {
             window.addDelayAfterBuy = settingsJson.abSettings.addDelayAfterBuy;
-            jQuery("#ab_add_buy_delay").addClass("toggled");
+            jQuery(nameAbAddBuyDelay).addClass("toggled");
         }
 
         if (settingsJson.abSettings.captchaCloseTab) {
             window.captchaCloseTab = settingsJson.abSettings.captchaCloseTab;
-            jQuery("#ab_close_tab_toggle").addClass("toggled");
+            jQuery(nameAbCloseTabToggle).addClass("toggled");
         }
 
         if (settingsJson.abSettings.notificationEnabled) {
             window.notificationEnabled = settingsJson.abSettings.notificationEnabled;
-            jQuery("#ab_message_notification_toggle").addClass("toggled");
+            jQuery(nameAbMessageNotificationToggle).addClass("toggled");
         }
 
         if (settingsJson.abSettings.soundEnabled) {
             window.soundEnabled = settingsJson.abSettings.soundEnabled;
-            jQuery("#ab_sound_toggle").addClass("toggled");
+            jQuery(nameAbSoundToggle).addClass("toggled");
         }
 
         if (settingsJson.abSettings.telegramBotToken) {
-            jQuery('#telegram_bot_token').val(settingsJson.abSettings.telegramBotToken);
+            jQuery(nameTelegramBotToken).val(settingsJson.abSettings.telegramBotToken);
         }
         if (settingsJson.abSettings.telegramChatID) {
-            jQuery('#telegram_chat_id').val(settingsJson.abSettings.telegramChatID);
+            jQuery(nameTelegramChatId).val(settingsJson.abSettings.telegramChatID);
         }
         if (settingsJson.abSettings.telegramBuy) {
-            jQuery('#telegram_buy').val(settingsJson.abSettings.telegramBuy);
+            jQuery(nameTelegramBuy).val(settingsJson.abSettings.telegramBuy);
         }
 
         let savedCriteria = settingsJson.searchCriteria || {};
@@ -220,8 +277,8 @@
 
     window.sendNotificationToUser = function (message) {
         if (window.notificationEnabled) {
-            let bot_token = jQuery('#telegram_bot_token').val();
-            let bot_chatID = jQuery('#telegram_chat_id').val();
+            let bot_token = jQuery(nameTelegramBotToken).val();
+            let bot_chatID = jQuery(nameTelegramChatId).val();
             if (bot_token && bot_chatID) {
                 let url = 'https://api.telegram.org/bot' + bot_token +
                     '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + message;
@@ -246,8 +303,8 @@
             window.searchCountBeforePause = 10;
             window.currentChemistry = -1;
             window.currentPage = 1;
-            if ($('#ab_cycle_amount').val() !== '') {
-                window.searchCountBeforePause = parseInt($('#ab_cycle_amount').val());
+            if ($(nameAbCycleAmount).val() !== '') {
+                window.searchCountBeforePause = parseInt($(nameAbCycleAmount).val());
             }
             window.defaultStopTime = window.searchCountBeforePause;
             window.autoBuyerActive = true;
@@ -304,8 +361,8 @@
     };
 
     window.clearLog = function () {
-        var $progressLog = jQuery('#progressAutobuyer');
-        var $buyerLog = jQuery('#autoBuyerFoundLog');
+        var $progressLog = jQuery(nameProgressAutobuyer);
+        var $buyerLog = jQuery(nameAutoBuyerFoundLog);
         $progressLog.val("");
         $buyerLog.val("");
     };
@@ -462,7 +519,7 @@
             window.notify("Unable to calculate price", enums.UINotificationType.NEGATIVE);
         }
 
-        jQuery('#ab_buy_price').val(minBuy + '');
+        jQuery(nameAbBuyPrice).val(minBuy + '');
         jQuery('.ut-click-shield').removeClass('showing');
         jQuery(".loaderIcon ").css("display", "none");
     }
@@ -501,7 +558,7 @@
                     } else {
                         criteria.maxBuy = window.fixRandomPrice(window.getSellBidPrice(currentMin));
                     }
-                    await window.waitAsync(2); 
+                    await window.waitAsync(2);
                 }
                 else {
                     isMinFound = true;
@@ -551,45 +608,45 @@
             if (!jQuery('.SearchWrapper').length) {
                 var view = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._view;
                 jQuery(view.__root.parentElement).prepend(
-                    '<div id="InfoWrapper" class="ut-navigation-bar-view navbar-style-landscape">' +
-                    '   <h1 class="title">AUTOBUYER STATUS: <span id="ab_status"></span> | REQUEST COUNT: <span id="ab_request_count">0</span></h1>' +
+                    '<div id="' + nameInfoWrapper.substring(1) + '" class="ut-navigation-bar-view navbar-style-landscape">' +
+                    '   <h1 class="title">AUTOBUYER STATUS: <span id="' + nameAbStatus.substring(1) + '"></span> | REQUEST COUNT: <span id="' + nameAbRequestCount.substring(1) + '">0</span></h1>' +
                     '   <div class="view-navbar-clubinfo">' +
                     '       <div class="view-navbar-clubinfo-data">' +
                     '           <div class="view-navbar-clubinfo-name">' +
                     '               <div style="float: left;">Search:</div>' +
                     '               <div style="float: right; height: 10px; width: 100px; background: #888; margin: 5px 0px 5px 5px;">' +
-                    '                   <div id="ab_search_progress" style="background: #000; height: 10px; width: 0%"></div>' +
+                    '                   <div id="' + nameAbSearchProgress.substring(1) + '" style="background: #000; height: 10px; width: 0%"></div>' +
                     '               </div>' +
                     '           </div>' +
                     '           <div class="view-navbar-clubinfo-name">' +
                     '               <div style="float: left;">Statistics:</div>' +
                     '               <div style="float: right; height: 10px; width: 100px; background: #888; margin: 5px 0px 5px 5px;">' +
-                    '                   <div id="ab_statistics_progress" style="background: #000; height: 10px; width: 0%"></div>' +
+                    '                   <div id="' + nameAbStatus.substring(1) + '" style="background: #000; height: 10px; width: 0%"></div>' +
                     '               </div>' +
                     '           </div>' +
                     '       </div>' +
                     '   </div>' +
                     '   <div class="view-navbar-currency" style="margin-left: 10px;">' +
-                    '       <div class="view-navbar-currency-coins" id="ab_coins"></div>' +
+                    '       <div class="view-navbar-currency-coins" id="' + nameAbCoins.substring(1) + '"></div>' +
                     '   </div>' +
                     '   <div class="view-navbar-clubinfo">' +
                     '       <div class="view-navbar-clubinfo-data">' +
-                    '           <span class="view-navbar-clubinfo-name">Sold Items: <span id="ab-sold-items"></span></span>' +
-                    '           <span class="view-navbar-clubinfo-name">Unsold Items: <span id="ab-unsold-items"></span></span>' +
+                    '           <span class="view-navbar-clubinfo-name">Sold Items: <span id="' + nameAbSoldItems.substring(1) + '"></span></span>' +
+                    '           <span class="view-navbar-clubinfo-name">Unsold Items: <span id="' + nameAbUnsoldItems.substring(1) + 'x"></span></span>' +
                     '       </div>' +
                     '   </div>' +
                     '   <div class="view-navbar-clubinfo" style="border: none;">' +
                     '       <div class="view-navbar-clubinfo-data">' +
-                    '           <span class="view-navbar-clubinfo-name">Available Items: <span id="ab-available-items"></span></span>' +
-                    '           <span class="view-navbar-clubinfo-name">Active transfers: <span id="ab-active-transfers"></span></span>' +
+                    '           <span class="view-navbar-clubinfo-name">Available Items: <span id="' + nameAbAvailableItems.substring(1) + '"></span></span>' +
+                    '           <span class="view-navbar-clubinfo-name">Active transfers: <span id="' + nameAbActiveTransfers.substring(1) + '"></span></span>' +
                     '       </div>' +
                     '   </div>' +
                     '</div>'
                 );
 
-                jQuery(view.__root.parentElement).append('<div id="SearchWrapper" style="width: 50%; right: 50%"><textarea readonly id="progressAutobuyer" style="font-size: 15px; width: 100%;height: 58%;"></textarea><label>Search Results:</label><br/><textarea readonly id="autoBuyerFoundLog" style="font-size: 10px; width: 100%;height: 26%;"></textarea></div>');
+                jQuery(view.__root.parentElement).append('<div id="' + nameSearchWrapper.substring(1) + '" style="width: 50%; right: 50%"><textarea readonly id="' + nameProgressAutobuyer.substring(1) + '" style="font-size: 15px; width: 100%;height: 58%;background-color:#141414;color:#e2dde2;"></textarea><label>Search Results:</label><br/><textarea readonly id="' + nameAutoBuyerFoundLog.substring(1) + '" style="font-size: 10px; width: 100%;height: 26%;background-color:#141414;color:#e2dde2;"></textarea></div>');
 
-                var $log = jQuery('#progressAutobuyer');
+                var $log = jQuery(nameProgressAutobuyer);
                 if ($log.val() == '') {
                     let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
                     let log_init_text = 'Autobuyer Ready\n' +
@@ -602,15 +659,15 @@
             }
 
             if (jQuery('.search-prices').first().length) {
-                if (!jQuery('#ab_buy_price').length) {
+                if (!jQuery(nameAbBuyPrice).length) {
 
                     jQuery('.ut-item-search-view').first().prepend(
                         '<div style="width:100%;display: flex;">' +
                         '<div class="button-container">' +
-                        '<select id="filter-dropdown" name="filters" style="width:100%;padding: 10px;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +
+                        '<select id="' + nameFilterDropdown.substring(1) + '" name="filters" style="width:100%;padding: 10px;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826;"></select>' +
                         '</div>' +
                         '<div style="width:50%;margin-top: 1%;" class="button-container">' +
-                        '<button style="width:50%" class="btn-standard call-to-action" id="delete_filter">Delete Filter</button>' +
+                        '<button style="width:50%" class="btn-standard call-to-action" id="' + nameDeleteFilter.substring(1) + '">Delete Filter</button>' +
                         '</div> </div>');
                     jQuery('.search-prices').first().append(
                         '<div><br></div>' +
@@ -625,7 +682,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_buy_price" placeholder="5000">' +
+                        '           <input type="tel" class="numericInput" id="' + nameAbBuyPrice.substring(1) + '" placeholder="5000">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -635,7 +692,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_card_count" placeholder="10">' +
+                        '           <input type="text" class="numericInput" id="' + nameAbCardCount.substring(1) + '" placeholder="10">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -645,14 +702,14 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_max_bid_price" placeholder="5000">' +
+                        '           <input type="tel" class="numericInput" id="' + nameAbMaxBid.substring(1) + '" placeholder="5000">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Bid Exact Price</span>' +
-                        '           <div id="ab_bid_exact" class="ut-toggle-control">' +
+                        '           <div id="' + nameAbBidExact.substring(1) + '" class="ut-toggle-control">' +
                         '           <div class="ut-toggle-control--track">' +
                         '           </div>' +
                         '           <div class= "ut-toggle-control--grip" >' +
@@ -666,13 +723,13 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_item_expiring" placeholder="1H">' +
+                        '           <input type="text" class="numericInput" id="' + nameAbItemExpiring.substring(1) + '" placeholder="1H">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
                             '<div class="button-container">' +
-                            '    <button class="btn-standard call-to-action" id="calc_bin_price">Calculate Buy Price</button>' +
+                            '    <button class="btn-standard call-to-action" id="' + nameCalcBinPrice.substring(1) + '">Calculate Buy Price</button>' +
                             '</div>' +
                         '</div>' +
                         '<div><br></div>' +
@@ -683,11 +740,11 @@
                         '<div><br></div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
-                        '       <span class="secondary label">Sell Price:</span><br/><small>Receive After Tax: <span id="sell_after_tax">0</span></small>' +
+                        '       <span class="secondary label">Sell Price:</span><br/><small>Receive After Tax: <span id="' + nameSellAfterTax.substring(1) + '">0</span></small>' +
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_sell_price" placeholder="7000">' +
+                        '           <input type="tel" class="numericInput" id="' + nameAbSellPrice.substring(1) + '" placeholder="7000">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -697,13 +754,13 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_min_delete_count" placeholder="10">' +
+                        '           <input type="tel" class="numericInput" id="' + nameAbMinDeleteCount.substring(1) + '" placeholder="10">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div style="padding-top : 20px" class="ut-toggle-cell-view">' +
                         '    <span class="ut-toggle-cell-view--label">Relist Unsold Items</span>' +
-                        '    <div id="ab_sell_toggle" class="ut-toggle-control">' +
+                        '    <div id="' + nameAbSellToggle.substring(1) + '" class="ut-toggle-control">' +
                         '        <div class="ut-toggle-control--track">' +
                         '        </div>' +
                         '        <div class= "ut-toggle-control--grip" >' +
@@ -722,7 +779,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_wait_time" placeholder="7-15">' +
+                        '           <input type="tel" class="numericInput" id="' + nameAbWaitTime.substring(1) + '" placeholder="7-15">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -732,7 +789,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_max_purchases" placeholder="3">' +
+                        '           <input type="text" class="numericInput" id="' + nameAbMaxPurchases.substring(1) + '" placeholder="3">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -742,7 +799,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_cycle_amount" placeholder="10">' +
+                        '           <input type="text" class="numericInput" id="' + nameAbCycleAmount.substring(1) + '" placeholder="10">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -752,7 +809,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_pause_for" placeholder="0-0S">' +
+                        '           <input type="text" class="numericInput" id="' + nameAbPauseFor.substring(1) + '" placeholder="0-0S">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -762,14 +819,14 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_stop_after" placeholder="1H">' +
+                        '           <input type="text" class="numericInput" id="' + nameAbStopAfter.substring(1) + '" placeholder="1H">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Add Delay After Buy<br/><small>(Adds 1 Sec Delay after trying <br/> to buy / bid a card)</small></span>' +
-                        '           <div id="ab_add_buy_delay" class="ut-toggle-control">' +
+                        '           <div id="' + nameAbAddBuyDelay.substring(1) + '" class="ut-toggle-control">' +
                         '           <div class="ut-toggle-control--track">' +
                         '           </div>' +
                         '           <div class= "ut-toggle-control--grip" >' +
@@ -789,7 +846,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_min_rate" placeholder="10" value="10">' +
+                        '           <input type="text" class="numericInput" id="' + nameAbMinRate.substring(1) + '" placeholder="10" value="10">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -799,7 +856,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="ab_max_rate" placeholder="100" value="100">' +
+                        '           <input type="text" class="numericInput" id="' + nameAbMaxRate.substring(1) + '" placeholder="100" value="100">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -815,14 +872,14 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_rand_min_bid_input" placeholder="300">' +
+                        '           <input type="tel" class="numericInput" id="' + nameAbRandMinBidInput.substring(1) + '" placeholder="300">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Use random min bid</span>' +
-                        '           <div id="ab_rand_min_bid_toggle" class="ut-toggle-control">' +
+                        '           <div id="' + nameAbRandMinBidToggle.substring(1) + '" class="ut-toggle-control">' +
                         '           <div class="ut-toggle-control--track">' +
                         '           </div>' +
                         '           <div class= "ut-toggle-control--grip" >' +
@@ -836,14 +893,14 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_rand_min_buy_input" placeholder="300">' +
+                        '           <input type="tel" class="numericInput" id="' + nameAbRandMinBuyInput.substring(1) + '" placeholder="300">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Use random min buy</span>' +
-                        '           <div id="ab_rand_min_buy_toggle" class="ut-toggle-control">' +
+                        '           <div id="' + nameAbRandMinBuyToggle.substring(1) + '" class="ut-toggle-control">' +
                         '           <div class="ut-toggle-control--track">' +
                         '           </div>' +
                         '           <div class= "ut-toggle-control--grip" >' +
@@ -860,7 +917,7 @@
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Close Web App on Captcha Trigger</span>' +
-                        '           <div id="ab_close_tab_toggle" class="ut-toggle-control">' +
+                        '           <div id="' + nameAbCloseTabToggle.substring(1) + '" class="ut-toggle-control">' +
                         '           <div class="ut-toggle-control--track">' +
                         '           </div>' +
                         '           <div class= "ut-toggle-control--grip" >' +
@@ -876,7 +933,7 @@
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Sound Notification</span>' +
-                        '           <div id="ab_sound_toggle" class="ut-toggle-control">' +
+                        '           <div id="' + nameAbSoundToggle.substring(1) + '" class="ut-toggle-control">' +
                         '           <div class="ut-toggle-control--track">' +
                         '           </div>' +
                         '           <div class= "ut-toggle-control--grip" >' +
@@ -890,7 +947,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="telegram_bot_token">' +
+                        '           <input type="text" class="numericInput" id="' + nameTelegramBotToken.substring(1) + '">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -900,7 +957,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="telegram_chat_id">' +
+                        '           <input type="text" class="numericInput" id="' + nameTelegramChatId.substring(1) + '">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -910,14 +967,14 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="telegram_buy">' +
+                        '           <input type="text" class="numericInput" id="' + nameTelegramBuy.substring(1) + '">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
                         '<div style="width: 100%;" class="price-filter">' +
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Send Notification</span>' +
-                        '           <div id="ab_message_notification_toggle" class="ut-toggle-control">' +
+                        '           <div id="' + nameAbMessageNotificationToggle.substring(1) + '" class="ut-toggle-control">' +
                         '           <div class="ut-toggle-control--track">' +
                         '           </div>' +
                         '           <div class= "ut-toggle-control--grip" >' +
@@ -927,12 +984,12 @@
                         '</div>' +
                         '<div><br></div>' +
                         '<div class="button-container">' +
-                        '    <button class="btn-standard call-to-action" id="test_notification">Test Notification</button>' +
+                        '    <button class="btn-standard call-to-action" id="' + nameTestNotification.substring(1) + '">Test Notification</button>' +
                         '</div>' +
                         '<div><br></div>' +
                         '<hr>' +
                         '<div class="button-container">' +
-                        '    <button class="btn-standard call-to-action" id="preserve_changes">Save Filter</button>' +
+                        '    <button class="btn-standard call-to-action" id="' + namePreserveChanges.substring(1) + '">Save Filter</button>' +
                         '</div>' +
                         '<div><br></div>' +
                         '<hr>' +
@@ -940,8 +997,8 @@
                         '   <h1 class="secondary">Multi-Filter settings:</h1>' +
                         '</div>' +
                         '<div class="button-container">' +
-                        '       <select multiple="multiple" class="multiselect-filter" id="selected-filters" name="selectedFilters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826; overflow-y : scroll"></select>' +
-                        '       <label style="white-space: nowrap;" id="select-filterCount">No Filter Selected</label>' +
+                        '       <select multiple="multiple" class="multiselect-filter" id="' + nameSelectedFilter.substring(1) + '" name="selectedFilters" style="padding: 10px;width: 100%;font-family: UltimateTeamCondensed,sans-serif;font-size: 1.6em;color: #e2dde2;text-transform: uppercase;background-color: #171826; overflow-y : scroll"></select>' +
+                        '       <label style="white-space: nowrap;" id="' + nameSelectFilterCount.substring(1) + '">No Filter Selected</label>' +
                         '</div>' +
                         '<div class="price-filter">' +
                         '   <div class="info">' +
@@ -949,7 +1006,7 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_number_filter_search" placeholder="1">' +
+                        '           <input type="tel" class="numericInput" id="' + nameAbNumberFilterSearch.substring(1) + '" placeholder="1">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -964,16 +1021,16 @@
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="tel" class="numericInput" id="ab_stop_error_codes" placeholder="">' +
+                        '           <input type="tel" class="numericInput" id="' + nameAbStopErrorCode.substring(1) + '" placeholder="">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
-                        '<audio id="win_mp3" hidden">\n' +
+                        '<audio id="' + nameWinMp3.substring(1) + '" hidden">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.ogg" type="audio/ogg">\n' +
                         '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.mp3" type="audio/mpeg">\n' +
                         '  Your browser does not support the audio element.\n' +
                         '</audio>' +
-                        '<audio id="capatcha_mp3" hidden">\n' +
+                        '<audio id="' + nameCapatchaMp3.substring(1) + '" hidden">\n' +
                         '  <source src="https://proxy.notificationsounds.com/wake-up-tones/alarm-frenzy-493/download/file-sounds-897-alarm-frenzy.ogg" type="audio/ogg">\n' +
                         '  <source src="https://proxy.notificationsounds.com/wake-up-tones/alarm-frenzy-493/download/file-sounds-897-alarm-frenzy.mp3" type="audio/mpeg">\n' +
                         '  Your browser does not support the audio element.\n' +
@@ -981,8 +1038,8 @@
                     );
 
 
-                    let dropdown = $('#filter-dropdown');
-                    let filterdropdown = $('#selected-filters');
+                    let dropdown = $(nameFilterDropdown);
+                    let filterdropdown = $(nameSelectedFilter);
 
                     dropdown.empty();
                     filterdropdown.empty();
@@ -1001,8 +1058,8 @@
                 }
             }
 
-            if (!jQuery('#search_cancel_button').length) {
-                jQuery('#InfoWrapper').next().find('.button-container button').last().after('<button class="btn-standard" id="search_cancel_button">Stop</button><button class="btn-standard" id="clear_log_button">Clear Log</button>')
+            if (!jQuery(nameSearchCancelButton).length) {
+                jQuery(nameInfoWrapper).next().find('.button-container button').last().after('<button class="btn-standard" id="' + nameSearchCancelButton.substring(1) + '">Stop</button><button class="btn-standard" id="' + nameClearLogButton.substring(1) + '">Clear Log</button>')
             }
         } else {
             window.setTimeout(createAutoBuyerInterface, 1000);
@@ -1011,7 +1068,7 @@
 
     window.saveDetails = function () {
 
-        jQuery("#preserve_changes").addClass("active");
+        jQuery(namePreserveChanges).addClass("active");
 
         setTimeout(function () {
 
@@ -1020,72 +1077,72 @@
 
             settingsJson.abSettings = {};
 
-            if (jQuery('#ab_buy_price').val() !== '') {
-                settingsJson.abSettings.buyPrice = jQuery('#ab_buy_price').val();
+            if (jQuery(nameAbBuyPrice).val() !== '') {
+                settingsJson.abSettings.buyPrice = jQuery(nameAbBuyPrice).val();
             }
 
-            if (jQuery('#ab_card_count').val() !== '') {
-                settingsJson.abSettings.cardCount = jQuery('#ab_card_count').val();
+            if (jQuery(nameAbCardCount).val() !== '') {
+                settingsJson.abSettings.cardCount = jQuery(nameAbCardCount).val();
             }
 
-            if (jQuery('#ab_max_bid_price').val() !== '') {
-                settingsJson.abSettings.maxBid = jQuery('#ab_max_bid_price').val();
+            if (jQuery(nameAbMaxBid).val() !== '') {
+                settingsJson.abSettings.maxBid = jQuery(nameAbMaxBid).val();
             }
 
-            if (jQuery('#ab_item_expiring').val() !== '') {
-                settingsJson.abSettings.itemExpiring = jQuery('#ab_item_expiring').val();
+            if (jQuery(nameAbItemExpiring).val() !== '') {
+                settingsJson.abSettings.itemExpiring = jQuery(nameAbItemExpiring).val();
             }
 
             if (window.bidExact) {
                 settingsJson.abSettings.bidExact = window.bidExact;
             }
 
-            if (jQuery('#ab_sell_price').val() !== '') {
-                settingsJson.abSettings.sellPrice = jQuery('#ab_sell_price').val();
+            if (jQuery(nameAbSellPrice).val() !== '') {
+                settingsJson.abSettings.sellPrice = jQuery(nameAbSellPrice).val();
             }
 
-            if (jQuery('#ab_min_delete_count').val() !== '') {
-                settingsJson.abSettings.minDeleteCount = jQuery('#ab_min_delete_count').val();
+            if (jQuery(nameAbMinDeleteCount).val() !== '') {
+                settingsJson.abSettings.minDeleteCount = jQuery(nameAbMinDeleteCount).val();
             }
 
             if (window.reListEnabled) {
                 settingsJson.abSettings.reListEnabled = window.reListEnabled;
             }
 
-            if (jQuery('#ab_wait_time').val() !== '') {
-                settingsJson.abSettings.waitTime = jQuery('#ab_wait_time').val();
+            if (jQuery(nameAbWaitTime).val() !== '') {
+                settingsJson.abSettings.waitTime = jQuery().val();
             }
 
-            if (jQuery('#ab_max_purchases').val() !== '') {
-                settingsJson.abSettings.maxPurchases = jQuery('#ab_max_purchases').val();
+            if (jQuery(nameAbMaxPurchases).val() !== '') {
+                settingsJson.abSettings.maxPurchases = jQuery(nameAbMaxPurchases).val();
             }
 
-            if (jQuery('#ab_cycle_amount').val() !== '') {
-                settingsJson.abSettings.pauseCycle = jQuery('#ab_cycle_amount').val();
+            if (jQuery(nameAbCycleAmount).val() !== '') {
+                settingsJson.abSettings.pauseCycle = jQuery(nameAbCycleAmount).val();
             }
 
-            if (jQuery('#ab_pause_for').val() !== '') {
-                settingsJson.abSettings.pauseFor = jQuery('#ab_pause_for').val();
+            if (jQuery(nameAbPauseFor).val() !== '') {
+                settingsJson.abSettings.pauseFor = jQuery(nameAbPauseFor).val();
             }
 
-            if (jQuery('#ab_stop_after').val() !== '') {
-                settingsJson.abSettings.stopAfter = jQuery('#ab_stop_after').val();
+            if (jQuery(nameAbStopAfter).val() !== '') {
+                settingsJson.abSettings.stopAfter = jQuery(nameAbStopAfter).val();
             }
 
-            if (jQuery('#ab_min_rate').val() !== '') {
-                settingsJson.abSettings.minRate = jQuery('#ab_min_rate').val();
+            if (jQuery(nameAbMinRate).val() !== '') {
+                settingsJson.abSettings.minRate = jQuery(nameAbMinRate).val();
             }
 
-            if (jQuery('#ab_max_rate').val() !== '') {
-                settingsJson.abSettings.maxRate = jQuery('#ab_max_rate').val();
+            if (jQuery(nameAbMaxRate).val() !== '') {
+                settingsJson.abSettings.maxRate = jQuery(nameAbMaxRate).val();
             }
 
-            if (jQuery('#ab_rand_min_bid_input').val() !== '') {
-                settingsJson.abSettings.randMinBid = jQuery('#ab_rand_min_bid_input').val();
+            if (jQuery(nameAbRandMinBidInput).val() !== '') {
+                settingsJson.abSettings.randMinBid = jQuery(nameAbRandMinBidInput).val();
             }
 
-            if (jQuery('#ab_rand_min_buy_input').val() !== '') {
-                settingsJson.abSettings.randMinBuy = jQuery('#ab_rand_min_buy_input').val();
+            if (jQuery(nameAbRandMinBuyInput).val() !== '') {
+                settingsJson.abSettings.randMinBuy = jQuery(nameAbRandMinBuyInput).val();
             }
 
             if (window.useRandMinBuy) {
@@ -1100,14 +1157,14 @@
                 settingsJson.abSettings.addDelayAfterBuy = window.addDelayAfterBuy;
             }
 
-            if (jQuery('#telegram_bot_token').val() !== '') {
-                settingsJson.abSettings.telegramBotToken = jQuery('#telegram_bot_token').val();
+            if (jQuery(nameTelegramBotToken).val() !== '') {
+                settingsJson.abSettings.telegramBotToken = jQuery(nameTelegramBotToken).val();
             }
-            if (jQuery('#telegram_chat_id').val() !== '') {
-                settingsJson.abSettings.telegramChatID = jQuery('#telegram_chat_id').val();
+            if (jQuery(nameTelegramChatId).val() !== '') {
+                settingsJson.abSettings.telegramChatID = jQuery(nameTelegramChatId).val();
             }
-            if (jQuery('#telegram_buy').val() !== '') {
-                settingsJson.abSettings.telegramBuy = jQuery('#telegram_buy').val();
+            if (jQuery(nameTelegramBuy).val() !== '') {
+                settingsJson.abSettings.telegramBuy = jQuery(nameTelegramBuy).val();
             }
 
             if (window.notificationEnabled) {
@@ -1120,7 +1177,7 @@
             if (window.captchaCloseTab) {
                 settingsJson.abSettings.captchaCloseTab = window.captchaCloseTab;
             }
-                        
+
             var currentFilterName = $('select[name=filters] option').filter(':selected').val();
             if (currentFilterName === 'Choose filter to load') {
                 currentFilterName = undefined;
@@ -1129,15 +1186,15 @@
 
             if (filterName) {
                 filterName = filterName.toUpperCase();
-                window.checkAndOption('#filter-dropdown',filterName);
-                window.checkAndOption('#selected-filters',filterName); 
+                window.checkAndOption(nameFilterDropdown,filterName);
+                window.checkAndOption(nameSelectedFilter,filterName);
 
                 $(`select[name=filters] option[value="${filterName}"]`).attr("selected", true);
                 GM_setValue(filterName, JSON.stringify(settingsJson));
-                jQuery("#preserve_changes").removeClass("active");
+                jQuery(namePreserveChanges).removeClass("active");
                 window.notify("Changes saved successfully");
             } else {
-                jQuery("#preserve_changes").removeClass("active");
+                jQuery(namePreserveChanges).removeClass("active");
                 window.notify("Filter Name Required", enums.UINotificationType.NEGATIVE);
             }
         }, 200);
@@ -1158,76 +1215,76 @@
     }
 
     window.clearABSettings = function (e) {
-        $("#ab_buy_price").val('');
-        $("#ab_card_count").val('');
-        $("#ab_max_bid_price").val('');
-        $("#ab_item_expiring").val('');
+        $(nameAbBuyPrice).val('');
+        $(nameAbCardCount).val('');
+        $(nameAbMaxBid).val('');
+        $(nameAbItemExpiring).val('');
         window.bidExact = false;
-        jQuery("#ab_bid_exact").removeClass("toggled");
-        jQuery('#ab_sell_price').val('');
-        jQuery('#ab_min_delete_count').val('');
+        jQuery(nameAbBidExact).removeClass("toggled");
+        jQuery(nameAbSellPrice).val('');
+        jQuery(nameAbMinDeleteCount).val('');
         window.reListEnabled = false;
-        jQuery("#ab_sell_toggle").removeClass("toggled");
-        jQuery('#ab_wait_time').val('');
-        jQuery('#ab_max_purchases').val('');
-        jQuery('#ab_cycle_amount').val('');
-        jQuery('#ab_pause_for').val('');
-        jQuery('#ab_stop_after').val('');
-        jQuery('#ab_min_rate').val('');
-        jQuery('#ab_max_rate').val('');
-        jQuery('#ab_rand_min_bid_input').val('');
-        jQuery('#ab_rand_min_buy_input').val('');
-        jQuery('#telegram_bot_token').val('');
-        jQuery('#telegram_chat_id').val('');
-        jQuery('#telegram_buy').val('');
+        jQuery(nameAbSellToggle).removeClass("toggled");
+        jQuery(nameAbWaitTime).val('');
+        jQuery(nameAbMaxPurchases).val('');
+        jQuery(nameAbCycleAmount).val('');
+        jQuery(nameAbPauseFor).val('');
+        jQuery(nameAbStopAfter).val('');
+        jQuery(nameAbMinRate).val('');
+        jQuery(nameAbMaxRate).val('');
+        jQuery(nameAbRandMinBidInput).val('');
+        jQuery(nameAbRandMinBuyInput).val('');
+        jQuery(nameTelegramBotToken).val('');
+        jQuery(nameTelegramChatId).val('');
+        jQuery(nameTelegramBuy).val('');
         window.useRandMinBuy = false;
         window.useRandMinBid = false;
         window.addDelayAfterBuy = false;
-        jQuery("#ab_rand_min_buy_toggle").removeClass("toggled");
+        jQuery(nameAbRandMinBuyToggle).removeClass("toggled");
         window.bidExact = false;
-        jQuery("#ab_rand_min_bid_toggle").removeClass("toggled");
+        jQuery(nameAbRandMinBidToggle).removeClass("toggled");
         window.captchaCloseTab = false;
-        jQuery("#ab_close_tab_toggle").removeClass("toggled");
+        jQuery(nameAbCloseTabToggle).removeClass("toggled");
         window.notificationEnabled = false;
-        jQuery("#ab_message_notification_toggle").removeClass("toggled");
+        jQuery(nameAbMessageNotificationToggle).removeClass("toggled");
         window.soundEnabled = false;
-        jQuery("#ab_sound_toggle").removeClass("toggled");
+        jQuery(nameAbSoundToggle).removeClass("toggled");
 
         if (e) {
-            jQuery("#selected-filters").find('option').attr("selected", false);
+            jQuery(nameSelectedFilter).find('option').attr("selected", false);
             window.setFilters();
-            jQuery("#filter-dropdown").prop('selectedIndex', 0);
+            jQuery(nameFilterDropdown).prop('selectedIndex', 0);
         }
     }
 
-    jQuery(document).on('click', '#search_cancel_button', deactivateAutoBuyer);
-    jQuery(document).on('click', '#clear_log_button', clearLog);
+    jQuery(document).on('click', nameSearchCancelButton, deactivateAutoBuyer);
+    jQuery(document).on('click', nameClearLogButton, clearLog);
     jQuery(document).on('click', 'button:contains("Reset")', clearABSettings);
-    jQuery(document).on('click', '#calc_bin_price', findMinBin);
+    jQuery(document).on('click', nameCalcBinPrice, findMinBin);
 
 
     jQuery(document).on({
         mouseenter: function () {
-            jQuery("#preserve_changes").addClass("hover");
+            jQuery(namePreserveChanges).addClass("hover");
         },
         mouseleave: function () {
-            jQuery("#preserve_changes").removeClass("hover");
+            jQuery(namePreserveChanges).removeClass("hover");
         },
         click: function () {
             saveDetails()
         }
-    }, "#preserve_changes");
+    }, namePreserveChanges);
 
     jQuery(document).on({
         mouseenter: function () {
-            jQuery("#test_notification").addClass("hover");
+            jQuery(nameTestNotification).addClass("hover");
         },
         mouseleave: function () {
-            jQuery("#test_notification").removeClass("hover");
+            jQuery(nameTestNotification).removeClass("hover");
         },
         click: function () {
-            let bot_token = jQuery('#telegram_bot_token').val();
-            let bot_chatID = jQuery('#telegram_chat_id').val();
+            let bot_token = jQuery(nameTelegramBotToken).val();
+            let bot_chatID = jQuery(nameTelegramChatId).val();
             let message = "Test Notification Arrived";
             if (bot_token && bot_chatID) {
                 let url = 'https://api.telegram.org/bot' + bot_token +
@@ -1238,149 +1295,149 @@
             }
             window.notify("Test Notification Sent");
         }
-    }, "#test_notification");
+    }, nameTestNotification);
 
     window.setFilters = function () {
         window.selectedFilters = $('select[name=selectedFilters]').val() || [];
         if (window.selectedFilters.length) {
-            jQuery('#select-filterCount').text('(' + window.selectedFilters.length + ') Filter Selected');
+            jQuery(nameSelectFilterCount).text('(' + window.selectedFilters.length + ') Filter Selected');
         } else {
-            jQuery('#select-filterCount').text('No Filter Selected');
+            jQuery(nameSelectFilterCount).text('No Filter Selected');
         }
     }
 
     jQuery(document).on({
         mouseenter: function () {
-            jQuery("#delete_filter").addClass("hover");
+            jQuery(nameDeleteFilter).addClass("hover");
         },
         mouseleave: function () {
-            jQuery("#delete_filter").removeClass("hover");
+            jQuery(nameDeleteFilter).removeClass("hover");
         },
         click: function () {
             deleteFilter()
         }
-    }, "#delete_filter");
+    }, nameDeleteFilter);
 
     jQuery(document).on({
         change: function () {
             loadFilter()
         }
-    }, "#filter-dropdown");
+    }, nameFilterDropdown);
 
     jQuery(document).on({
         click: function () {
             setFilters();
         },
-    }, "#selected-filters");
+    }, nameSelectedFilter);
 
     window.toggleBidExact = function () {
         if (window.bidExact) {
             window.bidExact = false;
-            jQuery("#ab_bid_exact").removeClass("toggled");
+            jQuery(nameAbBidExact).removeClass("toggled");
         } else {
             window.bidExact = true;
-            jQuery("#ab_bid_exact").addClass("toggled");
+            jQuery(nameAbBidExact).addClass("toggled");
         }
     };
 
     window.toggleUseRandMinBid = function () {
         if (window.useRandMinBid) {
             window.useRandMinBid = false;
-            jQuery("#ab_rand_min_bid_toggle").removeClass("toggled");
+            jQuery(nameAbRandMinBidToggle).removeClass("toggled");
         } else {
             window.useRandMinBid = true;
-            jQuery("#ab_rand_min_bid_toggle").addClass("toggled");
+            jQuery(nameAbRandMinBidToggle).addClass("toggled");
         }
     };
 
     window.toggleAddDelayAfterBuy = function () {
         if (window.addDelayAfterBuy) {
             window.addDelayAfterBuy = false;
-            jQuery("#ab_add_buy_delay").removeClass("toggled");
+            jQuery(nameAbAddBuyDelay).removeClass("toggled");
         } else {
             window.addDelayAfterBuy = true;
-            jQuery("#ab_add_buy_delay").addClass("toggled");
+            jQuery(nameAbAddBuyDelay).addClass("toggled");
         }
     };
 
     window.toggleUseRandMinBuy = function () {
         if (window.useRandMinBuy) {
             window.useRandMinBuy = false;
-            jQuery("#ab_rand_min_buy_toggle").removeClass("toggled");
+            jQuery(nameAbRandMinBuyToggle).removeClass("toggled");
         } else {
             window.useRandMinBuy = true;
-            jQuery("#ab_rand_min_buy_toggle").addClass("toggled");
+            jQuery(nameAbRandMinBuyToggle).addClass("toggled");
         }
     };
 
     window.toggleRelist = function () {
         if (window.reListEnabled) {
             window.reListEnabled = false;
-            jQuery("#ab_sell_toggle").removeClass("toggled");
+            jQuery(nameAbSellToggle).removeClass("toggled");
         } else {
             alert("Re-listing will list all the cards in the transfer list not only the card which bought by the tool. " +
                 "Check the transfer list once and move the required cards to your club to avoid losing any required cards.")
 
             window.reListEnabled = true;
-            jQuery("#ab_sell_toggle").addClass("toggled");
+            jQuery(nameAbSellToggle).addClass("toggled");
         }
     }
 
     window.toggleCloseTab = function () {
         if (window.captchaCloseTab) {
             window.captchaCloseTab = false;
-            jQuery("#ab_close_tab_toggle").removeClass("toggled");
+            jQuery(nameAbCloseTabToggle).removeClass("toggled");
         } else {
             window.captchaCloseTab = true;
-            jQuery("#ab_close_tab_toggle").addClass("toggled");
+            jQuery(nameAbCloseTabToggle).addClass("toggled");
         }
     }
 
     window.toggleSolveCaptcha = function () {
         if (window.solveCaptcha) {
             window.solveCaptcha = false;
-            jQuery("#ab_solve_captcha").removeClass("toggled");
+            jQuery(nameAbSolveCaptcha).removeClass("toggled");
         } else {
             window.solveCaptcha = true;
-            jQuery("#ab_solve_captcha").addClass("toggled");
+            jQuery(nameAbSolveCaptcha).addClass("toggled");
         }
     }
 
     window.toggleSound = function () {
         if (window.soundEnabled) {
             window.soundEnabled = false;
-            jQuery("#ab_sound_toggle").removeClass("toggled");
+            jQuery(nameAbSoundToggle).removeClass("toggled");
         } else {
             window.soundEnabled = true;
-            jQuery("#ab_sound_toggle").addClass("toggled");
+            jQuery(nameAbSoundToggle).addClass("toggled");
         }
     }
 
     window.toggleMessageNotification = function () {
         if (window.notificationEnabled) {
             window.notificationEnabled = false;
-            jQuery("#ab_message_notification_toggle").removeClass("toggled");
+            jQuery(nameAbMessageNotificationToggle).removeClass("toggled");
         } else {
             window.notificationEnabled = true;
-            jQuery("#ab_message_notification_toggle").addClass("toggled");
+            jQuery(nameAbMessageNotificationToggle).addClass("toggled");
         }
     }
 
 
-    jQuery(document).on('click', '#ab_bid_exact', toggleBidExact);
-    jQuery(document).on('click', '#ab_sell_toggle', toggleRelist);
+    jQuery(document).on('click', nameAbBidExact, toggleBidExact);
+    jQuery(document).on('click', nameAbSellToggle, toggleRelist);
 
-    jQuery(document).on('click', '#ab_rand_min_bid_toggle', toggleUseRandMinBid);
-    jQuery(document).on('click', '#ab_add_buy_delay', toggleAddDelayAfterBuy);
-    jQuery(document).on('click', '#ab_rand_min_buy_toggle', toggleUseRandMinBuy);
-    jQuery(document).on('click', '#ab_close_tab_toggle', toggleCloseTab);
-    jQuery(document).on('click', '#ab_sound_toggle', toggleSound);
-    jQuery(document).on('click', '#ab_message_notification_toggle', toggleMessageNotification);
-    //jQuery(document).on('click', '#ab_solve_captcha', toggleSolveCaptcha);
+    jQuery(document).on('click', nameAbRandMinBidToggle, toggleUseRandMinBid);
+    jQuery(document).on('click', nameAbAddBuyDelay, toggleAddDelayAfterBuy);
+    jQuery(document).on('click', nameAbRandMinBuyToggle, toggleUseRandMinBuy);
+    jQuery(document).on('click', nameAbCloseTabToggle, toggleCloseTab);
+    jQuery(document).on('click', nameAbSoundToggle, toggleSound);
+    jQuery(document).on('click', nameAbMessageNotificationToggle, toggleMessageNotification);
+    //jQuery(document).on('click', 'nameAbSolveCaptcha', toggleSolveCaptcha);
 
 
-    jQuery(document).on('keyup', '#ab_sell_price', function () {
-        jQuery('#sell_after_tax').html((jQuery('#ab_sell_price').val() - ((parseInt(jQuery('#ab_sell_price').val()) / 100) * 5)).toLocaleString());
+    jQuery(document).on('keyup', nameAbSellPrice, function () {
+        jQuery(nameSellAfterTax).html((jQuery(nameAbSellPrice).val() - ((parseInt(jQuery(nameAbSellPrice).val()) / 100) * 5)).toLocaleString());
     });
 
     window.updateAutoTransferListStat = function () {
@@ -1397,7 +1454,7 @@
 
     window.writeToLog = function (message) {
         let time_txt = '[' + new Date().toLocaleTimeString() + '] '
-        var $log = jQuery('#progressAutobuyer');
+        var $log = jQuery(nameProgressAutobuyer);
         if ($log.val() == '') {
             let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
             let log_init_text = 'Autobuyer Ready\n' +
@@ -1412,7 +1469,7 @@
     };
 
     window.writeToDebugLog = function (message) {
-        var $log = jQuery('#autoBuyerFoundLog');
+        var $log = jQuery(nameAutoBuyerFoundLog);
         message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
         $log.val($log.val() + message);
         $log.scrollTop($log[0].scrollHeight);
@@ -1427,8 +1484,8 @@
         var addedTime = 0;
 
         var wait = [7, 15];
-        if (jQuery('#ab_wait_time').val()) {
-            wait = jQuery('#ab_wait_time').val().split('-').map(a => parseInt(a));
+        if (jQuery(nameAbWaitTime).val()) {
+            wait = jQuery(nameAbWaitTime).val().split('-').map(a => parseInt(a));
         }
         window.searchCount++;
         return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000);
@@ -1441,34 +1498,34 @@
     };
 
     window.updateStatistics = function () {
-        jQuery('#ab_search_progress').css('width', window.getTimerProgress(window.timers.search));
-        jQuery('#ab_statistics_progress').css('width', window.getTimerProgress(window.timers.transferList));
+        jQuery(nameAbSearchProgress).css('width', window.getTimerProgress(window.timers.search));
+        jQuery(nameAbStatisticsProgress).css('width', window.getTimerProgress(window.timers.transferList));
 
-        jQuery('#ab_request_count').html(window.searchCount);
+        jQuery(nameAbRequestCount).html(window.searchCount);
 
-        jQuery('#ab_coins').html(window.futStatistics.coins);
+        jQuery(nameAbCoins).html(window.futStatistics.coins);
 
         if (window.autoBuyerActive) {
-            jQuery('#ab_status').css('color', '#2cbe2d').html('RUNNING');
+            jQuery(nameAbStatus).css('color', '#2cbe2d').html('RUNNING');
         } else {
-            jQuery('#ab_status').css('color', 'red').html('IDLE');
+            jQuery(nameAbStatus).css('color', 'red').html('IDLE');
         }
 
-        jQuery('#ab-sold-items').html(window.futStatistics.soldItems);
-        jQuery('#ab-unsold-items').html(window.futStatistics.unsoldItems);
-        jQuery('#ab-available-items').html(window.futStatistics.availableItems);
-        jQuery('#ab-active-transfers').html(window.futStatistics.activeTransfers);
+        jQuery(nameAbSoldItems).html(window.futStatistics.soldItems);
+        jQuery(nameAbUnsoldItems).html(window.futStatistics.unsoldItems);
+        jQuery(nameAbAvailableItems).html(window.futStatistics.availableItems);
+        jQuery(nameAbActiveTransfers).html(window.futStatistics.activeTransfers);
 
         if (window.futStatistics.unsoldItems) {
-            jQuery('#ab-unsold-items').css('color', 'red');
+            jQuery(nameAbUnsoldItems).css('color', 'red');
         } else {
-            jQuery('#ab-unsold-items').css('color', '');
+            jQuery(nameAbUnsoldItems).css('color', '');
         }
 
         if (window.futStatistics.availableItems) {
-            jQuery('#ab-available-items').css('color', 'orange');
+            jQuery(nameAbAvailableItems).css('color', 'orange');
         } else {
-            jQuery('#ab-available-items').css('color', '');
+            jQuery(nameAbAvailableItems).css('color', '');
         }
     };
 
@@ -1590,8 +1647,8 @@
 
     window.stopIfRequired = function () {
         var stopAfter = "1H";
-        if ($('#ab_stop_after').val()) {
-            stopAfter = $('#ab_stop_after').val();
+        if ($(nameAbStopAfter).val()) {
+            stopAfter = $(nameAbStopAfter).val();
         }
         let interval = stopAfter[stopAfter.length - 1].toUpperCase();
         let time = parseInt(stopAfter.substring(0, stopAfter.length - 1));
@@ -1617,8 +1674,8 @@
     window.pauseIfRequired = function () {
         if (window.searchCountBeforePause <= 0) {
             var pauseFor = "0-0S";
-            if ($('#ab_pause_for').val()) {
-                pauseFor = $('#ab_pause_for').val();
+            if ($(nameAbPauseFor).val()) {
+                pauseFor = $(nameAbPauseFor).val();
             }
             let interval = pauseFor[pauseFor.length - 1].toUpperCase();
             let time = pauseFor.substring(0, pauseFor.length - 1);
@@ -1662,8 +1719,8 @@
         }
 
         if (!window.eachFilterSearch) {
-            if (jQuery('#ab_number_filter_search').val() !== '') {
-                window.eachFilterSearch = parseInt(jQuery('#ab_number_filter_search').val());
+            if (jQuery(nameAbNumberFilterSearch).val() !== '') {
+                window.eachFilterSearch = parseInt(jQuery(nameAbNumberFilterSearch).val());
             }
             else {
                 window.eachFilterSearch = 1
@@ -1677,10 +1734,10 @@
         services.Item.clearTransferMarketCache();
 
         var expiresIn = 3600;
-        if ($('#ab_item_expiring').val() !== '') {
+        if ($(nameAbItemExpiring).val() !== '') {
             var expiresInString = "1H";
-            if ($('#ab_item_expiring').val()) {
-                expiresInString = $('#ab_item_expiring').val();
+            if ($(nameAbItemExpiring).val()) {
+                expiresInString = $(nameAbItemExpiring).val();
             }
             let expiresInterval = expiresInString[expiresInString.length - 1].toUpperCase();
             let expiresInTime = parseInt(expiresInString.substring(0, expiresInString.length - 1));
@@ -1693,14 +1750,14 @@
 
         // Randomize search criteria min bid to clear cache
         if (window.useRandMinBid) {
-            let user_min_bid_txt = $('#ab_rand_min_bid_input').val();
+            let user_min_bid_txt = $(nameAbRandMinBidInput).val();
             if (user_min_bid_txt == '') { user_min_bid_txt = '300' }
             let user_min_bid = Math.round(parseInt(user_min_bid_txt));
             searchCriteria.minBid = window.fixRandomPrice(window.getRandNum(0, user_min_bid));
             window.currentPage = 1;
         }
         if (window.useRandMinBuy) {
-            let user_min_buy_txt = $('#ab_rand_min_buy_input').val();
+            let user_min_buy_txt = $(nameAbRandMinBuyInput).val();
             if (user_min_buy_txt == '') { user_min_buy_txt = '300' }
             let user_min_buy = Math.round(parseInt(user_min_buy_txt));
             searchCriteria.minBuy = window.fixRandomPrice(window.getRandNum(0, user_min_buy));
@@ -1714,8 +1771,8 @@
         window.mbid = searchCriteria.minBid;
         window.mBuy = searchCriteria.minBuy;
 
-        if ($('#ab_card_count').val() !== '') {
-            window.buyCardCount = parseInt(jQuery('#ab_card_count').val());
+        if ($(nameAbCardCount).val() !== '') {
+            window.buyCardCount = parseInt(jQuery(nameAbCardCount).val());
         } else {
             window.buyCardCount = undefined;
         }
@@ -1725,8 +1782,8 @@
                 (window.currentPage === 1) && sendPinEvents("Transfer Market Results - List View");
                 window.searchCountBeforePause--;
 
-                let min_rate_txt = jQuery('#ab_min_rate').val();
-                let max_rate_txt = jQuery('#ab_max_rate').val();
+                let min_rate_txt = jQuery(nameAbMinRate).val();
+                let max_rate_txt = jQuery(nameAbMaxRate).val();
                 if (min_rate_txt == '') {
                     min_rate_txt = "10"
                 }
@@ -1739,8 +1796,8 @@
                 writeToDebugLog('= Received ' + response.data.items.length + ' items - from page (' + window.currentPage + ')  =>  config: (minbid:' + window.mbid + '-minbuy:' + window.mBuy + ') ');
 
                 var maxPurchases = 3;
-                if ($('#ab_max_purchases').val() !== '') {
-                    maxPurchases = Math.max(1, parseInt($('#ab_max_purchases').val()));
+                if ($(nameAbMaxPurchases).val() !== '') {
+                    maxPurchases = Math.max(1, parseInt($(nameAbMaxPurchases).val()));
                 }
                 if (window.currentPage <= 20 && response.data.items.length === 21) {
                     window.currentPage++;
@@ -1777,14 +1834,14 @@
                     let buyNowPrice = auction.buyNowPrice;
                     let currentBid = auction.currentBid || auction.startingBid;
                     let isBid = auction.currentBid;
-                    let bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
+                    let bidPrice = parseInt(jQuery(nameAbMaxBid).val());
 
 
                     let priceToBid = (window.bidExact) ? bidPrice : ((isBid) ? window.getSellBidPrice(bidPrice) : bidPrice);
                     let checkPrice = (window.bidExact) ? priceToBid : ((isBid) ? window.getBuyBidPrice(currentBid) : currentBid);
-                    let userBuyNowPrice = parseInt(jQuery('#ab_buy_price').val());
+                    let userBuyNowPrice = parseInt(jQuery(nameAbBuyPrice).val());
 
-                    var sellPrice = parseInt(jQuery('#ab_sell_price').val());
+                    var sellPrice = parseInt(jQuery(nameAbSellPrice).val());
 
                     let bid_buy_txt = "(bid: " + window.format_string(currentBid.toString(), 6) + " / buy:" + window.format_string(buyNowPrice.toString(), 7) + ")"
                     let player_name = window.getItemName(player);
@@ -1916,9 +1973,9 @@
 
         services.Item.requestWatchedItems().observe(this, function (t, response) {
 
-            var bidPrice = parseInt(jQuery('#ab_max_bid_price').val());
+            var bidPrice = parseInt(jQuery(nameAbMaxBid).val());
 
-            var sellPrice = parseInt(jQuery('#ab_sell_price').val());
+            var sellPrice = parseInt(jQuery(nameAbSellPrice).val());
 
             let activeItems = response.data.items.filter(function (item) {
                 return item._auction && item._auction._tradeState === "active";
@@ -2013,7 +2070,7 @@
                     }));
                 }
 
-                if (jQuery('#telegram_buy').val() == 'B' || jQuery('#telegram_buy').val() == 'A') {
+                if (jQuery(nameTelegramBuy).val() == 'B' || jQuery(nameTelegramBuy).val() == 'A') {
                     window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |');
                 }
 
@@ -2021,12 +2078,12 @@
                 window.lossCount++;
                 let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
                 writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
-                if (jQuery('#telegram_buy').val() == 'L' || jQuery('#telegram_buy').val() == 'A') {
+                if (jQuery(nameTelegramBuy).val() == 'L' || jQuery(nameTelegramBuy).val() == 'A') {
                     window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
                 }
 
-                if (jQuery('#ab_stop_error_codes').val()) {
-                    var errorCodes = jQuery('#ab_stop_error_codes').val().split(",");
+                if (jQuery(nameAbStopErrorCode).val()) {
+                    var errorCodes = jQuery(nameAbStopErrorCode).val().split(",");
 
                     if (errorCodes.indexOf(data.status + "") != -1) {
                         writeToLog('------------------------------------------------------------------------------------------');
@@ -2129,8 +2186,8 @@
             }
 
             var minSoldCount = 10;
-            if ($('#ab_min_delete_count').val() !== '') {
-                minSoldCount = Math.max(1, parseInt($('#ab_min_delete_count').val()));
+            if ($(nameAbMinDeleteCount).val() !== '') {
+                minSoldCount = Math.max(1, parseInt($(nameAbMinDeleteCount).val()));
             }
 
             if (window.futStatistics.soldItems >= minSoldCount) {

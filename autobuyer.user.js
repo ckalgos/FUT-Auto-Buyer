@@ -631,7 +631,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                     '           <div class="view-navbar-clubinfo-name">' +
                     '               <div style="float: left;">Statistics:</div>' +
                     '               <div style="float: right; height: 10px; width: 100px; background: #888; margin: 5px 0px 5px 5px;">' +
-                    '                   <div id="' + nameAbStatus.substring(1) + '" style="background: #000; height: 10px; width: 0%"></div>' +
+                    '                   <div id="' + nameAbStatisticsProgress.substring(1) + '" style="background: #000; height: 10px; width: 0%"></div>' +
                     '               </div>' +
                     '           </div>' +
                     '       </div>' +
@@ -642,7 +642,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                     '   <div class="view-navbar-clubinfo">' +
                     '       <div class="view-navbar-clubinfo-data">' +
                     '           <span class="view-navbar-clubinfo-name">Sold Items: <span id="' + nameAbSoldItems.substring(1) + '"></span></span>' +
-                    '           <span class="view-navbar-clubinfo-name">Unsold Items: <span id="' + nameAbUnsoldItems.substring(1) + 'x"></span></span>' +
+                    '           <span class="view-navbar-clubinfo-name">Unsold Items: <span id="' + nameAbUnsoldItems.substring(1) + '"></span></span>' +
                     '       </div>' +
                     '   </div>' +
                     '   <div class="view-navbar-clubinfo" style="border: none;">' +

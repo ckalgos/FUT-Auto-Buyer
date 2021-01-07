@@ -658,7 +658,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                     '</div>'
                 );
 
-                jQuery(view.__root.parentElement).append('<div id="' + nameSearchWrapper.substring(1) + '" style="width: 50%; right: 50%;"><textarea readonly id="' + nameProgressAutobuyer.substring(1) + '" style="font-size: 15px; width: 100%;height: 58%;background-color:#141414;color:#e2dde2;"></textarea><label>Search Results:</label><br/><textarea readonly id="' + nameAutoBuyerFoundLog.substring(1) + '" style="font-size: 10px; width: 100%;height: 38%;background-color:#141414;color:#e2dde2;"></textarea></div>');
+                jQuery(view.__root.parentElement).append('<div id="' + nameSearchWrapper.substring(1) + '" style="width: 50%; right: 50%;"><textarea readonly id="' + nameProgressAutobuyer.substring(1) + '" style="font-size: 15px; width: 100%;height: 58%;background-color:#141414;color:#e2dde2;"></textarea><label>Search Results:</label><br/><textarea readonly id="' + nameAutoBuyerFoundLog.substring(1) + '" style="font-size: 10px; width: 100%;height: 37%;background-color:#141414;color:#e2dde2;"></textarea></div>');
 
                 var $log = jQuery(nameProgressAutobuyer);
                 if ($log.val() == '') {

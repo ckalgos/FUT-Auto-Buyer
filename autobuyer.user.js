@@ -178,7 +178,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
         }
 
         if (settingsJson.abSettings.minDeleteCount) {
-            jQuery().val(settingsJson.abSettings.minDeleteCount);
+            jQuery(nameAbMinDeleteCount).val(settingsJson.abSettings.minDeleteCount);
         }
 
         if (settingsJson.abSettings.reListEnabled) {
@@ -618,6 +618,10 @@ var nameFilterDropdown = '#elem_' + makeid(15),
             if (!jQuery('.SearchWrapper').length) {
                 var view = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._view;
                 jQuery(view.__root.parentElement).prepend(
+                    '<style>' +
+                        '.ut-navigation-container-view--content>* { height: calc(100% - 4rem); }' +
+                        '.ut-content-container .ut-content { max-height: none !important; }' +
+                    '</style>' +
                     '<div id="' + nameInfoWrapper.substring(1) + '" class="ut-navigation-bar-view navbar-style-landscape">' +
                     '   <h1 class="title">AUTOBUYER STATUS: <span id="' + nameAbStatus.substring(1) + '"></span> | REQUEST COUNT: <span id="' + nameAbRequestCount.substring(1) + '">0</span></h1>' +
                     '   <div class="view-navbar-clubinfo">' +
@@ -654,7 +658,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                     '</div>'
                 );
 
-                jQuery(view.__root.parentElement).append('<div id="' + nameSearchWrapper.substring(1) + '" style="width: 50%; right: 50%"><textarea readonly id="' + nameProgressAutobuyer.substring(1) + '" style="font-size: 15px; width: 100%;height: 58%;background-color:#141414;color:#e2dde2;"></textarea><label>Search Results:</label><br/><textarea readonly id="' + nameAutoBuyerFoundLog.substring(1) + '" style="font-size: 10px; width: 100%;height: 26%;background-color:#141414;color:#e2dde2;"></textarea></div>');
+                jQuery(view.__root.parentElement).append('<div id="' + nameSearchWrapper.substring(1) + '" style="width: 50%; right: 50%;"><textarea readonly id="' + nameProgressAutobuyer.substring(1) + '" style="font-size: 15px; width: 100%;height: 58%;background-color:#141414;color:#e2dde2;"></textarea><label>Search Results:</label><br/><textarea readonly id="' + nameAutoBuyerFoundLog.substring(1) + '" style="font-size: 10px; width: 100%;height: 37%;background-color:#141414;color:#e2dde2;"></textarea></div>');
 
                 var $log = jQuery(nameProgressAutobuyer);
                 if ($log.val() == '') {
@@ -1120,7 +1124,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
             }
 
             if (jQuery(nameAbWaitTime).val() !== '') {
-                settingsJson.abSettings.waitTime = jQuery().val();
+                settingsJson.abSettings.waitTime = jQuery(nameAbWaitTime).val();
             }
 
             if (jQuery(nameAbMaxPurchases).val() !== '') {

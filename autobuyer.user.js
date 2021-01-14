@@ -112,8 +112,12 @@ var nameFilterDropdown = '#elem_' + makeid(15),
     nameAbStopErrorCode = '#elem_' + makeid(15),
     nameSearchWrapper = '#elem_' + makeid(15),
     nameWinMp3 = '#elem_' + makeid(15),
-    nameCapatchaMp3 = '#elem_' + makeid(15);
-
+    nameCapatchaMp3 = '#elem_' + makeid(15),
+    nameProxyAddress = '#elem_' + makeid(15),
+    nameProxyPort = '#elem_' + makeid(15),
+    nameProxyLogin = '#elem_' + makeid(15),
+    nameAntiCaptchKey = '#elem_' + makeid(15),
+    nameProxyPassword = '#elem_' + makeid(15);
 
     window.loadFilter = function () {
         var filterName = $('select[name=filters] option').filter(':selected').val();
@@ -252,6 +256,27 @@ var nameFilterDropdown = '#elem_' + makeid(15),
             jQuery(nameAbSoundToggle).addClass("toggled");
         }
 
+        if (settingsJson.abSettings.autoSolveCaptcha) {
+            window.autoSolveCaptcha = settingsJson.abSettings.autoSolveCaptcha;
+            jQuery(nameAbSolveCaptcha).addClass("toggled");
+        }
+
+        if (settingsJson.abSettings.proxyAddress) {
+            jQuery(nameProxyAddress).val(settingsJson.abSettings.proxyAddress);
+        }
+        if (settingsJson.abSettings.proxyPort) {
+            jQuery(nameProxyPort).val(settingsJson.abSettings.proxyPort);
+        }
+        if (settingsJson.abSettings.proxyUserName) {
+            jQuery(nameProxyLogin).val(settingsJson.abSettings.proxyUserName);
+        }
+        if (settingsJson.abSettings.proxyUserPassword) {
+            jQuery(nameProxyPassword).val(settingsJson.abSettings.proxyUserPassword);
+        }
+        if (settingsJson.abSettings.antiCaptchKey) {
+            jQuery(nameAntiCaptchKey).val(settingsJson.abSettings.antiCaptchKey);
+        } 
+
         if (settingsJson.abSettings.telegramBotToken) {
             jQuery(nameTelegramBotToken).val(settingsJson.abSettings.telegramBotToken);
         }
@@ -260,7 +285,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
         }
         if (settingsJson.abSettings.telegramBuy) {
             jQuery(nameTelegramBuy).val(settingsJson.abSettings.telegramBuy);
-        }
+        } 
 
         let savedCriteria = settingsJson.searchCriteria || {};
 
@@ -682,6 +707,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '</div>' +
                         '<div style="width:50%;margin-top: 1%;" class="button-container">' +
                         '<button style="width:50%" class="btn-standard call-to-action" id="' + nameDeleteFilter.substring(1) + '">Delete Filter</button>' +
+                        '<button style="width:100%" class="btn-standard call-to-action" id="' + namePreserveChanges.substring(1) + '">Save Filter</button>' + 
                         '</div> </div>');
                     jQuery('.search-prices').first().append(
                         '<div><br></div>' +
@@ -939,6 +965,68 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
+                        '<div style="width: 100%;" class="price-filter">' +
+                        '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                        '       <span class="ut-toggle-cell-view--label">Auto Solve Captcha</span>' +
+                        '           <div id="' + nameAbSolveCaptcha.substring(1) + '" class="ut-toggle-control">' +
+                        '           <div class="ut-toggle-control--track">' +
+                        '           </div>' +
+                        '           <div class= "ut-toggle-control--grip" >' +
+                        '           </div>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Anti-Captcha Key' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="' + nameAntiCaptchKey.substring(1) + '" style="text-transform: none;">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Proxy Address' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="' + nameProxyAddress.substring(1) + '" style="text-transform: none;">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Proxy Port' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="' + nameProxyPort.substring(1) + '" style="text-transform: none;">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Proxy User Name (Optional)' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="' + nameProxyLogin.substring(1) + '" style="text-transform: none;">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div class="info">' +
+                        '       <span class="secondary label">Proxy User Password (Optional)' +
+                        '   </div>' +
+                        '   <div class="buttonInfo">' +
+                        '       <div class="inputBox">' +
+                        '           <input type="text" class="numericInput" id="' + nameProxyPassword.substring(1) + '" style="text-transform: none;">' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+
                         '<div><br></div>' +
                         '<hr>' +
                         '<div class="search-price-header">' +
@@ -961,7 +1049,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="' + nameTelegramBotToken.substring(1) + '">' +
+                        '           <input type="text" class="numericInput" id="' + nameTelegramBotToken.substring(1) + '" style="text-transform: none;">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -971,7 +1059,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="' + nameTelegramChatId.substring(1) + '">' +
+                        '           <input type="text" class="numericInput" id="' + nameTelegramChatId.substring(1) + '" style="text-transform: none;">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -981,7 +1069,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '   </div>' +
                         '   <div class="buttonInfo">' +
                         '       <div class="inputBox">' +
-                        '           <input type="text" class="numericInput" id="' + nameTelegramBuy.substring(1) + '">' +
+                        '           <input type="text" class="numericInput" id="' + nameTelegramBuy.substring(1) + '" style="text-transform: none;">' +
                         '       </div>' +
                         '   </div>' +
                         '</div>' +
@@ -1000,13 +1088,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="' + nameTestNotification.substring(1) + '">Test Notification</button>' +
                         '</div>' +
-                        '<div><br></div>' +
-                        '<hr>' +
-                        '<div class="button-container">' +
-                        '    <button class="btn-standard call-to-action" id="' + namePreserveChanges.substring(1) + '">Save Filter</button>' +
-                        '</div>' +
-                        '<div><br></div>' +
-                        '<hr>' +
+                        '<div><br></div>' + 
                         '<div class="search-price-header">' +
                         '   <h1 class="secondary">Multi-Filter settings:</h1>' +
                         '</div>' +
@@ -1191,6 +1273,26 @@ var nameFilterDropdown = '#elem_' + makeid(15),
             if (window.captchaCloseTab) {
                 settingsJson.abSettings.captchaCloseTab = window.captchaCloseTab;
             }
+
+            if (window.autoSolveCaptcha) {
+                settingsJson.abSettings.autoSolveCaptcha = window.autoSolveCaptcha; 
+            }
+    
+            if (jQuery(nameProxyAddress).val() !== '') {
+                settingsJson.abSettings.proxyAddress = jQuery(nameProxyAddress).val();
+            }
+            if (jQuery(nameProxyPort).val() !== '') {
+                settingsJson.abSettings.proxyPort = jQuery(nameProxyPort).val();
+            }
+            if (jQuery(nameProxyLogin).val() !== '') {
+                settingsJson.abSettings.proxyUserName = jQuery(nameProxyLogin).val();
+            }
+            if (jQuery(nameProxyPassword).val() !== '') {
+                settingsJson.abSettings.proxyUserPassword = jQuery(nameProxyPassword).val();
+            }
+            if (jQuery(nameAntiCaptchKey).val() !== '') {
+                settingsJson.abSettings.antiCaptchKey = jQuery(nameAntiCaptchKey).val();
+            } 
 
             var currentFilterName = $('select[name=filters] option').filter(':selected').val();
             if (currentFilterName === 'Choose filter to load') {
@@ -1408,11 +1510,11 @@ var nameFilterDropdown = '#elem_' + makeid(15),
     }
 
     window.toggleSolveCaptcha = function () {
-        if (window.solveCaptcha) {
-            window.solveCaptcha = false;
+        if (window.autoSolveCaptcha) {
+            window.autoSolveCaptcha = false;
             jQuery(nameAbSolveCaptcha).removeClass("toggled");
         } else {
-            window.solveCaptcha = true;
+            window.autoSolveCaptcha = true;
             jQuery(nameAbSolveCaptcha).addClass("toggled");
         }
     }
@@ -1447,7 +1549,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
     jQuery(document).on('click', nameAbCloseTabToggle, toggleCloseTab);
     jQuery(document).on('click', nameAbSoundToggle, toggleSound);
     jQuery(document).on('click', nameAbMessageNotificationToggle, toggleMessageNotification);
-    //jQuery(document).on('click', 'nameAbSolveCaptcha', toggleSolveCaptcha);
+    jQuery(document).on('click', nameAbSolveCaptcha, toggleSolveCaptcha);
 
 
     jQuery(document).on('keyup', nameAbSellPrice, function () {
@@ -1951,16 +2053,15 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                 }
             } else if (!response.success) {
                 if (response.status == HttpStatusCode.CAPTCHA_REQUIRED) {
-
-                    window.sendNotificationToUser('Captcha, please solve the problem so that the bot can work again.');
-
-                    if (window.captchaCloseTab) {
-                        window.location.href = "about:blank";
-                        return;
+                    if (window.autoSolveCaptcha) {
+                        writeToLog('------------------------------------------------------------------------------------------');
+                        writeToLog('[!!!] Captcha got triggered, trying to solve it');
+                        writeToLog('------------------------------------------------------------------------------------------');
+                        window.solveCaptcha();
                     }
-                    writeToLog('------------------------------------------------------------------------------------------');
-                    writeToLog('[!!!] Autostopping bot since Captcha got triggered');
-                    writeToLog('------------------------------------------------------------------------------------------');
+                    else {
+                        window.showCaptchaLogs();
+                    }
                 } else {
                     writeToLog('------------------------------------------------------------------------------------------');
                     writeToLog('[!!!] Autostopping bot as search failed, please check if you can access transfer market in Web App');
@@ -1972,6 +2073,117 @@ var nameFilterDropdown = '#elem_' + makeid(15),
             }
         }));
     };
+
+    window.showCaptchaLogs = function() {
+        
+        window.sendNotificationToUser('Captcha, please solve the problem so that the bot can work again.');
+
+        if (window.captchaCloseTab) {
+            window.location.href = "about:blank";
+            return;
+        }
+        writeToLog('------------------------------------------------------------------------------------------');
+        writeToLog('[!!!] Autostopping bot since Captcha got triggered');
+        writeToLog('------------------------------------------------------------------------------------------');
+    }
+
+    window.solveCaptcha = function () {
+        var apikey = jQuery(nameAntiCaptchKey).val();
+        var websiteURL = "https://www.ea.com/fifa/ultimate-team/web-app/";
+        var websitePublicKey = "A4EECF77-AC87-8C8D-5754-BF882F72063B"; 
+        
+        var proxyAddress = jQuery(nameProxyAddress).val();
+        var proxyPort =jQuery(nameProxyPort).val();
+        var proxyLogin = jQuery(nameProxyLogin).val();
+        var proxyPassword = jQuery(nameProxyPassword).val();
+
+        if(!proxyAddress || !proxyPort || !apikey){
+            writeToLog('Proxy info not filled properly');
+            window.showCaptchaLogs();
+            return;
+        }
+
+        function createTask() {
+            accessobjects.Captcha.getCaptchaData().observe(this, (function (sender, responseData) {
+                if (responseData.success) {
+
+                    var data = responseData.response.blob;
+                    if (!data) {
+                        return false;
+                    }
+
+                    let payload = {
+                        "clientKey": apikey,
+                        "task":
+                        {
+                            "type": "FunCaptchaTask",
+                            "websiteURL": websiteURL,
+                            "websitePublicKey": websitePublicKey,
+                            "funcaptchaApiJSSubdomain": "ea-api.arkoselabs.com",
+                            "data": responseData.response,
+                            "proxyType": "http",
+                            "proxyAddress": proxyAddress,
+                            "proxyPort": proxyPort,
+                            "proxyLogin": proxyLogin,
+                            "proxyPassword": proxyPassword,
+                            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"
+                        }
+                    };
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", 'https://api.anti-captcha.com/createTask', true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            var json = JSON.parse(xhr.responseText);
+                            if (json.errorId == 0) {
+                                getTaskResult(json.taskId);
+                            } else {
+                                writeToLog('Got error from Captcha API: ' + json.errorCode + ', ' + json.errorDescription);
+                            }
+                        }
+                    };
+                    var data = JSON.stringify(payload);
+                    xhr.send(data);
+                    return true;
+                }
+            }));
+        }
+
+        function getTaskResult(taskId) {
+            let payload = {
+                'clientKey': apikey,
+                'taskId': taskId
+            };
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", 'https://api.anti-captcha.com/getTaskResult', true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText); 
+                    if (json.errorId == 0) { //no errors
+                        if (json.status == 'ready') {
+                            let captchaModel = new UTCaptchaViewModel(accessobjects.Captcha);
+                            captchaModel.validateToken(json.solution.token).observe(this, (function (sender, response) {
+                                if (response.success) {
+                                    writeToLog("Captcha Solved");
+                                    window.activateAutoBuyer(true);
+                                }
+                            }));
+                        } else {
+                            setTimeout(() => getTaskResult(taskId), 1000);
+                        }
+                    } else {
+                        writeToLog('Error occured when checking captcha result : ' + json.errorCode + ', ' + json.errorDescription);
+                    }
+                }
+            };
+            var data = JSON.stringify(payload);
+            xhr.send(data);
+        }
+
+        createTask();
+    }
 
     window.fixRandomPrice = function (price) {
         let range = JSUtils.find(UTCurrencyInputControl.PRICE_TIERS, function (e) {

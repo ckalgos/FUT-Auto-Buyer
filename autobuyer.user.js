@@ -50,74 +50,75 @@
 
 
 // DIV names
-function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    function makeid(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
-    return result;
-}
-var nameFilterDropdown = '#elem_' + makeid(15),
-    nameSelectedFilter = '#elem_' + makeid(15),
-    nameAbBuyPrice = '#elem_' + makeid(15),
-    nameAbCardCount = '#elem_' + makeid(15),
-    nameAbMaxBid = '#elem_' + makeid(15),
-    nameAbItemExpiring = '#elem_' + makeid(15),
-    nameAbBidExact = '#elem_' + makeid(15),
-    nameAbSellPrice = '#elem_' + makeid(15),
-    nameAbMinDeleteCount = '#elem_' + makeid(15),
-    nameAbSellToggle = '#elem_' + makeid(15),
-    nameAbWaitTime = '#elem_' + makeid(15),
-    nameAbMaxPurchases = '#elem_' + makeid(15),
-    nameAbCycleAmount = '#elem_' + makeid(15),
-    nameAbPauseFor = '#elem_' + makeid(15),
-    nameAbStopAfter = '#elem_' + makeid(15),
-    nameAbMinRate = '#elem_' + makeid(15),
-    nameAbMaxRate = '#elem_' + makeid(15),
-    nameAbRandMinBidInput = '#elem_' + makeid(15),
-    nameAbRandMinBuyInput = '#elem_' + makeid(15),
-    nameAbRandMinBuyToggle = '#elem_' + makeid(15),
-    nameAbRandMinBidToggle = '#elem_' + makeid(15),
-    nameAbAddBuyDelay = '#elem_' + makeid(15),
-    nameAbCloseTabToggle = '#elem_' + makeid(15),
-    nameAbMessageNotificationToggle = '#elem_' + makeid(15),
-    nameAbSoundToggle = '#elem_' + makeid(15),
-    nameTelegramBotToken = '#elem_' + makeid(15),
-    nameTelegramChatId = '#elem_' + makeid(15),
-    nameTelegramBuy = '#elem_' + makeid(15),
-    nameProgressAutobuyer = '#elem_' + makeid(15),
-    nameAutoBuyerFoundLog = '#elem_' + makeid(15),
-    nameSearchCancelButton = '#elem_' + makeid(15),
-    nameInfoWrapper = '#elem_' + makeid(15),
-    namePreserveChanges = '#elem_' + makeid(15),
-    nameClearLogButton = '#elem_' + makeid(15),
-    nameCalcBinPrice = '#elem_' + makeid(15),
-    nameTestNotification = '#elem_' + makeid(15),
-    nameSelectFilterCount = '#elem_' + makeid(15),
-    nameDeleteFilter = '#elem_' + makeid(15),
-    nameAbSolveCaptcha = '#elem_' + makeid(15),
-    nameSellAfterTax = '#elem_' + makeid(15),
-    nameAbSearchProgress = '#elem_' + makeid(15),
-    nameAbStatisticsProgress = '#elem_' + makeid(15),
-    nameAbRequestCount = '#elem_' + makeid(15),
-    nameAbCoins = '#elem_' + makeid(15),
-    nameAbStatus = '#elem_' + makeid(15),
-    nameAbSoldItems = '#elem_' + makeid(15),
-    nameAbUnsoldItems = '#elem_' + makeid(15),
-    nameAbAvailableItems = '#elem_' + makeid(15),
-    nameAbActiveTransfers = '#elem_' + makeid(15),
-    nameAbNumberFilterSearch = '#elem_' + makeid(15),
-    nameAbStopErrorCode = '#elem_' + makeid(15),
-    nameSearchWrapper = '#elem_' + makeid(15),
-    nameWinMp3 = '#elem_' + makeid(15),
-    nameCapatchaMp3 = '#elem_' + makeid(15),
-    nameProxyAddress = '#elem_' + makeid(15),
-    nameProxyPort = '#elem_' + makeid(15),
-    nameProxyLogin = '#elem_' + makeid(15),
-    nameAntiCaptchKey = '#elem_' + makeid(15),
-    nameProxyPassword = '#elem_' + makeid(15);
+    var nameFilterDropdown = '#elem_' + makeid(15),
+        nameSelectedFilter = '#elem_' + makeid(15),
+        nameAbBuyPrice = '#elem_' + makeid(15),
+        nameAbCardCount = '#elem_' + makeid(15),
+        nameAbMaxBid = '#elem_' + makeid(15),
+        nameAbItemExpiring = '#elem_' + makeid(15),
+        nameAbBidExact = '#elem_' + makeid(15),
+        nameAbSellPrice = '#elem_' + makeid(15),
+        nameAbMinDeleteCount = '#elem_' + makeid(15),
+        nameAbSellToggle = '#elem_' + makeid(15),
+        nameAbWaitTime = '#elem_' + makeid(15),
+        nameAbMaxPurchases = '#elem_' + makeid(15),
+        nameAbCycleAmount = '#elem_' + makeid(15),
+        nameAbPauseFor = '#elem_' + makeid(15),
+        nameAbStopAfter = '#elem_' + makeid(15),
+        nameAbMinRate = '#elem_' + makeid(15),
+        nameAbMaxRate = '#elem_' + makeid(15),
+        nameAbRandMinBidInput = '#elem_' + makeid(15),
+        nameAbRandMinBuyInput = '#elem_' + makeid(15),
+        nameAbRandMinBuyToggle = '#elem_' + makeid(15),
+        nameAbRandMinBidToggle = '#elem_' + makeid(15),
+        nameAbAddBuyDelay = '#elem_' + makeid(15),
+        nameAbAddFilterGK = '#elem_' + makeid(15),
+        nameAbCloseTabToggle = '#elem_' + makeid(15),
+        nameAbMessageNotificationToggle = '#elem_' + makeid(15),
+        nameAbSoundToggle = '#elem_' + makeid(15),
+        nameTelegramBotToken = '#elem_' + makeid(15),
+        nameTelegramChatId = '#elem_' + makeid(15),
+        nameTelegramBuy = '#elem_' + makeid(15),
+        nameProgressAutobuyer = '#elem_' + makeid(15),
+        nameAutoBuyerFoundLog = '#elem_' + makeid(15),
+        nameSearchCancelButton = '#elem_' + makeid(15),
+        nameInfoWrapper = '#elem_' + makeid(15),
+        namePreserveChanges = '#elem_' + makeid(15),
+        nameClearLogButton = '#elem_' + makeid(15),
+        nameCalcBinPrice = '#elem_' + makeid(15),
+        nameTestNotification = '#elem_' + makeid(15),
+        nameSelectFilterCount = '#elem_' + makeid(15),
+        nameDeleteFilter = '#elem_' + makeid(15),
+        nameAbSolveCaptcha = '#elem_' + makeid(15),
+        nameSellAfterTax = '#elem_' + makeid(15),
+        nameAbSearchProgress = '#elem_' + makeid(15),
+        nameAbStatisticsProgress = '#elem_' + makeid(15),
+        nameAbRequestCount = '#elem_' + makeid(15),
+        nameAbCoins = '#elem_' + makeid(15),
+        nameAbStatus = '#elem_' + makeid(15),
+        nameAbSoldItems = '#elem_' + makeid(15),
+        nameAbUnsoldItems = '#elem_' + makeid(15),
+        nameAbAvailableItems = '#elem_' + makeid(15),
+        nameAbActiveTransfers = '#elem_' + makeid(15),
+        nameAbNumberFilterSearch = '#elem_' + makeid(15),
+        nameAbStopErrorCode = '#elem_' + makeid(15),
+        nameSearchWrapper = '#elem_' + makeid(15),
+        nameWinMp3 = '#elem_' + makeid(15),
+        nameCapatchaMp3 = '#elem_' + makeid(15),
+        nameProxyAddress = '#elem_' + makeid(15),
+        nameProxyPort = '#elem_' + makeid(15),
+        nameProxyLogin = '#elem_' + makeid(15),
+        nameAntiCaptchKey = '#elem_' + makeid(15),
+        nameProxyPassword = '#elem_' + makeid(15);
 
     window.loadFilter = function () {
         var filterName = $('select[name=filters] option').filter(':selected').val();
@@ -241,6 +242,11 @@ var nameFilterDropdown = '#elem_' + makeid(15),
             jQuery(nameAbAddBuyDelay).addClass("toggled");
         }
 
+        if (settingsJson.abSettings.addFilterGK) {
+            window.addFilterGK = settingsJson.abSettings.addFilterGK;
+            jQuery(nameAbAddFilterGK).addClass("toggled");
+        }
+
         if (settingsJson.abSettings.captchaCloseTab) {
             window.captchaCloseTab = settingsJson.abSettings.captchaCloseTab;
             jQuery(nameAbCloseTabToggle).addClass("toggled");
@@ -275,7 +281,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
         }
         if (settingsJson.abSettings.antiCaptchKey) {
             jQuery(nameAntiCaptchKey).val(settingsJson.abSettings.antiCaptchKey);
-        } 
+        }
 
         if (settingsJson.abSettings.telegramBotToken) {
             jQuery(nameTelegramBotToken).val(settingsJson.abSettings.telegramBotToken);
@@ -285,7 +291,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
         }
         if (settingsJson.abSettings.telegramBuy) {
             jQuery(nameTelegramBuy).val(settingsJson.abSettings.telegramBuy);
-        } 
+        }
 
         let savedCriteria = settingsJson.searchCriteria || {};
 
@@ -384,10 +390,10 @@ var nameFilterDropdown = '#elem_' + makeid(15),
 
     window.play_audio = function (event_type) {
         if (window.soundEnabled) {
-            var elem = document.getElementById("win_mp3");
+            var elem = document.getElementById(nameWinMp3.substring(1));
 
             if (event_type == "capatcha") {
-                elem = document.getElementById("capatcha_mp3");
+                elem = document.getElementById(nameCapatchaMp3.substring(1));
             }
 
             elem.currentTime = 0;
@@ -408,7 +414,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
         if (!this.initialized) {
             //getAppMain().superclass(),
             this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch),
-                this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
+            this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
 
             _searchViewModel = this._viewmodel;
 
@@ -424,8 +430,8 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                 view.addTarget(this, this._eMaxBidPriceChanged, UTMarketSearchFiltersView.Event.MAX_BID_PRICE_CHANGE),
                 view.addTarget(this, this._eMinBuyPriceChanged, UTMarketSearchFiltersView.Event.MIN_BUY_PRICE_CHANGE),
                 view.addTarget(this, this._eMaxBuyPriceChanged, UTMarketSearchFiltersView.Event.MAX_BUY_PRICE_CHANGE),
-                this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
-                    view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
+            this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
+                view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
                 this._squadContext ? isPhone() || view.addClass("narrow") : view.addClass("floating"),
                 view.getPlayerNameSearch().addTarget(this, this._ePlayerNameChanged, enums.Event.CHANGE),
                 view.__root.style = "width: 50%; float: left;";
@@ -644,8 +650,8 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                 var view = getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController()._view;
                 jQuery(view.__root.parentElement).prepend(
                     '<style>' +
-                        '.ut-navigation-container-view--content>* { height: calc(100% - 4rem); }' +
-                        '.ut-content-container .ut-content { max-height: none !important; }' +
+                    '.ut-navigation-container-view--content>* { height: calc(100% - 4rem); }' +
+                    '.ut-content-container .ut-content { max-height: none !important; }' +
                     '</style>' +
                     '<div id="' + nameInfoWrapper.substring(1) + '" class="ut-navigation-bar-view navbar-style-landscape">' +
                     '   <h1 class="title">AUTOBUYER STATUS: <span id="' + nameAbStatus.substring(1) + '"></span> | REQUEST COUNT: <span id="' + nameAbRequestCount.substring(1) + '">0</span></h1>' +
@@ -707,7 +713,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '</div>' +
                         '<div style="width:50%;margin-top: 1%;" class="button-container">' +
                         '<button style="width:50%" class="btn-standard call-to-action" id="' + nameDeleteFilter.substring(1) + '">Delete Filter</button>' +
-                        '<button style="width:100%" class="btn-standard call-to-action" id="' + namePreserveChanges.substring(1) + '">Save Filter</button>' + 
+                        '<button style="width:100%" class="btn-standard call-to-action" id="' + namePreserveChanges.substring(1) + '">Save Filter</button>' +
                         '</div> </div>');
                     jQuery('.search-prices').first().append(
                         '<div><br></div>' +
@@ -768,9 +774,9 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '   </div>' +
                         '</div>' +
                         '<div class="price-filter">' +
-                            '<div class="button-container">' +
-                            '    <button class="btn-standard call-to-action" id="' + nameCalcBinPrice.substring(1) + '">Calculate Buy Price</button>' +
-                            '</div>' +
+                        '<div class="button-container">' +
+                        '    <button class="btn-standard call-to-action" id="' + nameCalcBinPrice.substring(1) + '">Calculate Buy Price</button>' +
+                        '</div>' +
                         '</div>' +
                         '<div><br></div>' +
                         '<hr>' +
@@ -867,6 +873,17 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
                         '       <span class="ut-toggle-cell-view--label">Add Delay After Buy<br/><small>(Adds 1 Sec Delay after trying <br/> to buy / bid a card)</small></span>' +
                         '           <div id="' + nameAbAddBuyDelay.substring(1) + '" class="ut-toggle-control">' +
+                        '           <div class="ut-toggle-control--track">' +
+                        '           </div>' +
+                        '           <div class= "ut-toggle-control--grip" >' +
+                        '           </div>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>' +
+                        '<div class="price-filter">' +
+                        '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                        '       <span class="ut-toggle-cell-view--label">SKIP GK<br/><small>(Skip all goalkeepers <br/> to buy / bid a card)</small></span>' +
+                        '           <div id="' + nameAbAddFilterGK.substring(1) + '" class="ut-toggle-control">' +
                         '           <div class="ut-toggle-control--track">' +
                         '           </div>' +
                         '           <div class= "ut-toggle-control--grip" >' +
@@ -1088,7 +1105,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                         '<div class="button-container">' +
                         '    <button class="btn-standard call-to-action" id="' + nameTestNotification.substring(1) + '">Test Notification</button>' +
                         '</div>' +
-                        '<div><br></div>' + 
+                        '<div><br></div>' +
                         '<div class="search-price-header">' +
                         '   <h1 class="secondary">Multi-Filter settings:</h1>' +
                         '</div>' +
@@ -1253,6 +1270,10 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                 settingsJson.abSettings.addDelayAfterBuy = window.addDelayAfterBuy;
             }
 
+            if(window.addFilterGK){
+                settingsJson.abSettings.addFilterGK = window.addFilterGK;
+            }
+
             if (jQuery(nameTelegramBotToken).val() !== '') {
                 settingsJson.abSettings.telegramBotToken = jQuery(nameTelegramBotToken).val();
             }
@@ -1275,9 +1296,9 @@ var nameFilterDropdown = '#elem_' + makeid(15),
             }
 
             if (window.autoSolveCaptcha) {
-                settingsJson.abSettings.autoSolveCaptcha = window.autoSolveCaptcha; 
+                settingsJson.abSettings.autoSolveCaptcha = window.autoSolveCaptcha;
             }
-    
+
             if (jQuery(nameProxyAddress).val() !== '') {
                 settingsJson.abSettings.proxyAddress = jQuery(nameProxyAddress).val();
             }
@@ -1292,7 +1313,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
             }
             if (jQuery(nameAntiCaptchKey).val() !== '') {
                 settingsJson.abSettings.antiCaptchKey = jQuery(nameAntiCaptchKey).val();
-            } 
+            }
 
             var currentFilterName = $('select[name=filters] option').filter(':selected').val();
             if (currentFilterName === 'Choose filter to load') {
@@ -1356,6 +1377,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
         window.useRandMinBuy = false;
         window.useRandMinBid = false;
         window.addDelayAfterBuy = false;
+        window.addFilterGK = false;
         jQuery(nameAbRandMinBuyToggle).removeClass("toggled");
         window.bidExact = false;
         jQuery(nameAbRandMinBidToggle).removeClass("toggled");
@@ -1476,6 +1498,16 @@ var nameFilterDropdown = '#elem_' + makeid(15),
         }
     };
 
+    window.toggleAddFilterGK = function () {
+        if (window.addFilterGK) {
+            window.addFilterGK = false;
+            jQuery(nameAbAddFilterGK).removeClass("toggled");
+        } else {
+            window.addFilterGK = true;
+            jQuery(nameAbAddFilterGK).addClass("toggled");
+        }
+    };
+
     window.toggleUseRandMinBuy = function () {
         if (window.useRandMinBuy) {
             window.useRandMinBuy = false;
@@ -1545,6 +1577,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
 
     jQuery(document).on('click', nameAbRandMinBidToggle, toggleUseRandMinBid);
     jQuery(document).on('click', nameAbAddBuyDelay, toggleAddDelayAfterBuy);
+    jQuery(document).on('click', nameAbAddFilterGK, toggleAddFilterGK);
     jQuery(document).on('click', nameAbRandMinBuyToggle, toggleUseRandMinBuy);
     jQuery(document).on('click', nameAbCloseTabToggle, toggleCloseTab);
     jQuery(document).on('click', nameAbSoundToggle, toggleSound);
@@ -1996,6 +2029,13 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                     }
                     // ============================================================================================================
 
+                    if(player.preferredPosition == 0 && window.addFilterGK == true){
+                        action_txt = 'skip >>> (is a Goalkeeper)';
+                        let player_name = window.getItemName(player);
+                        writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
+                        continue;
+                    }
+
                     if (rating_ok && window.autoBuyerActive && buyNowPrice <= userBuyNowPrice && buyNowPrice <= window.futStatistics.coinsNumber && !window.bids.includes(auction.tradeId)) {
                         action_txt = 'attempt buy: ' + buy_txt;
                         writeToDebugLog("| " + rating_txt + ' | ' + player_name + ' | ' + bid_txt + ' | ' + buy_txt + ' | ' + expire_time + ' | ' + action_txt);
@@ -2075,7 +2115,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
     };
 
     window.showCaptchaLogs = function() {
-        
+
         window.sendNotificationToUser('Captcha, please solve the problem so that the bot can work again.');
 
         if (window.captchaCloseTab) {
@@ -2090,8 +2130,8 @@ var nameFilterDropdown = '#elem_' + makeid(15),
     window.solveCaptcha = function () {
         var apikey = jQuery(nameAntiCaptchKey).val();
         var websiteURL = "https://www.ea.com/fifa/ultimate-team/web-app/";
-        var websitePublicKey = "A4EECF77-AC87-8C8D-5754-BF882F72063B"; 
-        
+        var websitePublicKey = "A4EECF77-AC87-8C8D-5754-BF882F72063B";
+
         var proxyAddress = jQuery(nameProxyAddress).val();
         var proxyPort =jQuery(nameProxyPort).val();
         var proxyLogin = jQuery(nameProxyLogin).val();
@@ -2115,19 +2155,19 @@ var nameFilterDropdown = '#elem_' + makeid(15),
                     let payload = {
                         "clientKey": apikey,
                         "task":
-                        {
-                            "type": "FunCaptchaTask",
-                            "websiteURL": websiteURL,
-                            "websitePublicKey": websitePublicKey,
-                            "funcaptchaApiJSSubdomain": "ea-api.arkoselabs.com",
-                            "data": responseData.response,
-                            "proxyType": "http",
-                            "proxyAddress": proxyAddress,
-                            "proxyPort": proxyPort,
-                            "proxyLogin": proxyLogin,
-                            "proxyPassword": proxyPassword,
-                            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"
-                        }
+                            {
+                                "type": "FunCaptchaTask",
+                                "websiteURL": websiteURL,
+                                "websitePublicKey": websitePublicKey,
+                                "funcaptchaApiJSSubdomain": "ea-api.arkoselabs.com",
+                                "data": responseData.response,
+                                "proxyType": "http",
+                                "proxyAddress": proxyAddress,
+                                "proxyPort": proxyPort,
+                                "proxyLogin": proxyLogin,
+                                "proxyPassword": proxyPassword,
+                                "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"
+                            }
                     };
 
                     var xhr = new XMLHttpRequest();
@@ -2160,7 +2200,7 @@ var nameFilterDropdown = '#elem_' + makeid(15),
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-                    var json = JSON.parse(xhr.responseText); 
+                    var json = JSON.parse(xhr.responseText);
                     if (json.errorId == 0) { //no errors
                         if (json.status == 'ready') {
                             let captchaModel = new UTCaptchaViewModel(accessobjects.Captcha);

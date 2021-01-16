@@ -242,6 +242,11 @@
             jQuery(nameAbAddBuyDelay).addClass("toggled");
         }
 
+        if (settingsJson.abSettings.addFilterGK) {
+            window.addFilterGK = settingsJson.abSettings.addFilterGK;
+            jQuery(nameAbAddFilterGK).addClass("toggled");
+        }
+
         if (settingsJson.abSettings.captchaCloseTab) {
             window.captchaCloseTab = settingsJson.abSettings.captchaCloseTab;
             jQuery(nameAbCloseTabToggle).addClass("toggled");
@@ -1263,6 +1268,10 @@
 
             if (window.addDelayAfterBuy) {
                 settingsJson.abSettings.addDelayAfterBuy = window.addDelayAfterBuy;
+            }
+
+            if(window.addFilterGK){
+                settingsJson.abSettings.addFilterGK = window.addFilterGK;
             }
 
             if (jQuery(nameTelegramBotToken).val() !== '') {

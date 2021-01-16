@@ -30,6 +30,7 @@
 ## Table of Contents
 
 * [Installation](#installation) 
+* [AutoSolve Captcha SetUp](#Captcha) 
 * [Usage](#Usage)
 * [Prerequisites](#prerequisites) 
 * [Telegram Installation Guide](#Telegram-Installation-Guide) 
@@ -48,6 +49,11 @@
 * Installation And Demo - [Video Guide](https://www.youtube.com/watch?v=M3Jn4FI1nUw).
  
 Now in Ultimate Team Web App, new menu will be added as AutoBuyer. 
+
+## Captcha
+
+### AutoSolve Captcha Setup
+  * Follow this [video](https://www.youtube.com/watch?v=9p_IMe52LBo) if you are not sure how to set it up.
 
 <!-- Usage -->
 ## Usage 

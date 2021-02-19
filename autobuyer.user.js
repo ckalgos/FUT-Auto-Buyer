@@ -1445,9 +1445,9 @@
         var addedTime = 0;
 
         var wait = [7, 15];
-        // if (jQuery('#ab_wait_time').val()) {
-        //     wait = jQuery('#ab_wait_time').val().split('-').map(a => parseInt(a));
-        // }
+        if (jQuery('#ab_wait_time').val()) {
+            wait = jQuery('#ab_wait_time').val().split('-').map(a => parseInt(a));
+        }
         window.searchCount++;
         return (Math.round((Math.random() * (wait[1] - wait[0]) + wait[0])) * 1000);
     };
@@ -2016,6 +2016,7 @@
                             return item.getAuctionData().isWon() && !window.userWatchItems.includes(item._auction.tradeId) && !window.sellBids.includes(item._auction.tradeId);
                         });
 
+                        let increasingTimeout = 0;
                         for (var i = 0; i < boughtItems.length; i++) {
                             let player = boughtItems[i];
                             let auction = player._auction;
@@ -2025,9 +2026,10 @@
                             writeToLog(" ($$$) " + player_name + '[' + player._auction.tradeId + '] -- Selling for: ' + sellPrice);
                             player.clearAuction();
 
+                            increasingTimeout += window.getRandomWait();
                             window.sellRequestTimeout = window.setTimeout(function () {
                                 services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
-                            }, window.getRandomWait());
+                            }, increasingTimeout);
                         }
 
                         services.Item.clearTransferMarketCache();

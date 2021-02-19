@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      2.0.7
+// @version      2.0.9
 // @updateURL    https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @downloadURL  https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @description  FUT Snipping Tool
@@ -324,8 +324,8 @@
 
             _searchViewModel = this._viewmodel;
 
-            var t = gConfigurationModel.getConfigObject(models.ConfigurationModel.KEY_ITEMS_PER_PAGE)
-                , count = 1 + (utils.JS.isValid(t) ? t[models.ConfigurationModel.ITEMS_PER_PAGE.TRANSFER_MARKET] : 15);
+            var t = getAppMain().getConfigRepository().getConfigObject(EAConfigurationRepository.KEY_ITEMS_PER_PAGE)
+                , count = 1 + (utils.JS.isValid(t) ? t[EAConfigurationRepository.KEY_ITEMS_PER_PAGE] : 15);
             this._viewmodel.searchCriteria.count = count,
                 this._viewmodel.searchFeature = enums.ItemSearchFeature.MARKET;
             var view = this.getView();
@@ -337,9 +337,9 @@
                 view.addTarget(this, this._eMinBuyPriceChanged, UTMarketSearchFiltersView.Event.MIN_BUY_PRICE_CHANGE),
                 view.addTarget(this, this._eMaxBuyPriceChanged, UTMarketSearchFiltersView.Event.MAX_BUY_PRICE_CHANGE),
             this._viewmodel.getCategoryTabVisible() && (view.initTabMenuComponent(),
-                view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, enums.Event.TAP)),
+                view.getTabMenuComponent().addTarget(this, this._eSearchCategoryChanged, EventType.TAP)),
                 this._squadContext ? isPhone() || view.addClass("narrow") : view.addClass("floating"),
-                view.getPlayerNameSearch().addTarget(this, this._ePlayerNameChanged, enums.Event.CHANGE),
+                view.getPlayerNameSearch().addTarget(this, this._ePlayerNameChanged, EventType.CHANGE),
                 view.__root.style = "width: 50%; float: left;";
         }
     };

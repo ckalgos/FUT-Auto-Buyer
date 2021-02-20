@@ -2096,7 +2096,7 @@
                     window.isSearchInProgress = false;
                 }
             } else if (!response.success) {
-                if (response.status == UtasErrorCode.CAPTCHA_REQUIRED) {
+                if (response.status === UtasErrorCode.CAPTCHA_REQUIRED || (response.error && response.error.code == UtasErrorCode.CAPTCHA_REQUIRED)) {
                     if (window.autoSolveCaptcha) {
                         writeToLog('------------------------------------------------------------------------------------------');
                         writeToLog('[!!!] Captcha got triggered, trying to solve it');

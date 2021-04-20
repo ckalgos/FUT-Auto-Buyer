@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      2.0.9
+// @version      2.1.0
 // @updateURL    https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @downloadURL  https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @description  FUT Snipping Tool
@@ -408,18 +408,18 @@
         $buyerLog.val("");
     };
 
-    utils.JS.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController);
+    JSUtils.inherits(UTAutoBuyerViewController, UTMarketSearchFiltersViewController);
 
     window.UTAutoBuyerViewController.prototype.init = function init() {
         if (!this.initialized) {
             //getAppMain().superclass(),
             this._viewmodel || (this._viewmodel = new viewmodels.BucketedItemSearch),
-                this._viewmodel.searchCriteria.type === enums.SearchType.ANY && (this._viewmodel.searchCriteria.type = enums.SearchType.PLAYER);
+                this._viewmodel.searchCriteria.type === SearchType.ANY && (this._viewmodel.searchCriteria.type = SearchType.PLAYER);
 
             _searchViewModel = this._viewmodel;
 
             var t = getAppMain().getConfigRepository().getConfigObject(EAConfigurationRepository.KEY_ITEMS_PER_PAGE)
-                , count = 1 + (utils.JS.isValid(t) ? t[EAConfigurationRepository.KEY_ITEMS_PER_PAGE] : 15);
+                , count = 1 + (JSUtils.isValid(t) ? t[EAConfigurationRepository.KEY_ITEMS_PER_PAGE] : 15);
             this._viewmodel.searchCriteria.count = count,
                 this._viewmodel.searchFeature = enums.ItemSearchFeature.MARKET;
             var view = this.getView();

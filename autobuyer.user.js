@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FUT 21 Autobuyer Menu with TamperMonkey
 // @namespace    http://tampermonkey.net/
-// @version      2.1.0
+// @version      2.1.2
 // @updateURL    https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @downloadURL  https://raw.githubusercontent.com/chithakumar13/Fifa21-AutoBuyer/master/autobuyer.js
 // @description  FUT Snipping Tool
@@ -696,7 +696,7 @@
                     let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
                     let log_init_text = 'Autobuyer Ready\n' +
                         time_txt + '------------------------------------------------------------------------------------------\n' +
-                        time_txt + ' Index  | Item name       | price  | op  | result  | comments\n' +
+                        time_txt + ' Index  | Item name       | ## | price  | op  | result  | comments\n' +
                         time_txt + '------------------------------------------------------------------------------------------\n';
                     $log.val(log_init_text)
                 }
@@ -1608,7 +1608,7 @@
             let time_txt = '[' + new Date().toLocaleTimeString() + '] ';
             let log_init_text = 'Autobuyer Ready\n' +
                 time_txt + '------------------------------------------------------------------------------------------\n' +
-                time_txt + ' Index  | Item name                 | price  | op  | result  | comments\n' +
+                time_txt + ' Index  | Item name                 | ## | price  | op  | result  | comments\n' +
                 time_txt + '------------------------------------------------------------------------------------------\n';
             $log.val(log_init_text)
         }
@@ -2318,6 +2318,7 @@
         services.Item.bid(player, price).observe(this, (function (sender, data) {
             let price_txt = window.format_string(price.toString(), 6)
             let player_name = window.getItemName(player);
+            let player_rating = parseInt(player.rating);
             if (data.success) {
 
                 if (isBin) {
@@ -2327,7 +2328,7 @@
                 if (isBin && sellPrice !== 0 && !isNaN(sellPrice)) {
                     window.winCount++;
                     let sym = " W:" + window.format_string(window.winCount.toString(), 4);
-                    writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
+                    writeToLog(sym + " | " + player_name + ' | ' + player_rating + ' | ' + price_txt + ((isBin) ? ' | buy | success | selling for: ' + sellPrice : ' | bid | success |' + ' selling for: ' + sellPrice));
                     window.play_audio('card_won');
                     window.sellRequestTimeout = window.setTimeout(function () {
                         services.Item.list(player, window.getSellBidPrice(sellPrice), sellPrice, 3600);
@@ -2336,20 +2337,20 @@
                     window.bidCount++;
                     services.Item.move(player, ItemPile.CLUB).observe(this, (function (sender, moveResponse) {
                         let sym = " B:" + window.format_string(window.bidCount.toString(), 4);
-                        writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
+                        writeToLog(sym + " | " + player_name + ' | ' + player_rating + ' | ' + price_txt + ((isBin) ? ' | buy | success | move to club' : ' | bid | success | waiting to expire'));
                     }));
                 }
 
                 if (jQuery(nameTelegramBuy).val() == 'B' || jQuery(nameTelegramBuy).val() == 'A') {
-                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | buy |');
+                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + player_rating + ' | ' + price_txt.trim() + ' | buy |');
                 }
 
             } else {
                 window.lossCount++;
                 let sym = " L:" + window.format_string(window.lossCount.toString(), 4);
-                writeToLog(sym + " | " + player_name + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
+                writeToLog(sym + " | " + player_name + ' | ' + player_rating + ' | ' + price_txt + ((isBin) ? ' | buy | failure |' : ' | bid | failure |') + ' ERR: ' + data.status + '-' + (errorCodeLookUpShort[data.status] || ''));
                 if (jQuery(nameTelegramBuy).val() == 'L' || jQuery(nameTelegramBuy).val() == 'A') {
-                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + price_txt.trim() + ' | failure |');
+                    window.sendNotificationToUser("| " + player_name.trim() + ' | ' + player_rating + ' | ' + price_txt.trim() + ' | failure |');
                 }
 
                 if (jQuery(nameAbStopErrorCode).val()) {

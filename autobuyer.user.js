@@ -1139,13 +1139,13 @@
                         '   </div>' +
                         '</div>' +
                         '<audio id="' + nameWinMp3.substring(1) + '" hidden">\n' +
-                        '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.ogg" type="audio/ogg">\n' +
-                        '  <source src="https://proxy.notificationsounds.com/notification-sounds/coins-497/download/file-sounds-869-coins.mp3" type="audio/mpeg">\n' +
+                        '  <source src="https://freesound.org/data/previews/341/341695_5858296-lq.ogg" type="audio/ogg">\n' +
+                        '  <source src="https://freesound.org/data/previews/341/341695_5858296-lq.mp3" type="audio/mpeg">\n' +
                         '  Your browser does not support the audio element.\n' +
                         '</audio>' +
                         '<audio id="' + nameCapatchaMp3.substring(1) + '" hidden">\n' +
-                        '  <source src="https://proxy.notificationsounds.com/wake-up-tones/alarm-frenzy-493/download/file-sounds-897-alarm-frenzy.ogg" type="audio/ogg">\n' +
-                        '  <source src="https://proxy.notificationsounds.com/wake-up-tones/alarm-frenzy-493/download/file-sounds-897-alarm-frenzy.mp3" type="audio/mpeg">\n' +
+                        '  <source src="https://freesound.org/data/previews/328/328095_5659212-lq.ogg" type="audio/ogg">\n' +
+                        '  <source src="https://freesound.org/data/previews/328/328095_5659212-lq.mp3" type="audio/mpeg">\n' +
                         '  Your browser does not support the audio element.\n' +
                         '</audio>'
                     );

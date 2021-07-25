@@ -47,6 +47,7 @@
   window.userWatchItems = [];
   window.eachFilterSearch = null;
   window.discordClient = null;
+  window.autoClearLog = null;
   var _searchViewModel = null;
 
   // DIV names
@@ -121,7 +122,8 @@
     nameProxyPort = "#elem_" + makeid(15),
     nameProxyLogin = "#elem_" + makeid(15),
     nameAntiCaptchKey = "#elem_" + makeid(15),
-    nameProxyPassword = "#elem_" + makeid(15);
+    nameProxyPassword = "#elem_" + makeid(15),
+    nameAutoClearLog = "#elem_" + makeid(15);
 
   window.loadFilter = function () {
     var filterName = $("select[name=filters] option").filter(":selected").val();
@@ -306,6 +308,10 @@
       jQuery(nameDiscordChannelId).val(
         settingsJson.abSettings.discordChannelId
       );
+    }
+    if (settingsJson.abSettings.autoClearLog) {
+      window.autoClearLog = false;
+      window.toggleAutoLogClear();
     }
 
     let savedCriteria = settingsJson.searchCriteria || {};
@@ -1421,6 +1427,19 @@
                 "       </div>" +
                 "   </div>" +
                 "</div>" +
+                '<div style="width: 100%;" class="price-filter">' +
+                '   <div style="padding : 22px" class="ut-toggle-cell-view">' +
+                '       <span class="ut-toggle-cell-view--label">Auto Clear Log<br/><small>Automatically clear logs every 2 minutes</small></span>' +
+                '           <div id="' +
+                nameAutoClearLog.substring(1) +
+                '" class="ut-toggle-control">' +
+                '           <div class="ut-toggle-control--track">' +
+                "           </div>" +
+                '           <div class= "ut-toggle-control--grip" >' +
+                "           </div>" +
+                "       </div>" +
+                "   </div>" +
+                "</div>" +
                 '<audio id="' +
                 nameWinMp3.substring(1) +
                 '" hidden">\n' +
@@ -1613,13 +1632,14 @@
       if (window.soundEnabled) {
         settingsJson.abSettings.soundEnabled = window.soundEnabled;
       }
-
       if (window.captchaCloseTab) {
         settingsJson.abSettings.captchaCloseTab = window.captchaCloseTab;
       }
-
       if (window.autoSolveCaptcha) {
         settingsJson.abSettings.autoSolveCaptcha = window.autoSolveCaptcha;
+      }
+      if (window.autoClearLog) {
+        settingsJson.abSettings.autoClearLog = window.autoClearLog;
       }
 
       if (jQuery(nameProxyAddress).val() !== "") {
@@ -1727,7 +1747,10 @@
     jQuery(nameAbMessageNotificationToggle).removeClass("toggled");
     window.soundEnabled = false;
     jQuery(nameAbSoundToggle).removeClass("toggled");
-
+    window.autoClearLog = true;
+    window.toggleAutoLogClear();
+    window.autoSolveCaptcha = false;
+    jQuery(nameAbSolveCaptcha).removeClass("toggled");
     if (e) {
       jQuery(nameSelectedFilter).find("option").attr("selected", false);
       window.setFilters();
@@ -1900,6 +1923,22 @@
     }
   };
 
+  let intervalId;
+
+  window.toggleAutoLogClear = function () {
+    if (window.autoClearLog) {
+      window.autoClearLog = false;
+      jQuery(nameAutoClearLog).removeClass("toggled");
+      clearInterval(intervalId);
+    } else {
+      window.autoClearLog = true;
+      jQuery(nameAutoClearLog).addClass("toggled");
+      intervalId = setInterval(() => {
+        window.clearLog();
+      }, 120000);
+    }
+  };
+
   window.toggleSound = function () {
     if (window.soundEnabled) {
       window.soundEnabled = false;
@@ -1935,6 +1974,7 @@
     toggleMessageNotification
   );
   jQuery(document).on("click", nameAbSolveCaptcha, toggleSolveCaptcha);
+  jQuery(document).on("click", nameAutoClearLog, toggleAutoLogClear);
 
   jQuery(document).on("keyup", nameAbSellPrice, function () {
     jQuery(nameSellAfterTax).html(

@@ -1,0 +1,25 @@
+{
+  "name": "fut-auto-buyer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:dev": "webpack --mode development",
+    "build:prod": "webpack --mode production",
+    "serve": "webpack serve --mode development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chithakumar13/fut-auto-buyer.git"
+  },
+  "author": "Ck Algos",
+  "license": "ISC",
+  "dependencies": {
+    "webpack": "^5.47.1"
+  },
+  "devDependencies": {
+    "terser-webpack-plugin": "^5.1.4",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-userscript": "^2.5.8"
+  }
+}

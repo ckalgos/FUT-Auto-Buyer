@@ -6,8 +6,7 @@ export const setRandomInterval = (intervalFunction, start, end) => {
       intervalFunction();
       runInterval();
     };
-
-    const delay = Math.round(Math.random() * (end - start) + start) * 1000;
+    const delay = (Math.floor(Math.random() * (end - start)) + start) * 1000;
     timeout = setTimeout(timeoutFunction, delay);
   };
 

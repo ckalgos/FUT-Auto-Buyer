@@ -20,13 +20,13 @@ export const wait = async (seconds = 1) => {
 };
 
 export const showLoader = () => {
-  jQuery(".ut-click-shield").addClass("showing");
-  jQuery(".loaderIcon ").css("display", "block");
+  $(".ut-click-shield").addClass("showing");
+  $(".loaderIcon ").css("display", "block");
 };
 
 export const hideLoader = () => {
-  jQuery(".ut-click-shield").removeClass("showing");
-  jQuery(".loaderIcon ").css("display", "none");
+  $(".ut-click-shield").removeClass("showing");
+  $(".loaderIcon ").css("display", "none");
 };
 
 export const convertToSeconds = (val) => {

@@ -15,7 +15,7 @@ export const statsProcessor = () => {
   const buyerSetting = getValue("BuyerSettings");
   setInterval(() => {
     const currentStats = getValue("sessionStats");
-    jQuery("#" + idAbRequestCount).html(currentStats.searchCount);
+    $("#" + idAbRequestCount).html(currentStats.searchCount);
   }, 1000);
 };
 

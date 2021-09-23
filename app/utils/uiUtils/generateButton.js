@@ -9,13 +9,13 @@ export const generateButton = (id, label, callback, additionalClasses) => {
 };
 
 const initializeListensers = (id, callback) => {
-  jQuery(document).on(
+  $(document).on(
     {
       mouseenter: function () {
-        jQuery(this).addClass("hover");
+        $(this).addClass("hover");
       },
       mouseleave: function () {
-        jQuery(this).removeClass("hover");
+        $(this).removeClass("hover");
       },
       click: function () {
         callback();

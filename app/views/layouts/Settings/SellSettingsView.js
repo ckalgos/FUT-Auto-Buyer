@@ -10,22 +10,18 @@ import {
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 
-jQuery(document).on(
-  "keyup",
-  "#" + idAbSellPrice,
-  function ({ target: { value } }) {
-    updateAfterTax(value);
-  }
-);
+$(document).on("keyup", "#" + idAbSellPrice, function ({ target: { value } }) {
+  updateAfterTax(value);
+});
 
 const updateAfterTax = (salePrice) => {
   const parsedSalePrice = parseInt(salePrice);
   if (isNaN(parsedSalePrice)) {
-    jQuery("#" + idSellAfterTax).html(0);
+    $("#" + idSellAfterTax).html(0);
     return;
   }
   const calculatedPrice = (salePrice - (salePrice / 100) * 5).toLocaleString();
-  jQuery("#" + idSellAfterTax).html(calculatedPrice);
+  $("#" + idSellAfterTax).html(calculatedPrice);
 };
 
 export const sellSettingsView = function () {

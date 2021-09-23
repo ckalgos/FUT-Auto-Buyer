@@ -1,6 +1,7 @@
 import * as ElementIds from "../elementIds.constants";
 import { getValue, setValue } from "../services/repository";
 import { clearSettingMenus } from "../views/layouts/MenuItemView";
+import { deleteFilters, insertFilters } from "./dbUtil";
 import { checkAndAppendOption } from "./filterUtil";
 import { sendUINotification } from "./notificationUtil";
 
@@ -8,7 +9,7 @@ const filterDropdownId = `#${ElementIds.idFilterDropdown}`;
 
 export const saveFilterDetails = function (self) {
   const btnContext = this;
-  jQuery(btnContext).addClass("active");
+  $(btnContext).addClass("active");
   let buyerSetting = getValue("BuyerSettings");
   setTimeout(function () {
     let settingsJson = {};
@@ -19,7 +20,7 @@ export const saveFilterDetails = function (self) {
       buyerSettings: buyerSetting,
     };
 
-    let currentFilterName = jQuery(`${filterDropdownId} option`)
+    let currentFilterName = $(`${filterDropdownId} option`)
       .filter(":selected")
       .val();
 
@@ -38,22 +39,20 @@ export const saveFilterDetails = function (self) {
         true
       );
 
-      GM_setValue(filterName, JSON.stringify(settingsJson));
-      jQuery(btnContext).removeClass("active");
+      getValue("filters")[filterName] = JSON.stringify(settingsJson);
+      insertFilters(filterName, getValue("filters")[filterName]);
+      $(btnContext).removeClass("active");
       sendUINotification("Changes saved successfully");
     } else {
-      jQuery(btnContext).removeClass("active");
-      sendUINotification(
-        "Filter Name Required",
-        enums.UINotificationType.NEGATIVE
-      );
+      $(btnContext).removeClass("active");
+      sendUINotification("Filter Name Required", UINotificationType.NEGATIVE);
     }
   }, 200);
 };
 
 export const loadFilter = function (currentFilterName) {
   clearSettingMenus();
-  const filterSetting = GM_getValue(currentFilterName);
+  const filterSetting = getValue("filters")[currentFilterName];
   if (!filterSetting) return;
   const {
     searchCriteria: { criteria, playerData, buyerSettings },
@@ -63,7 +62,7 @@ export const loadFilter = function (currentFilterName) {
   Object.assign(this._viewmodel.searchCriteria, criteria);
   Object.assign(this._viewmodel.playerData, playerData);
 
-  if (jQuery.isEmptyObject(this._viewmodel.playerData)) {
+  if ($.isEmptyObject(this._viewmodel.playerData)) {
     this._viewmodel.playerData = null;
   }
 
@@ -75,12 +74,12 @@ export const loadFilter = function (currentFilterName) {
     const id = `#${ElementIds[key]}`;
     if (typeof value == "boolean") {
       if (value) {
-        jQuery(id).addClass("toggled");
+        $(id).addClass("toggled");
         continue;
       }
-      jQuery(id).removeClass("toggled");
+      $(id).removeClass("toggled");
     } else {
-      jQuery(id).val(value);
+      $(id).val(value);
     }
   }
 };
@@ -89,7 +88,7 @@ export const deleteFilter = function () {
   const filterName = $(`${filterDropdownId} option`).filter(":selected").val();
   if (filterName != "Choose filter to load") {
     $(`${filterDropdownId}` + ` option[value="${filterName}"]`).remove();
-    jQuery(`${filterDropdownId}`).prop("selectedIndex", 0);
+    $(`${filterDropdownId}`).prop("selectedIndex", 0);
 
     clearSettingMenus();
     this._viewmodel.playerData = null;
@@ -100,7 +99,8 @@ export const deleteFilter = function () {
     );
     this.viewDidAppear();
 
-    GM_deleteValue(filterName);
+    delete getValue("filters")[filterName];
+    deleteFilters(filterName);
     sendUINotification("Changes saved successfully");
   }
 };

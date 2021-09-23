@@ -39,9 +39,10 @@ export const cssOverride = () => {
   input[type="number"]{
     padding: 0 .5em;
     border-radius: 0;
-    background-color: #171826;
+    background-color: #262c38;
+    border: 1px solid #4ee6eb;
     box-sizing: border-box;
-    color: #63d3f9;
+    color: #4ee6eb;
     font-family: UltimateTeam,sans-serif;
     font-size: 1em;
     height: 2.8em;
@@ -99,6 +100,9 @@ export const cssOverride = () => {
     display: flex  !important;
     justify-content: center;
     align-items: center;
+  }
+  .ut-pinned-list-container.ut-content-container {
+    padding: 0 !important;
   }
   `;
   if (!isPhone()) {

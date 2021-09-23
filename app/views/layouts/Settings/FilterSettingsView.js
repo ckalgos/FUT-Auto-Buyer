@@ -3,6 +3,8 @@ import {
   idSelectedFilter,
   idSelectFilterCount,
 } from "../../../elementIds.constants";
+import { getValue, setValue } from "../../../services/repository";
+import { getUserFilters } from "../../../utils/dbUtil";
 import { updateMultiFilterSettings } from "../../../utils/filterUtil";
 import {
   deleteFilter,
@@ -11,7 +13,7 @@ import {
 } from "../../../utils/userExternalUtil";
 import { createButton } from "../ButtonView";
 
-jQuery(document).on(
+$(document).on(
   {
     click: updateMultiFilterSettings,
     touchend: updateMultiFilterSettings,
@@ -19,12 +21,20 @@ jQuery(document).on(
   `#${idSelectedFilter}`
 );
 
-export const filterSettingsView = function () {
+const filters = async () => {
+  if (!getValue("filters")) {
+    setValue("filters", (await getUserFilters()) || {});
+  }
+
+  return getValue("filters");
+};
+
+export const filterSettingsView = async function () {
   return `<div style='display : none' class='buyer-settings-wrapper filter-settings-view'> 
                 <div class="price-filter buyer-settings-field multiple-filter">
                     <select  multiple="multiple" class="multiselect-filter filter-header-settings" id="${idSelectedFilter}"
                      name="selectedFilters" style="overflow-y : scroll;width: 50%;">
-                     ${GM_listValues().map(
+                     ${Object.keys(await filters()).map(
                        (value) => `<option value='${value}'>${value}</option>`
                      )}
                     </select>
@@ -34,9 +44,9 @@ export const filterSettingsView = function () {
     `;
 };
 
-export const filterHeaderSettingsView = function () {
+export const filterHeaderSettingsView = async function () {
   const context = this;
-  jQuery(document).on(
+  $(document).on(
     {
       change: function () {
         const filterName = $(`#${idFilterDropdown} option`)
@@ -48,16 +58,17 @@ export const filterHeaderSettingsView = function () {
     `#${idFilterDropdown}`
   );
 
-  const rootHeader = jQuery(`<div style="width:100%;display: flex;">
-               <div class="button-container">
+  const rootHeader =
+    $(`<div style="width:100%;display: flex;flex-wrap: inherit;">
+               <div style="width:100%;" class="button-container">
                    <select class="filter-header-settings" id=${idFilterDropdown}>
                       <option selected="true" disabled>Choose filter to load</option>
-                      ${GM_listValues().map(
+                      ${Object.keys(await filters()).map(
                         (value) => `<option value='${value}'>${value}</option>`
                       )}
                    </select>
                </div>
-               <div id="btn-actions" style="width:50%;margin-top: 1%;" class="button-container"> 
+               <div id="btn-actions" style="width:100%;margin-top: 1%;" class="button-container"> 
                </div>
              </div>`);
   const buttons = rootHeader.find("#btn-actions");

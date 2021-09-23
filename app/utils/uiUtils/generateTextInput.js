@@ -21,7 +21,7 @@ export const generateTextInput = (
   if (placeholder) {
     updateCache(key, placeholder, type, true);
   }
-  jQuery(document).on("input", `#${id[key]}`, ({ target: { value } }) => {
+  $(document).on("input", `#${id[key]}`, ({ target: { value } }) => {
     customCallBack && customCallBack(value);
     updateCache(key, value || placeholder, type, !value);
   });

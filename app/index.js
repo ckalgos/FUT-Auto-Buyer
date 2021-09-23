@@ -5,8 +5,7 @@ const initAutobuyer = function () {
   let isHomePageLoaded = false;
   if (
     services.Localization &&
-    jQuery("h1.title").html() ===
-      services.Localization.localize("navbar.label.home")
+    $("h1.title").html() === services.Localization.localize("navbar.label.home")
   ) {
     isHomePageLoaded = true;
   }

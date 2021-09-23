@@ -5,10 +5,10 @@ const clickHandler = (key, evt) => {
   const buyerSetting = getValue("BuyerSettings") || {};
   if (buyerSetting[key]) {
     buyerSetting[key] = false;
-    jQuery(evt.currentTarget).removeClass("toggled");
+    $(evt.currentTarget).removeClass("toggled");
   } else {
     buyerSetting[key] = true;
-    jQuery(evt.currentTarget).addClass("toggled");
+    $(evt.currentTarget).addClass("toggled");
   }
   setValue("BuyerSettings", buyerSetting);
 };
@@ -21,7 +21,7 @@ export const generateToggleInput = (
 ) => {
   const key = Object.keys(id)[0];
   if (!eventMappers.has(key)) {
-    jQuery(document).on("click touchend", `#${id[key]}`, (evt) => {
+    $(document).on("click touchend", `#${id[key]}`, (evt) => {
       clickHandler(key, evt);
     });
     eventMappers.add(key);

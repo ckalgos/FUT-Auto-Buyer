@@ -21,10 +21,10 @@ export const updateMultiFilterSettings = function (e) {
   const selectedFilters = $(`#${idSelectedFilter}`).val() || [];
   if (selectedFilters.length) {
     setValue("Filters", selectedFilters);
-    jQuery(`#${idSelectFilterCount}`).text(
+    $(`#${idSelectFilterCount}`).text(
       "(" + selectedFilters.length + ") Filter Selected"
     );
   } else {
-    jQuery(`#${idSelectFilterCount}`).text("No Filter Selected");
+    $(`#${idSelectFilterCount}`).text("No Filter Selected");
   }
 };

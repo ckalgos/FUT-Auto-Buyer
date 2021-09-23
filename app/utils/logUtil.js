@@ -71,15 +71,15 @@ export const showCaptchaLogs = function (captchaCloseTab) {
 };
 
 export const writeToLog = function (message, log) {
-  var $log = jQuery("#" + log);
+  var $log = $("#" + log);
   message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
   $log.val($log.val() + message);
   if ($log[0]) $log.scrollTop($log[0].scrollHeight);
 };
 
 export const clearLogs = () => {
-  jQuery("#" + idAutoBuyerFoundLog).val("");
-  jQuery("#" + idProgressAutobuyer).val("");
+  $("#" + idAutoBuyerFoundLog).val("");
+  $("#" + idProgressAutobuyer).val("");
   initializeLog();
 };
 

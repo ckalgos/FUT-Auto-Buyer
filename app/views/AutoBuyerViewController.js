@@ -17,18 +17,16 @@ const searchFiltersViewInit =
 const searchFiltersAppear =
   UTMarketSearchFiltersViewController.prototype.viewDidAppear;
 
-UTMarketSearchFiltersView.prototype._generate;
-
 JSUtils.inherits(AutoBuyerViewController, UTMarketSearchFiltersViewController);
 
 AutoBuyerViewController.prototype.init = function () {
   searchFiltersViewInit.call(this);
   let view = this.getView();
-  if (!isPhone()) view.__root.style = "width: 55%; float: left;";
+  if (!isPhone()) view.__root.style = "width: 52%; float: left;";
 
   const menuItems = generateMenuItems.call(this);
-  let root = jQuery(view.__root);
-  //   root.find(".ut-pinned-list-container").append(jQuery(menuItems.__root));
+  let root = $(view.__root);
+  //   root.find(".ut-pinned-list-container").append($(menuItems.__root));
   const createButtonWithContext = createButton.bind(this);
   const stopBtn = createButtonWithContext("Stop", () =>
     stopAutoBuyer.call(this)
@@ -52,14 +50,13 @@ AutoBuyerViewController.prototype.init = function () {
     clearSettingMenus();
   });
 
-  btnContainer.append(jQuery(searchBtn.__root));
-  btnContainer.append(jQuery(stopBtn.__root));
-  btnContainer.append(jQuery(clearLogBtn.__root));
+  btnContainer.append($(searchBtn.__root));
+  btnContainer.append($(stopBtn.__root));
+  btnContainer.append($(clearLogBtn.__root));
   root.find(".search-prices").append(menuItems.__root);
-  root
-    .find(".ut-item-search-view")
-    .first()
-    .prepend(filterHeaderSettingsView.call(this));
+  filterHeaderSettingsView.call(this).then((res) => {
+    root.find(".ut-item-search-view").first().prepend(res);
+  });
 };
 
 AutoBuyerViewController.prototype.viewDidAppear = function () {
@@ -69,10 +66,10 @@ AutoBuyerViewController.prototype.viewDidAppear = function () {
 
 AutoBuyerViewController.prototype.getNavigationTitle = function () {
   setTimeout(() => {
-    const title = jQuery(".title");
+    const title = $(".title");
     isPhone() && title.addClass("buyer-header");
     title.append(BuyerStatus());
-    jQuery(".ut-navigation-container-view--content").append(logView());
+    $(".ut-navigation-container-view--content").append(logView());
     initializeLog();
   });
   return `AutoBuyer `;

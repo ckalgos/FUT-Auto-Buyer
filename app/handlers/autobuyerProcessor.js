@@ -32,7 +32,7 @@ let passInterval = null;
 const currentBids = new Set();
 
 export const startAutoBuyer = async function (isResume) {
-  jQuery("#" + idAbStatus)
+  $("#" + idAbStatus)
     .css("color", "#2cbe2d")
     .html("RUNNING");
 
@@ -89,7 +89,7 @@ export const stopAutoBuyer = (isPaused) => {
   if (!isActive) return;
   setValue("autoBuyerActive", false);
   sendUINotification(isPaused ? "Autobuyer Paused" : "Autobuyer Stopped");
-  jQuery("#" + idAbStatus)
+  $("#" + idAbStatus)
     .css("color", "red")
     .html("IDLE");
 };
@@ -225,7 +225,13 @@ const searchTransferMarket = function (buyerSetting) {
             }
 
             if (buyNowPrice > userBuyNowPrice && currentBid > priceToBid) {
-              logWrite("skip >>> (higher than specified buy/bid price");
+              logWrite("skip >>> (higher than specified buy/bid price)");
+              continue;
+            }
+
+            const userCoins = services.User.getUser().coins.amount;
+            if (userCoins < buyNowPrice && userCoins < priceToBid) {
+              logWrite("skip >>> (Insufficient coins to purchase)");
               continue;
             }
 
@@ -274,7 +280,7 @@ const searchTransferMarket = function (buyerSetting) {
 const formRequestPayLoad = (player, platform) => {
   const {
     id,
-    resourceId,
+    definitionId,
     _auction: { buyNowPrice, tradeId: auctionId, expires: expiresOn },
     _metaData: { id: assetId, skillMoves, weakFoot } = {},
     _attributes,
@@ -287,7 +293,7 @@ const formRequestPayLoad = (player, platform) => {
   const expireDate = new Date();
   expireDate.setSeconds(expireDate.getSeconds() + expiresOn);
   const trackPayLoad = {
-    resourceId,
+    definitionId,
     price: buyNowPrice,
     expiresOn: expireDate,
     id: id + "",
@@ -297,7 +303,7 @@ const formRequestPayLoad = (player, platform) => {
     updatedOn: new Date(),
   };
   const playerPayLoad = {
-    _id: resourceId,
+    _id: definitionId,
     nationId,
     leagueId,
     staticData: { firstName, knownAs, lastName, name },

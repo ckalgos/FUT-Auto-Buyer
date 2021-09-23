@@ -48,13 +48,13 @@ export const buyPlayer = (player, playerName, price, sellPrice, isBin) => {
           if (isValidRating && useFutBinPrice) {
             try {
               const futBinResponse = await fetchPricesFromFutBin(
-                player.resourceId,
+                player.definitionId,
                 3
               );
               if (futBinResponse.status === 200) {
                 const futBinPrices = JSON.parse(futBinResponse.responseText);
                 sellPrice = parseInt(
-                  futBinPrices[player.resourceId].prices[
+                  futBinPrices[player.definitionId].prices[
                     getUserPlatform()
                   ].LCPrice.replace(/[,.]/g, "")
                 );

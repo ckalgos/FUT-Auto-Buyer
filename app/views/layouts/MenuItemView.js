@@ -55,7 +55,7 @@ export const generateMenuItems = function () {
   menuItems.addTarget(this, onSettingChange, EventType.TAP);
   menuItems.__root.style = "margin-top: 20px;";
 
-  menuRoot = jQuery(menuItems.__root);
+  menuRoot = $(menuItems.__root);
   menuRoot.find(".menu-container").css("overflow-x", "auto");
 
   appendMenuItems();
@@ -73,26 +73,28 @@ const appendMenuItems = () => {
   menuRoot.append(sellSettingsView.call(this));
   menuRoot.append(searchSettingsView.call(this));
   menuRoot.append(safeSettingsView.call(this));
-  menuRoot.append(filterSettingsView.call(this));
-  menuRoot.append(captchaSettingsView.call(this));
-  menuRoot.append(notificationSettingsView.call(this));
-  menuRoot.append(commonSettingsView.call(this));
+  filterSettingsView.call(this).then((res) => {
+    menuRoot.append(res);
+    menuRoot.append(captchaSettingsView.call(this));
+    menuRoot.append(notificationSettingsView.call(this));
+    menuRoot.append(commonSettingsView.call(this));
+  });
 };
 
 const deleteAllMenu = () => {
   settingsLookup.forEach((value, key) => {
-    jQuery(value.selector).remove();
+    $(value.selector).remove();
   });
 };
 
 const onSettingChange = function (e, t, i) {
   hideAllSection();
   const selectedTab = settingsLookup.get(i.index).selector;
-  jQuery(selectedTab).css("display", "");
+  $(selectedTab).css("display", "");
 };
 
 const hideAllSection = () => {
   settingsLookup.forEach((value, key) => {
-    jQuery(value.selector).css("display", "none");
+    $(value.selector).css("display", "none");
   });
 };

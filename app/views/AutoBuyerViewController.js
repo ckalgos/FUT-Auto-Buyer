@@ -42,6 +42,7 @@ AutoBuyerViewController.prototype.init = function () {
 
   statsProcessor();
 
+  root.addClass("auto-buyer");
   const btnContainer = root.find(".button-container");
   btnContainer.addClass("buyer-actions");
   btnContainer.find(".call-to-action").remove();

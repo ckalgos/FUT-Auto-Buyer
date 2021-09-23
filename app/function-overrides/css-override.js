@@ -104,6 +104,12 @@ export const cssOverride = () => {
   .ut-pinned-list-container.ut-content-container {
     padding: 0 !important;
   }
+  .auto-buyer .enhancer-option-header {
+    display: none;
+  }
+  .auto-buyer .enhancer-toggle {
+    display: none !important;
+  }
   `;
   if (!isPhone()) {
     style.innerText += getScrollBarStyle();

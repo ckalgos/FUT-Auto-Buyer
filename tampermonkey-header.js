@@ -12,7 +12,7 @@ module.exports = {
     grant: ["GM_xmlhttpRequest"],
     connect: ["ea.com", "ea2.com", "futbin.com"],
     require: [
-      "https://github.com/chithakumar13/fut-trade-enhancer/releases/l atest/download/fut-trade-enhancer.user.js",
+      "https://github.com/chithakumar13/fut-trade-enhancer/releases/latest/download/fut-trade-enhancer.user.js",
     ],
     updateURL:
       "https://github.com/chithakumar13/fut-auto-buyer/releases/latest/download/fut-auto-buyer.user.js",

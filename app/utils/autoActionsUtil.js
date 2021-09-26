@@ -1,6 +1,10 @@
 import { idAutoBuyerFoundLog } from "../elementIds.constants";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
-import { getValue } from "../services/repository";
+import {
+  getValue,
+  increAndGetStoreValue,
+  setValue,
+} from "../services/repository";
 import { convertToSeconds, getRandNum } from "./commonUtil";
 import { writeToLog } from "./logUtil";
 import { loadFilter } from "./userExternalUtil";
@@ -35,7 +39,17 @@ export const pauseBotIfRequired = function (buyerSetting) {
 
 export const switchFilterIfRequired = function () {
   const availableFilters = getValue("Filters");
-  if (!availableFilters || !availableFilters.length) return false;
+  const fiterSearchCount = getValue("fiterSearchCount");
+  const currentFilterCount = getValue("currentFilterCount");
+  if (
+    !availableFilters ||
+    !availableFilters.length ||
+    fiterSearchCount > currentFilterCount
+  ) {
+    increAndGetStoreValue("currentFilterCount");
+    return false;
+  }
+  setValue("currentFilterCount", 1);
   let filterName = availableFilters[getRandNum(0, availableFilters.length - 1)];
   loadFilter.call(this, filterName);
   writeToLog(

@@ -19,6 +19,7 @@ export const generateTextInput = (
 ) => {
   const key = Object.keys(id)[0];
   if (placeholder) {
+    customCallBack && customCallBack(placeholder);
     updateCache(key, placeholder, type, true);
   }
   $(document).on("input", `#${id[key]}`, ({ target: { value } }) => {

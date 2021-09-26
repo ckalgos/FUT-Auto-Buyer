@@ -79,6 +79,9 @@ const appendMenuItems = () => {
     menuRoot.append(notificationSettingsView.call(this));
     menuRoot.append(commonSettingsView.call(this));
   });
+  $(".menu-container").animate({
+    scrollLeft: 0,
+  });
 };
 
 const deleteAllMenu = () => {

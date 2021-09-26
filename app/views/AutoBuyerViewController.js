@@ -1,5 +1,6 @@
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import { statsProcessor } from "../handlers/statsProcessor";
+import { setValue } from "../services/repository";
 import { clearLogs } from "../utils/logUtil";
 import { createButton } from "./layouts/ButtonView";
 import { BuyerStatus } from "./layouts/HeaderView";
@@ -49,6 +50,7 @@ AutoBuyerViewController.prototype.init = function () {
   const btnReset = btnContainer.find('button:contains("Reset")');
   btnReset.on("click", function () {
     clearSettingMenus();
+    setValue("BuyerSettings", {});
   });
 
   btnContainer.append($(searchBtn.__root));

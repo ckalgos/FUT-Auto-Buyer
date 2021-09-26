@@ -2,10 +2,12 @@ import {
   idFilterDropdown,
   idSelectedFilter,
   idSelectFilterCount,
+  idAbNumberFilterSearch,
 } from "../../../elementIds.constants";
 import { getValue, setValue } from "../../../services/repository";
 import { getUserFilters } from "../../../utils/dbUtil";
 import { updateMultiFilterSettings } from "../../../utils/filterUtil";
+import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import {
   deleteFilter,
   loadFilter,
@@ -40,6 +42,15 @@ export const filterSettingsView = async function () {
                     </select>
                     <label style="white-space: nowrap;width: 50%;" id="${idSelectFilterCount}" >No Filter Selected</label>
                 </div>
+                ${generateTextInput(
+                  "No. of search For each filter",
+                  getValue("fiterSearchCount") || 3,
+                  { idAbNumberFilterSearch },
+                  "(Count of searches performed before switching to another filter)",
+                  "number",
+                  null,
+                  (value) => setValue("fiterSearchCount", parseInt(value) || 3)
+                )}
             </div>
     `;
 };

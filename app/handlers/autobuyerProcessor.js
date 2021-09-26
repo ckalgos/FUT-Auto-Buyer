@@ -139,17 +139,20 @@ const searchTransferMarket = function (buyerSetting) {
           for (let i = response.data.items.length - 1; i >= 0; i--) {
             let player = response.data.items[i];
             let auction = player._auction;
+            let type = player.type;
             let playerRating = parseInt(player.rating);
             let expires = services.Localization.localizeAuctionTimeRemaining(
               auction.expires
             );
 
-            const { trackPayLoad, playerPayLoad } = formRequestPayLoad(
-              player,
-              platform
-            );
+            if (type === "player") {
+              const { trackPayLoad, playerPayLoad } = formRequestPayLoad(
+                player,
+                platform
+              );
 
-            auctionPrices.push(trackPayLoad);
+              auctionPrices.push(trackPayLoad);
+            }
 
             let buyNowPrice = auction.buyNowPrice;
             let currentBid = auction.currentBid || auction.startingBid;
@@ -288,6 +291,7 @@ const formRequestPayLoad = (player, platform) => {
     nationId,
     leagueId,
     rareflag,
+    playStyle,
   } = player;
 
   const expireDate = new Date();
@@ -299,8 +303,9 @@ const formRequestPayLoad = (player, platform) => {
     id: id + "",
     assetId: assetId + "_" + platform + "_" + rareflag,
     auctionId,
-    year: 21,
+    year: 22,
     updatedOn: new Date(),
+    playStyle,
   };
   const playerPayLoad = {
     _id: definitionId,

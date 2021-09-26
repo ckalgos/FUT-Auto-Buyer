@@ -38,7 +38,7 @@ export const pauseBotIfRequired = function (buyerSetting) {
 };
 
 export const switchFilterIfRequired = function () {
-  const availableFilters = getValue("Filters");
+  const availableFilters = getValue("selectedFilters");
   const fiterSearchCount = getValue("fiterSearchCount");
   const currentFilterCount = getValue("currentFilterCount");
   if (

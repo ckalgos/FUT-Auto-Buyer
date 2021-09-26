@@ -26,10 +26,20 @@ export const generateToggleInput = (
     });
     eventMappers.add(key);
   }
+  if (!eventMappers.has(`${key}_tooltip`)) {
+    $(document).on("click touchend", `#${id[key]}_tooltip`, () => {
+      const fragment = label.replace(/\s/g, "-");
+      window.open(
+        `https://github.com/chithakumar13/FUT-Auto-Buyer#${fragment}`,
+        "_blank"
+      );
+    });
+    eventMappers.add(`${key}_tooltip`);
+  }
   return `
     <div class="price-filter  ${additionalClasses}">
         <div class="ut-toggle-cell-view">
-           <span class="ut-toggle-cell-view--label">${label} <br/><small>${info}</small></span>
+           <span class="ut-toggle-cell-view--label"><button id='${id[key]}_tooltip' style="font-size:16px" class="flat camel-case">${label}</button> <br/><small>${info}</small></span>
              <div id='${id[key]}' class="ut-toggle-control">
                <div class="ut-toggle-control--track">
               </div>

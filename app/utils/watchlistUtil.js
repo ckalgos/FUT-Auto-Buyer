@@ -9,6 +9,7 @@ import {
   promisifyTimeOut,
   wait,
 } from "./commonUtil";
+import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToLog } from "./logUtil";
 import { sendPinEvents } from "./notificationUtil";
 import { getBuyBidPrice, getSellBidPrice } from "./priceUtils";
@@ -57,7 +58,12 @@ export const watchListUtil = function (buyerSetting) {
                 }
               }
 
-              if (isAutoBuyerActive && sellPrice && !isNaN(sellPrice)) {
+              const useFutBinPrice = buyerSetting["idSellFutBinPrice"];
+
+              if (
+                isAutoBuyerActive &&
+                ((sellPrice && !isNaN(sellPrice)) || useFutBinPrice)
+              ) {
                 const userWatchItems = getValue("userWatchItems");
                 let boughtItems = response.data.items.filter(function (item) {
                   return (
@@ -68,11 +74,33 @@ export const watchListUtil = function (buyerSetting) {
                 });
 
                 for (var i = 0; i < boughtItems.length; i++) {
-                  await sellWonItems(
-                    boughtItems[i],
-                    sellPrice,
-                    buyerSetting["idAbWaitTime"]
-                  );
+                  const player = boughtItems[i];
+                  const ratingThreshold = buyerSetting["idSellRatingThreshold"];
+                  let playerRating = parseInt(player.rating);
+                  const isValidRating =
+                    !ratingThreshold || playerRating <= ratingThreshold;
+
+                  if (isValidRating && useFutBinPrice) {
+                    let playerName = formatString(player._staticData.name, 15);
+                    sellPrice = await getSellPriceFromFutBin(
+                      buyerSetting,
+                      playerName,
+                      player.definitionId
+                    );
+                  }
+
+                  const shouldList =
+                    sellPrice && !isNaN(sellPrice) && isValidRating;
+
+                  if (shouldList) {
+                    await sellWonItems(
+                      player,
+                      sellPrice,
+                      buyerSetting["idAbWaitTime"]
+                    );
+                  } else {
+                    services.Item.move(player, ItemPile.CLUB);
+                  }
                 }
               }
 

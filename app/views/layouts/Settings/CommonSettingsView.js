@@ -25,7 +25,7 @@ export const commonSettingsView = function () {
   ${generateToggleInput(
     "Auto Clear Log",
     { idAutoClearLog },
-    "(Automatically clear logs every 2 minutes)"
+    "(Automatically clear logs <br/> every 2 minutes)"
   )}  
   </div>`;
 };

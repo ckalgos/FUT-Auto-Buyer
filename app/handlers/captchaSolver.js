@@ -95,7 +95,8 @@ export const solveCaptcha = () => {
               .observe(this, function (sender, response) {
                 if (response.success) {
                   writeToLog("Captcha Solved", idProgressAutobuyer);
-                  startAutoBuyer();
+                  const instance = getValue("AutoBuyerInstance");
+                  startAutoBuyer.call(instance);
                 }
               });
           } else {

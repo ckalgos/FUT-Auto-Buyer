@@ -50,8 +50,8 @@ export const saveFilterDetails = function (self) {
   }, 200);
 };
 
-export const loadFilter = function (currentFilterName) {
-  clearSettingMenus();
+export const loadFilter = async function (currentFilterName) {
+  await clearSettingMenus();
   const filterSetting = getValue("filters")[currentFilterName];
   if (!filterSetting) return;
   const {
@@ -84,13 +84,13 @@ export const loadFilter = function (currentFilterName) {
   }
 };
 
-export const deleteFilter = function () {
+export const deleteFilter = async function () {
   const filterName = $(`${filterDropdownId} option`).filter(":selected").val();
   if (filterName != "Choose filter to load") {
     $(`${filterDropdownId}` + ` option[value="${filterName}"]`).remove();
     $(`${filterDropdownId}`).prop("selectedIndex", 0);
 
-    clearSettingMenus();
+    await clearSettingMenus();
     this._viewmodel.playerData = null;
 
     Object.assign(

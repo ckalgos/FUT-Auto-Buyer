@@ -24,6 +24,7 @@ AutoBuyerViewController.prototype.init = function () {
   searchFiltersViewInit.call(this);
   let view = this.getView();
   if (!isPhone()) view.__root.style = "width: 52%; float: left;";
+  setValue("AutoBuyerInstance", this);
 
   const menuItems = generateMenuItems.call(this);
   let root = $(view.__root);
@@ -48,9 +49,8 @@ AutoBuyerViewController.prototype.init = function () {
   btnContainer.addClass("buyer-actions");
   btnContainer.find(".call-to-action").remove();
   const btnReset = btnContainer.find('button:contains("Reset")');
-  btnReset.on("click", function () {
-    clearSettingMenus();
-    setValue("BuyerSettings", {});
+  btnReset.on("click", async function () {
+    await clearSettingMenus();
   });
 
   btnContainer.append($(searchBtn.__root));

@@ -81,9 +81,23 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 
 - If specified the autobuyer will bid on the card matching the search critieria for the price less than or equal to specified price.
 
-### Bid Exact
+### No. of cards to buy
+
+- Number of cards the autobuyer should buy before auto stopping.
+- Default Value (`10`).
+
+### Bid Exact Price
 
 - By default tool will bid for the lowest possible price and gradually increase the bid , if this flag is enabled bot will directly bid for the specified bid price.
+
+### Find Sale Price
+
+- If toggled will use FUTBIN price api to get the player price.
+
+### Sell Price Percent
+
+- When find sale price is toggled, this field is to specify the sale price from the percent of FUTBIN Price.
+- Default Value (`100`).
 
 ### Bid items expiring in:
 
@@ -101,10 +115,15 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 - The autobuyer will wait for the specified time before making the next search request.
 - Default Value (`7 - 15`).
 
-### Min clear count
+### Clear sold count
 
 - The autobuyer will clear all the sold items from transfer list when the count exceeds the specified value.
 - Default Value (`10`).
+
+### Rating Threshold
+
+- Will only list the card if the rating of the card is below this value.
+- Default Value (`100`).
 
 ### Max purchases per search request
 
@@ -127,18 +146,46 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 - Indicates the amount of search request to be made before pausing the tool.
 - Default Value (`10`).
 
-### Rating Filtering
+### Min Rating
 
-- If specified tool will bid only on items which has rating with in the specified range.
-- Default Value (`10` - `100`).
+- If specified tool will bid only on items which has rating greater or equal to this value.
+- Default Value (`10`).
 
-### Random Min Bid
+### Max Rating
+
+- If specified tool will bid only on items which has rating lesser or equal to this value.
+- Default Value (`100`).
+
+### Delay To Add
+
+- If add delay after buy is enabled, this field specifies the wait duration.
+- Default Value (`1S`) (S for seconds, M for Minutes, H for hours).
+
+### Add Delay After Buy
+
+- If enabled tool will wait for the specified time after trying to buy/bid on cards.
+
+### Max value of random min bid
+
+- If use random min bid is enabled , this field specifies the maximum value till which min bid can be generated.
+- Default Value (`300`).
+
+### Max value of random min buy
+
+- If use random min buy is enabled , this field specifies the maximum value till which min buy can be generated.
+- Default Value (`300`).
+
+### Use Random Min Bid
 
 - If enabled tool will randomize min bid for each search to avoid cached result.
 
-### Random Min Buy
+### Use Random Min Buy
 
 - If enabled tool will randomize min buy for each search to avoid cached result.
+
+### Skip GK
+
+- If enabled tool will skip bidding/buying GK Cards.
 
 ### Close On Captcha Trigger
 

@@ -13,7 +13,7 @@ import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput"
 export const captchaSettingsView = function () {
   return `<div style='display : none' class='buyer-settings-wrapper captcha-settings-view'>
     ${generateToggleInput(
-      "Close Web App on Captcha Trigger",
+      "Close Web App on <br/> Captcha Trigger",
       { idAbCloseTabToggle },
       ""
     )}

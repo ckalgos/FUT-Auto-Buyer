@@ -1,7 +1,4 @@
-import {
-  idAutoBuyerFoundLog,
-  idProgressAutobuyer,
-} from "../elementIds.constants";
+import { idProgressAutobuyer } from "../elementIds.constants";
 import { stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import { getValue, increAndGetStoreValue } from "../services/repository";
 import {
@@ -11,11 +8,10 @@ import {
   playAudio,
   wait,
 } from "./commonUtil";
-import { fetchPricesFromFutBin } from "./futbinUtil";
+import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToAbLog, writeToLog } from "./logUtil";
 import { sendNotificationToUser } from "./notificationUtil";
-import { getSellBidPrice, roundOffPrice } from "./priceUtils";
-import { getUserPlatform } from "./userUtil";
+import { getSellBidPrice } from "./priceUtils";
 
 export const checkRating = (
   cardRating,
@@ -46,44 +42,11 @@ export const buyPlayer = (player, playerName, price, sellPrice, isBin) => {
 
           const useFutBinPrice = buyerSetting["idSellFutBinPrice"];
           if (isValidRating && useFutBinPrice) {
-            try {
-              const futBinResponse = await fetchPricesFromFutBin(
-                player.definitionId,
-                3
-              );
-              if (futBinResponse.status === 200) {
-                const futBinPrices = JSON.parse(futBinResponse.responseText);
-                sellPrice = parseInt(
-                  futBinPrices[player.definitionId].prices[
-                    getUserPlatform()
-                  ].LCPrice.replace(/[,.]/g, "")
-                );
-                const futBinPercent = buyerSetting["idSellFutBinPercent"];
-                const calculatedPrice = roundOffPrice(
-                  (sellPrice * futBinPercent) / 100
-                );
-                writeToLog(
-                  `= Futbin price for ${playerName}: ${sellPrice}: ${futBinPercent}% of sale price: ${calculatedPrice}`,
-                  idAutoBuyerFoundLog
-                );
-                sellPrice = calculatedPrice;
-              } else {
-                sellPrice = null;
-                writeToLog(
-                  `= Unable to get Futbin price for ${playerName}`,
-                  idAutoBuyerFoundLog
-                );
-              }
-            } catch (err) {
-              err = err.statusText || err.status || err;
-              sellPrice = null;
-              writeToLog(
-                `= Unable to get Futbin price for ${playerName}, err: ${
-                  err || "error occured"
-                }`,
-                idAutoBuyerFoundLog
-              );
-            }
+            sellPrice = await getSellPriceFromFutBin(
+              buyerSetting,
+              playerName,
+              player.definitionId
+            );
           }
 
           const shouldList = sellPrice && !isNaN(sellPrice) && isValidRating;

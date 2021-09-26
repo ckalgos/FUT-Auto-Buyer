@@ -62,23 +62,23 @@ export const generateMenuItems = function () {
   return menuItems;
 };
 
-export const clearSettingMenus = () => {
+export const clearSettingMenus = async () => {
   deleteAllMenu();
-  appendMenuItems();
+  await appendMenuItems();
 };
 
-const appendMenuItems = () => {
+const appendMenuItems = async () => {
   menuItems.setActiveTab(0);
   menuRoot.append(buySettingsView.call(this));
   menuRoot.append(sellSettingsView.call(this));
   menuRoot.append(searchSettingsView.call(this));
   menuRoot.append(safeSettingsView.call(this));
-  filterSettingsView.call(this).then((res) => {
-    menuRoot.append(res);
-    menuRoot.append(captchaSettingsView.call(this));
-    menuRoot.append(notificationSettingsView.call(this));
-    menuRoot.append(commonSettingsView.call(this));
-  });
+  const filterVal = await filterSettingsView.call(this);
+  menuRoot.append(filterVal);
+  menuRoot.append(captchaSettingsView.call(this));
+  menuRoot.append(notificationSettingsView.call(this));
+  menuRoot.append(commonSettingsView.call(this));
+
   $(".menu-container").animate({
     scrollLeft: 0,
   });

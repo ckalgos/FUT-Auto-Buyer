@@ -76,7 +76,7 @@ export const notificationSettingsView = function () {
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-897-alarm-frenzy.ogg" type="audio/ogg">
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-897-alarm-frenzy.mp3" type="audio/mpeg">
       " Your browser does not support the audio element"
-  </audio>"
+  </audio>
   </div>
   `;
 };

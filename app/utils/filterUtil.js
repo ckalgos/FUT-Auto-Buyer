@@ -20,7 +20,7 @@ export const checkAndAppendOption = function (dropdownSelector, optionName) {
 export const updateMultiFilterSettings = function (e) {
   const selectedFilters = $(`#${idSelectedFilter}`).val() || [];
   if (selectedFilters.length) {
-    setValue("Filters", selectedFilters);
+    setValue("selectedFilters", selectedFilters);
     $(`#${idSelectFilterCount}`).text(
       "(" + selectedFilters.length + ") Filter Selected"
     );

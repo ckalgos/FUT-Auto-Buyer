@@ -12,6 +12,9 @@ import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput"
 
 export const safeSettingsView = function () {
   return `<div style='display : none' class='buyer-settings-wrapper safety-settings-view'>
+  <div class="search-price-header">
+    <h1 class="secondary">Safety Settings:</h1>
+  </div>
   ${generateTextInput(
     "Wait Time",
     "7-15",

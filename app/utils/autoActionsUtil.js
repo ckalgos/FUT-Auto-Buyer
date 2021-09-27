@@ -37,7 +37,7 @@ export const pauseBotIfRequired = function (buyerSetting) {
   }
 };
 
-export const switchFilterIfRequired = function () {
+export const switchFilterIfRequired = async function () {
   const availableFilters = getValue("selectedFilters");
   const fiterSearchCount = getValue("fiterSearchCount");
   const currentFilterCount = getValue("currentFilterCount");
@@ -51,7 +51,7 @@ export const switchFilterIfRequired = function () {
   }
   setValue("currentFilterCount", 1);
   let filterName = availableFilters[getRandNum(0, availableFilters.length - 1)];
-  loadFilter.call(this, filterName);
+  await loadFilter.call(this, filterName);
   writeToLog(
     `---------------------------  Running for filter ${filterName}  ---------------------------------------------`,
     idAutoBuyerFoundLog

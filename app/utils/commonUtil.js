@@ -106,3 +106,9 @@ export const playAudio = function (eventType) {
     elem.play();
   }
 };
+
+export const createElementFromHTML = (htmlString) => {
+  var div = document.createElement("div");
+  div.innerHTML = htmlString.trim();
+  return div.firstChild;
+};

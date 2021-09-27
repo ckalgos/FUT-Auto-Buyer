@@ -108,6 +108,12 @@ export const cssOverride = () => {
   .auto-buyer .enhancer-toggle {
     display: none !important;
   }
+  .search-price-header{
+    display: none !important;
+  }
+  .mrgTop10 {
+    margin-top: 10px;
+  }
   `;
   if (!isPhone()) {
     style.innerText += getScrollBarStyle();

@@ -8,6 +8,9 @@ import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput"
 
 export const commonSettingsView = function () {
   return `<div style='display : none' class='buyer-settings-wrapper common-settings-view'>
+  <div class="search-price-header">
+    <h1 class="secondary">Common Settings:</h1>
+  </div>
   ${generateTextInput(
     "Error Codes to stop bot (csv)",
     "",

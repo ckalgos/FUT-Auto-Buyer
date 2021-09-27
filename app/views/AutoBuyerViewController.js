@@ -1,11 +1,18 @@
+import { idAbCompactView } from "../elementIds.constants";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import { statsProcessor } from "../handlers/statsProcessor";
-import { setValue } from "../services/repository";
+import { getValue, setValue } from "../services/repository";
+import { createElementFromHTML } from "../utils/commonUtil";
 import { clearLogs } from "../utils/logUtil";
+import { generateToggleInput } from "../utils/uiUtils/generateToggleInput";
 import { createButton } from "./layouts/ButtonView";
 import { BuyerStatus } from "./layouts/HeaderView";
 import { initializeLog, logView } from "./layouts/LogView";
-import { clearSettingMenus, generateMenuItems } from "./layouts/MenuItemView";
+import {
+  clearSettingMenus,
+  generateMenuItems,
+  setDefaultActiveTab,
+} from "./layouts/MenuItemView";
 import { filterHeaderSettingsView } from "./layouts/Settings/FilterSettingsView";
 
 export const AutoBuyerViewController = function (t) {
@@ -56,6 +63,38 @@ AutoBuyerViewController.prototype.init = function () {
   btnContainer.append($(searchBtn.__root));
   btnContainer.append($(stopBtn.__root));
   btnContainer.append($(clearLogBtn.__root));
+  root.find(".search-prices").append(
+    createElementFromHTML(
+      generateToggleInput(
+        "Legacy View",
+        { idAbCompactView },
+        "",
+        "mrgTop10",
+        (evt) => {
+          let legacyView = getValue("LegacyView");
+          if (legacyView) {
+            legacyView = false;
+            $(evt.currentTarget).removeClass("toggled");
+          } else {
+            legacyView = true;
+            $(evt.currentTarget).addClass("toggled");
+          }
+          setValue("LegacyView", legacyView);
+          if (legacyView) {
+            $(".menu-container").css("display", "none");
+            $(".buyer-settings-wrapper").css("display", "");
+            $(".search-price-header").attr("style", "display: flex !important");
+          } else {
+            $(".buyer-settings-wrapper").css("display", "none");
+            $(".search-price-header").removeAttr("style");
+            $(".menu-container").css("display", "block");
+            $(".buy-settings-view").css("display", "");
+            setDefaultActiveTab();
+          }
+        }
+      )
+    )
+  );
   root.find(".search-prices").append(menuItems.__root);
   filterHeaderSettingsView.call(this).then((res) => {
     root.find(".ut-item-search-view").first().prepend(res);

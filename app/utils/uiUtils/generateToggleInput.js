@@ -11,18 +11,21 @@ const clickHandler = (key, evt) => {
     $(evt.currentTarget).addClass("toggled");
   }
   setValue("BuyerSettings", buyerSetting);
+  return buyerSetting[key];
 };
 
 export const generateToggleInput = (
   label,
   id,
   info,
-  additionalClasses = "buyer-settings-field"
+  additionalClasses = "buyer-settings-field",
+  customCallBack = null
 ) => {
   const key = Object.keys(id)[0];
   if (!eventMappers.has(key)) {
     $(document).on("click touchend", `#${id[key]}`, (evt) => {
-      clickHandler(key, evt);
+      !customCallBack && clickHandler(key, evt);
+      customCallBack && customCallBack(evt);
     });
     eventMappers.add(key);
   }

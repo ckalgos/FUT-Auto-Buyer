@@ -32,7 +32,10 @@ const filters = async () => {
 };
 
 export const filterSettingsView = async function () {
-  return `<div style='display : none' class='buyer-settings-wrapper filter-settings-view'> 
+  return `<div style='display : none' class='buyer-settings-wrapper filter-settings-view'>
+                <div class="search-price-header">
+                  <h1 class="secondary">Filter Settings:</h1>
+                </div>
                 <div class="price-filter buyer-settings-field multiple-filter">
                     <select  multiple="multiple" class="multiselect-filter filter-header-settings" id="${idSelectedFilter}"
                      name="selectedFilters" style="overflow-y : scroll;width: 50%;">

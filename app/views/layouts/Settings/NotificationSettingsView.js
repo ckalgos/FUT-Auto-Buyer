@@ -16,7 +16,10 @@ import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 
 export const notificationSettingsView = function () {
-  return `<div style='display : none' class='buyer-settings-wrapper notification-settings-view'>  
+  return `<div style='display : none' class='buyer-settings-wrapper notification-settings-view'>
+  <div class="search-price-header">
+    <h1 class="secondary">Notification Settings:</h1>
+  </div>
   ${generateTextInput(
     "Telegram Bot Token",
     "",

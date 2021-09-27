@@ -6,6 +6,7 @@ import { notificationSettingsView } from "./Settings/NotificationSettingsView";
 import { commonSettingsView } from "./Settings/CommonSettingsView";
 import { searchSettingsView } from "./Settings/SearchSettingsView";
 import { filterSettingsView } from "./Settings/FilterSettingsView";
+import { getValue } from "../../services/repository";
 
 const settingsLookup = new Map();
 settingsLookup.set(0, {
@@ -67,6 +68,13 @@ export const clearSettingMenus = async () => {
   await appendMenuItems();
 };
 
+export const setDefaultActiveTab = () => {
+  menuItems.setActiveTab(0);
+  $(".menu-container").animate({
+    scrollLeft: 0,
+  });
+};
+
 const appendMenuItems = async () => {
   menuItems.setActiveTab(0);
   menuRoot.append(buySettingsView.call(this));
@@ -82,6 +90,13 @@ const appendMenuItems = async () => {
   $(".menu-container").animate({
     scrollLeft: 0,
   });
+
+  const legacyView = getValue("LegacyView");
+  if (legacyView) {
+    $(".menu-container").css("display", "none");
+    $(".buyer-settings-wrapper").css("display", "");
+    $(".search-price-header").attr("style", "display: flex !important");
+  }
 };
 
 const deleteAllMenu = () => {

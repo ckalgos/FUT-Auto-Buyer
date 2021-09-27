@@ -49,7 +49,7 @@ export const startAutoBuyer = async function (isResume) {
   let watchListWithContext = watchListUtil.bind(this);
   let transferListWithContext = transferListUtil.bind(this);
   let pauseBotWithContext = pauseBotIfRequired.bind(this);
-  switchFilterWithContext();
+  await switchFilterWithContext();
   let buyerSetting = getValue("BuyerSettings");
   await addUserWatchItems();
   sendPinEvents("Hub - Transfers");
@@ -65,7 +65,7 @@ export const startAutoBuyer = async function (isResume) {
     stopBotIfRequired(buyerSetting);
     const isBuyerActive = getValue("autoBuyerActive");
     if (isBuyerActive) {
-      switchFilterWithContext();
+      await switchFilterWithContext();
       buyerSetting = getValue("BuyerSettings");
       sendPinEvents("Hub - Transfers");
       await srchTmWithContext(buyerSetting);
@@ -207,7 +207,7 @@ const searchTransferMarket = function (buyerSetting) {
               continue;
             }
 
-            if (isNaN(userBuyNowPrice) && isNaN(priceToBid)) {
+            if (!userBuyNowPrice && !bidPrice) {
               logWrite("skip >>> (No Buy or Bid Price given)");
               continue;
             }
@@ -227,14 +227,20 @@ const searchTransferMarket = function (buyerSetting) {
               continue;
             }
 
-            if (buyNowPrice > userBuyNowPrice && currentBid > priceToBid) {
+            if (
+              buyNowPrice > userBuyNowPrice ||
+              (bidPrice && currentBid > priceToBid)
+            ) {
               logWrite("skip >>> (higher than specified buy/bid price)");
               continue;
             }
 
             const userCoins = services.User.getUser().coins.amount;
-            if (userCoins < buyNowPrice && userCoins < priceToBid) {
-              logWrite("skip >>> (Insufficient coins to purchase)");
+            if (
+              userCoins < buyNowPrice ||
+              (bidPrice && userCoins < checkPrice)
+            ) {
+              logWrite("skip >>> (Insufficient coins to buy/bid)");
               continue;
             }
 
@@ -259,9 +265,12 @@ const searchTransferMarket = function (buyerSetting) {
               }
               logWrite("attempt bid: " + checkPrice);
               currentBids.add(auction.tradeId);
+              isBidDone = true;
               maxPurchases--;
               await buyPlayer(player, playerName, checkPrice, usersellPrice);
+              continue;
             }
+            logWrite("skip >>> (No Actions Required)");
           }
           if (auctionPrices.length) {
             trackMarketPrices(auctionPrices);

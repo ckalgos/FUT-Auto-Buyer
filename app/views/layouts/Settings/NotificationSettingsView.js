@@ -9,6 +9,7 @@ import {
   idTelegramChatId,
   idTestNotification,
   idWinMp3,
+  idFinishMp3,
 } from "../../../elementIds.constants";
 import { sendNotificationToUser } from "../../../utils/notificationUtil";
 import { generateButton } from "../../../utils/uiUtils/generateButton";
@@ -70,15 +71,20 @@ export const notificationSettingsView = function () {
     () => sendNotificationToUser("Test Notification Message", true),
     "call-to-action"
   )}
-  <audio id=${idWinMp3} hidden">
+  <audio id='${idWinMp3}' hidden>
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-869-coins.ogg" type="audio/ogg">
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-869-coins.mp3" type="audio/mpeg">
       "Your browser does not support the audio element"
   </audio> 
-  <audio id=${idCapatchaMp3} hidden">
+  <audio id='${idCapatchaMp3}' hidden>
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-897-alarm-frenzy.ogg" type="audio/ogg">
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-897-alarm-frenzy.mp3" type="audio/mpeg">
-      " Your browser does not support the audio element"
+      "Your browser does not support the audio element"
+  </audio>
+  <audio id='${idFinishMp3}' hidden>
+    <source src="https://freesound.org/data/previews/220/220763_4104696-lq.ogg" type="audio/ogg">
+    <source src="https://freesound.org/data/previews/220/220763_4104696-lq.mp3" type="audio/mpeg">
+      "Your browser does not support the audio element"
   </audio>
   </div>
   `;

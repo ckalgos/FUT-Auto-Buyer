@@ -11,6 +11,7 @@ import {
   formatString,
   getRandNum,
   getRangeValue,
+  playAudio,
 } from "../utils/commonUtil";
 import { writeToDebugLog, writeToLog } from "../utils/logUtil";
 import { sendPinEvents, sendUINotification } from "../utils/notificationUtil";
@@ -88,6 +89,9 @@ export const stopAutoBuyer = (isPaused) => {
   const isActive = getValue("autoBuyerActive");
   if (!isActive) return;
   setValue("autoBuyerActive", false);
+  if(!isPaused){
+    playAudio('finish');
+  }
   sendUINotification(isPaused ? "Autobuyer Paused" : "Autobuyer Stopped");
   $("#" + idAbStatus)
     .css("color", "red")

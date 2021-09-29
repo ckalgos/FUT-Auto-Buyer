@@ -1,4 +1,4 @@
-import { idCapatchaMp3, idWinMp3 } from "../elementIds.constants";
+import { idCapatchaMp3, idWinMp3, idFinishMp3 } from "../elementIds.constants";
 import { getValue } from "../services/repository";
 
 export const generateId = (length) => {
@@ -93,19 +93,23 @@ export const networkCallWithRetry = (execution, delay, retries) =>
       });
   });
 
-export const playAudio = function (eventType) {
-  const buyerSetting = getValue("BuyerSettings");
-  if (buyerSetting["idAbSoundToggle"]) {
-    let elem = document.getElementById(idWinMp3);
-
-    if (eventType == "capatcha") {
-      elem = document.getElementById(idCapatchaMp3);
+  export const playAudio = function (eventType) {
+    const buyerSetting = getValue("BuyerSettings");
+    if (buyerSetting["idAbSoundToggle"]) {
+      let elem = document.getElementById(idWinMp3);
+  
+      if (eventType == "capatcha") {
+        elem = document.getElementById(idCapatchaMp3);
+      }
+  
+      if (eventType == "finish") {
+        elem = document.getElementById(idFinishMp3);
+      }
+  
+      elem.currentTime = 0;
+      elem.play();
     }
-
-    elem.currentTime = 0;
-    elem.play();
-  }
-};
+  };
 
 export const createElementFromHTML = (htmlString) => {
   var div = document.createElement("div");

@@ -59,6 +59,7 @@ export const idAbStopErrorCode = "elem_" + generateId(15);
 export const idAbStopErrorCodeCount = "elem_" + generateId(15);
 export const idSearchWrapper = "elem_" + generateId(15);
 export const idWinMp3 = "elem_" + generateId(15);
+export const idFinishMp3 = "elem_" + generateId(15);
 export const idCapatchaMp3 = "elem_" + generateId(15);
 export const idProxyAddress = "elem_" + generateId(15);
 export const idProxyPort = "elem_" + generateId(15);

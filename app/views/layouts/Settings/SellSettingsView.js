@@ -25,7 +25,8 @@ const updateAfterTax = (salePrice) => {
 };
 
 export const sellSettingsView = function () {
-  return `<div style='display : none' class='buyer-settings-wrapper sell-settings-view'>
+  return `<div style='display : none' class='buyer-settings-wrapper sell-settings-view'>    
+    <hr class="search-price-header header-hr">
     <div class="search-price-header">
       <h1 class="secondary">Sell Settings:</h1>
     </div>

@@ -32,7 +32,8 @@ const filters = async () => {
 };
 
 export const filterSettingsView = async function () {
-  return `<div style='display : none' class='buyer-settings-wrapper filter-settings-view'>
+  return `<div style='display : none' class='buyer-settings-wrapper filter-settings-view'>  
+                <hr class="search-price-header header-hr">
                 <div class="search-price-header">
                   <h1 class="secondary">Filter Settings:</h1>
                 </div>

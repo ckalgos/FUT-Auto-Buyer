@@ -11,7 +11,8 @@ import {
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 
 export const searchSettingsView = function () {
-  return `<div style='display : none' class='buyer-settings-wrapper results-filter-view'>
+  return `<div style='display : none' class='buyer-settings-wrapper results-filter-view'>  
+    <hr class="search-price-header header-hr">
     <div class="search-price-header">
       <h1 class="secondary">Search Settings:</h1>
     </div> 

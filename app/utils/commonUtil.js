@@ -112,3 +112,9 @@ export const createElementFromHTML = (htmlString) => {
   div.innerHTML = htmlString.trim();
   return div.firstChild;
 };
+
+export const getTimerProgress = function (timer) {
+  if (!timer) return 0;
+  var time = new Date().getTime();
+  return (Math.max(0, timer.end - time) / (timer.end - timer.start)) * 100;
+};

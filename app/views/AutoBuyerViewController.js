@@ -6,7 +6,7 @@ import { createElementFromHTML } from "../utils/commonUtil";
 import { clearLogs } from "../utils/logUtil";
 import { generateToggleInput } from "../utils/uiUtils/generateToggleInput";
 import { createButton } from "./layouts/ButtonView";
-import { BuyerStatus } from "./layouts/HeaderView";
+import { BuyerStatus, HeaderView } from "./layouts/HeaderView";
 import { initializeLog, logView } from "./layouts/LogView";
 import {
   clearSettingMenus,
@@ -81,13 +81,13 @@ AutoBuyerViewController.prototype.init = function () {
           }
           setValue("LegacyView", legacyView);
           if (legacyView) {
-            $(".menu-container").css("display", "none");
+            $(".settings-menu").css("display", "none");
             $(".buyer-settings-wrapper").css("display", "");
             $(".search-price-header").attr("style", "display: flex !important");
           } else {
             $(".buyer-settings-wrapper").css("display", "none");
             $(".search-price-header").removeAttr("style");
-            $(".menu-container").css("display", "block");
+            $(".settings-menu").css("display", "block");
             $(".buy-settings-view").css("display", "");
             setDefaultActiveTab();
           }
@@ -95,6 +95,7 @@ AutoBuyerViewController.prototype.init = function () {
       )
     )
   );
+  $(menuItems.__root).find(".menu-container").addClass("settings-menu");
   root.find(".search-prices").append(menuItems.__root);
   filterHeaderSettingsView.call(this).then((res) => {
     root.find(".ut-item-search-view").first().prepend(res);
@@ -110,7 +111,10 @@ AutoBuyerViewController.prototype.getNavigationTitle = function () {
   setTimeout(() => {
     const title = $(".title");
     isPhone() && title.addClass("buyer-header");
+    $(".view-navbar-currency").remove();
+    $(".view-navbar-clubinfo").remove();
     title.append(BuyerStatus());
+    $(HeaderView()).insertAfter(title);
     $(".ut-navigation-container-view--content").append(logView());
     initializeLog();
   });

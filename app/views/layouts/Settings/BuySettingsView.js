@@ -9,8 +9,9 @@ import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 
 export const buySettingsView = function () {
-  return `<div class='buyer-settings-wrapper buy-settings-view'>
-      <div class="search-price-header">
+  return `<div class='buyer-settings-wrapper buy-settings-view'>  
+      <hr class="search-price-header header-hr">
+      <div class="search-price-header"> 
          <h1 class="secondary">Buy/Bid Settings:</h1>
       </div>
       ${generateTextInput("Buy Price", "", { idAbBuyPrice }, "<br/>")}

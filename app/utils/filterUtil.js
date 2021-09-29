@@ -25,6 +25,7 @@ export const updateMultiFilterSettings = function (e) {
       "(" + selectedFilters.length + ") Filter Selected"
     );
   } else {
+    setValue("selectedFilters", []);
     $(`#${idSelectFilterCount}`).text("No Filter Selected");
   }
 };

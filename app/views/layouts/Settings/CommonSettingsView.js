@@ -7,7 +7,8 @@ import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 
 export const commonSettingsView = function () {
-  return `<div style='display : none' class='buyer-settings-wrapper common-settings-view'>
+  return `<div style='display : none' class='buyer-settings-wrapper common-settings-view'>  
+  <hr class="search-price-header header-hr">
   <div class="search-price-header">
     <h1 class="secondary">Common Settings:</h1>
   </div>

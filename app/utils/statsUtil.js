@@ -5,3 +5,9 @@ export const updateRequestCount = () => {
   currentStats["searchCount"]++;
   setValue("sessionStats", currentStats);
 };
+
+export const updateProfit = (val) => {
+  const currentStats = getValue("sessionStats");
+  currentStats["profit"] += val;
+  setValue("sessionStats", currentStats);
+};

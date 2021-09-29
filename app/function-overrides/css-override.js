@@ -114,6 +114,22 @@ export const cssOverride = () => {
   .mrgTop10 {
     margin-top: 10px;
   }
+  .header-hr {
+    padding: 0px !important;
+    width: 96% !important;
+  }
+  .stats-progress {
+    float: right; 
+    height: 10px; 
+    width: 100px; 
+    background: #888; 
+    margin: 5px 0px 5px 5px;
+  }
+  .stats-fill {
+    background: #000; 
+    height: 10px; 
+    width: 0%
+  }
   `;
   if (!isPhone()) {
     style.innerText += getScrollBarStyle();

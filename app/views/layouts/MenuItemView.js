@@ -7,6 +7,7 @@ import { commonSettingsView } from "./Settings/CommonSettingsView";
 import { searchSettingsView } from "./Settings/SearchSettingsView";
 import { filterSettingsView } from "./Settings/FilterSettingsView";
 import { getValue } from "../../services/repository";
+import { updateMultiFilterSettings } from "../../utils/filterUtil";
 
 const settingsLookup = new Map();
 settingsLookup.set(0, {
@@ -97,6 +98,19 @@ const appendMenuItems = async () => {
     $(".buyer-settings-wrapper").css("display", "");
     $(".search-price-header").attr("style", "display: flex !important");
   }
+
+  setTimeout(() => {
+    const selectedFilters = getValue("selectedFilters") || [];
+    $.each(selectedFilters, function (idx, val) {
+      $(".multiselect-filter option[value='" + val + "']").prop(
+        "selected",
+        "selected"
+      );
+    });
+    if (selectedFilters.length) {
+      updateMultiFilterSettings();
+    }
+  });
 };
 
 const deleteAllMenu = () => {

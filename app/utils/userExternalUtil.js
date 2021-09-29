@@ -2,10 +2,11 @@ import * as ElementIds from "../elementIds.constants";
 import { getValue, setValue } from "../services/repository";
 import { clearSettingMenus } from "../views/layouts/MenuItemView";
 import { deleteFilters, insertFilters } from "./dbUtil";
-import { checkAndAppendOption } from "./filterUtil";
+import { checkAndAppendOption, updateMultiFilterSettings } from "./filterUtil";
 import { sendUINotification } from "./notificationUtil";
 
 const filterDropdownId = `#${ElementIds.idFilterDropdown}`;
+const selectedFilterId = `#${ElementIds.idSelectedFilter}`;
 
 export const saveFilterDetails = function (self) {
   const btnContext = this;
@@ -58,6 +59,7 @@ export const loadFilter = async function (currentFilterName) {
     searchCriteria: { criteria, playerData, buyerSettings },
   } = JSON.parse(filterSetting);
   setValue("BuyerSettings", buyerSettings);
+  setValue("currentFilter", currentFilterName);
   this._viewmodel.playerData = {};
   Object.assign(this._viewmodel.searchCriteria, criteria);
   Object.assign(this._viewmodel.playerData, playerData);
@@ -100,6 +102,8 @@ export const deleteFilter = async function () {
     this.viewDidAppear();
 
     delete getValue("filters")[filterName];
+    $(`${selectedFilterId}` + ` option[value="${filterName}"]`).remove();
+    updateMultiFilterSettings();
     deleteFilters(filterName);
     sendUINotification("Changes saved successfully");
   }

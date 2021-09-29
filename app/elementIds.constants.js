@@ -48,6 +48,7 @@ export const idAbSearchProgress = "elem_" + generateId(15);
 export const idAbStatisticsProgress = "elem_" + generateId(15);
 export const idAbRequestCount = "elem_" + generateId(15);
 export const idAbCoins = "elem_" + generateId(15);
+export const idAbProfit = "elem_" + generateId(15);
 export const idAbStatus = "elem_" + generateId(15);
 export const idAbSoldItems = "elem_" + generateId(15);
 export const idAbUnsoldItems = "elem_" + generateId(15);

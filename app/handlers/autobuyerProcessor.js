@@ -51,7 +51,7 @@ export const startAutoBuyer = async function (isResume) {
   let pauseBotWithContext = pauseBotIfRequired.bind(this);
   await switchFilterWithContext();
   let buyerSetting = getValue("BuyerSettings");
-  await addUserWatchItems();
+  !isResume && (await addUserWatchItems());
   sendPinEvents("Hub - Transfers");
   await srchTmWithContext(buyerSetting);
   sendPinEvents("Hub - Transfers");
@@ -88,6 +88,10 @@ export const stopAutoBuyer = (isPaused) => {
   const isActive = getValue("autoBuyerActive");
   if (!isActive) return;
   setValue("autoBuyerActive", false);
+  setValue("searchInterval", {
+    ...getValue("searchInterval"),
+    end: Date.now(),
+  });
   sendUINotification(isPaused ? "Autobuyer Paused" : "Autobuyer Stopped");
   $("#" + idAbStatus)
     .css("color", "red")
@@ -99,7 +103,7 @@ const searchTransferMarket = function (buyerSetting) {
   return new Promise((resolve) => {
     sendPinEvents("Transfer Market Search");
     updateRequestCount();
-    var searchCriteria = this._viewmodel.searchCriteria;
+    let searchCriteria = this._viewmodel.searchCriteria;
 
     services.Item.clearTransferMarketCache();
 
@@ -227,14 +231,6 @@ const searchTransferMarket = function (buyerSetting) {
               continue;
             }
 
-            if (
-              buyNowPrice > userBuyNowPrice ||
-              (bidPrice && currentBid > priceToBid)
-            ) {
-              logWrite("skip >>> (higher than specified buy/bid price)");
-              continue;
-            }
-
             const userCoins = services.User.getUser().coins.amount;
             if (
               userCoins < buyNowPrice ||
@@ -253,7 +249,8 @@ const searchTransferMarket = function (buyerSetting) {
                 playerName,
                 buyNowPrice,
                 usersellPrice,
-                true
+                true,
+                auction.tradeId
               );
               continue;
             }
@@ -265,11 +262,26 @@ const searchTransferMarket = function (buyerSetting) {
               }
               logWrite("attempt bid: " + checkPrice);
               currentBids.add(auction.tradeId);
-              isBidDone = true;
               maxPurchases--;
-              await buyPlayer(player, playerName, checkPrice, usersellPrice);
+              await buyPlayer(
+                player,
+                playerName,
+                checkPrice,
+                usersellPrice,
+                false,
+                auction.tradeId
+              );
               continue;
             }
+
+            if (
+              (userBuyNowPrice && buyNowPrice > userBuyNowPrice) ||
+              (bidPrice && currentBid > priceToBid)
+            ) {
+              logWrite("skip >>> (higher than specified buy/bid price)");
+              continue;
+            }
+
             logWrite("skip >>> (No Actions Required)");
           }
           if (auctionPrices.length) {

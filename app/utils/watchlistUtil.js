@@ -14,6 +14,7 @@ import { writeToLog } from "./logUtil";
 import { sendPinEvents } from "./notificationUtil";
 import { getBuyBidPrice, getSellBidPrice } from "./priceUtils";
 import { buyPlayer } from "./purchaseUtil";
+import { updateProfit } from "./statsUtil";
 
 const sellBids = new Set();
 
@@ -31,85 +32,111 @@ export const watchListUtil = function (buyerSetting) {
         return item._auction && item._auction._tradeState === "active";
       });
 
-      services.Item.refreshAuctions(activeItems).observe(
-        this,
-        function (t, refreshResponse) {
-          services.Item.requestWatchedItems().observe(
-            this,
-            async function (t, watchResponse) {
-              const isAutoBuyerActive = getValue("autoBuyerActive");
-              if (isAutoBuyerActive && bidPrice) {
-                let outBidItems = watchResponse.data.items.filter(function (
-                  item
-                ) {
-                  return (
-                    item._auction._bidState === "outbid" &&
-                    item._auction._tradeState === "active"
-                  );
-                });
-
-                for (var i = 0; i < outBidItems.length; i++) {
-                  await tryBidItems(
-                    outBidItems[i],
-                    bidPrice,
-                    sellPrice,
-                    buyerSetting
-                  );
-                }
-              }
-
-              const useFutBinPrice = buyerSetting["idSellFutBinPrice"];
-
-              if (
-                isAutoBuyerActive &&
-                ((sellPrice && !isNaN(sellPrice)) || useFutBinPrice)
-              ) {
-                const userWatchItems = getValue("userWatchItems");
-                let boughtItems = response.data.items.filter(function (item) {
-                  return (
-                    item.getAuctionData().isWon() &&
-                    !userWatchItems.has(item._auction.tradeId) &&
-                    !sellBids.has(item._auction.tradeId)
-                  );
-                });
-
-                for (var i = 0; i < boughtItems.length; i++) {
-                  const player = boughtItems[i];
-                  const ratingThreshold = buyerSetting["idSellRatingThreshold"];
-                  let playerRating = parseInt(player.rating);
-                  const isValidRating =
-                    !ratingThreshold || playerRating <= ratingThreshold;
-
-                  if (isValidRating && useFutBinPrice) {
-                    let playerName = formatString(player._staticData.name, 15);
-                    sellPrice = await getSellPriceFromFutBin(
-                      buyerSetting,
-                      playerName,
-                      player.definitionId
+      if (activeItems.length) {
+        services.Item.refreshAuctions(activeItems).observe(
+          this,
+          function (t, refreshResponse) {
+            services.Item.requestWatchedItems().observe(
+              this,
+              async function (t, watchResponse) {
+                const isAutoBuyerActive = getValue("autoBuyerActive");
+                const filterName = getValue("currentFilter");
+                const bidItemsByFilter =
+                  getValue("filterBidItems") || new Map();
+                const filterWatchList =
+                  bidItemsByFilter.get(filterName) || new Set();
+                if (isAutoBuyerActive && bidPrice) {
+                  let outBidItems = watchResponse.data.items.filter(function (
+                    item
+                  ) {
+                    return (
+                      item._auction._bidState === "outbid" &&
+                      item._auction._tradeState === "active"
                     );
-                  }
+                  });
 
-                  const shouldList =
-                    sellPrice && !isNaN(sellPrice) && isValidRating;
+                  for (var i = 0; i < outBidItems.length; i++) {
+                    const currentItem = outBidItems[i];
+                    if (
+                      filterName &&
+                      !filterWatchList.has(currentItem._auction.tradeId)
+                    ) {
+                      continue;
+                    }
 
-                  if (shouldList) {
-                    await sellWonItems(
-                      player,
+                    await tryBidItems(
+                      currentItem,
+                      bidPrice,
                       sellPrice,
-                      buyerSetting["idAbWaitTime"]
+                      buyerSetting
                     );
-                  } else {
-                    services.Item.move(player, ItemPile.CLUB);
                   }
                 }
-              }
 
-              services.Item.clearTransferMarketCache();
-              resolve();
-            }
-          );
-        }
-      );
+                const useFutBinPrice = buyerSetting["idSellFutBinPrice"];
+
+                if (
+                  isAutoBuyerActive &&
+                  ((sellPrice && !isNaN(sellPrice)) || useFutBinPrice)
+                ) {
+                  const userWatchItems = getValue("userWatchItems");
+                  let boughtItems = watchResponse.data.items.filter(function (
+                    item
+                  ) {
+                    return (
+                      item.getAuctionData().isWon() &&
+                      !userWatchItems.has(item._auction.tradeId) &&
+                      !sellBids.has(item._auction.tradeId)
+                    );
+                  });
+
+                  for (var i = 0; i < boughtItems.length; i++) {
+                    const player = boughtItems[i];
+                    const ratingThreshold =
+                      buyerSetting["idSellRatingThreshold"];
+                    let playerRating = parseInt(player.rating);
+                    const isValidRating =
+                      !ratingThreshold || playerRating <= ratingThreshold;
+
+                    if (isValidRating && useFutBinPrice) {
+                      let playerName = formatString(
+                        player._staticData.name,
+                        15
+                      );
+                      sellPrice = await getSellPriceFromFutBin(
+                        buyerSetting,
+                        playerName,
+                        player.definitionId
+                      );
+                    }
+
+                    const shouldList =
+                      sellPrice && !isNaN(sellPrice) && isValidRating;
+
+                    if (shouldList) {
+                      updateProfit(
+                        sellPrice * 0.95 - player._auction.currentBid
+                      );
+                      await sellWonItems(
+                        player,
+                        sellPrice,
+                        buyerSetting["idAbWaitTime"]
+                      );
+                    } else {
+                      services.Item.move(player, ItemPile.CLUB);
+                    }
+                  }
+                }
+
+                services.Item.clearTransferMarketCache();
+                resolve();
+              }
+            );
+          }
+        );
+      } else {
+        resolve();
+      }
     });
   });
 };

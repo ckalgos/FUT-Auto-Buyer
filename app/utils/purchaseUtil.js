@@ -1,6 +1,10 @@
 import { idProgressAutobuyer } from "../elementIds.constants";
 import { stopAutoBuyer } from "../handlers/autobuyerProcessor";
-import { getValue, increAndGetStoreValue } from "../services/repository";
+import {
+  getValue,
+  increAndGetStoreValue,
+  setValue,
+} from "../services/repository";
 import {
   convertToSeconds,
   formatString,
@@ -12,6 +16,7 @@ import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToAbLog, writeToLog } from "./logUtil";
 import { sendNotificationToUser } from "./notificationUtil";
 import { getSellBidPrice } from "./priceUtils";
+import { updateProfit } from "./statsUtil";
 
 export const checkRating = (
   cardRating,
@@ -21,7 +26,14 @@ export const checkRating = (
 
 const errorCodeCountMap = new Map();
 
-export const buyPlayer = (player, playerName, price, sellPrice, isBin) => {
+export const buyPlayer = (
+  player,
+  playerName,
+  price,
+  sellPrice,
+  isBin,
+  tradeId
+) => {
   const buyerSetting = getValue("BuyerSettings");
   return new Promise((resolve) => {
     services.Item.bid(player, price).observe(
@@ -65,6 +77,7 @@ export const buyPlayer = (player, playerName, price, sellPrice, isBin) => {
 
             setTimeout(function () {
               if (shouldList) {
+                updateProfit(sellPrice * 0.95 - price);
                 services.Item.list(
                   player,
                   getSellBidPrice(sellPrice),
@@ -86,6 +99,16 @@ export const buyPlayer = (player, playerName, price, sellPrice, isBin) => {
               "success",
               "waiting to expire"
             );
+            const filterName = getValue("currentFilter");
+            if (filterName) {
+              const bidItemsByFilter = getValue("filterBidItems") || new Map();
+              if (bidItemsByFilter.has(filterName)) {
+                bidItemsByFilter.get(filterName).add(tradeId);
+              } else {
+                bidItemsByFilter.set(filterName, new Set([tradeId]));
+              }
+              setValue("filterBidItems", bidItemsByFilter);
+            }
           }
 
           if (notificationType === "B" || notificationType === "A") {

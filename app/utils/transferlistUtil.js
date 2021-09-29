@@ -3,17 +3,9 @@ import { updateStats } from "../handlers/statsProcessor";
 import { writeToLog } from "./logUtil";
 import { sendPinEvents } from "./notificationUtil";
 
-export const transferListUtil = function (
-  relistUnsold,
-  minSoldCount,
-  isInitialRun
-) {
+export const transferListUtil = function (relistUnsold, minSoldCount) {
   sendPinEvents("Transfer List - List View");
   return new Promise((resolve) => {
-    if (!isInitialRun && !repositories.Item.isDirty(ItemPile["TRANSFER"])) {
-      resolve();
-      return;
-    }
     services.Item.requestTransferItems().observe(this, function (t, response) {
       let soldItems = response.data.items.filter(function (item) {
         return item.getAuctionData().isSold();
@@ -49,6 +41,10 @@ export const transferListUtil = function (
       }).length;
 
       updateStats("availableItems", availableItems);
+
+      const userCoins = services.User.getUser().coins.amount;
+      updateStats("coinsNumber", userCoins);
+      updateStats("coins", userCoins.toLocaleString());
 
       if (shouldClearSold) {
         writeToLog(

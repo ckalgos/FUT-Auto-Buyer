@@ -31,17 +31,7 @@ export const saveFilterDetails = function (self) {
     let filterName = prompt("Enter a name for this filter", currentFilterName);
 
     if (filterName) {
-      filterName = filterName.toUpperCase();
-      checkAndAppendOption(filterDropdownId, filterName);
-      checkAndAppendOption(`#${ElementIds.idSelectedFilter}`, filterName);
-
-      $(`${filterDropdownId} option[value="${filterName}"]`).attr(
-        "selected",
-        true
-      );
-
-      getValue("filters")[filterName] = JSON.stringify(settingsJson);
-      insertFilters(filterName, getValue("filters")[filterName]);
+      saveFilterInDB(filterName, settingsJson);
       $(btnContext).removeClass("active");
       sendUINotification("Changes saved successfully");
     } else {
@@ -49,6 +39,17 @@ export const saveFilterDetails = function (self) {
       sendUINotification("Filter Name Required", UINotificationType.NEGATIVE);
     }
   }, 200);
+};
+
+export const saveFilterInDB = (filterName, settingsJson) => {
+  filterName = filterName.toUpperCase();
+  checkAndAppendOption(filterDropdownId, filterName);
+  checkAndAppendOption(`#${ElementIds.idSelectedFilter}`, filterName);
+
+  $(`${filterDropdownId} option[value="${filterName}"]`).attr("selected", true);
+
+  getValue("filters")[filterName] = JSON.stringify(settingsJson);
+  insertFilters(filterName, getValue("filters")[filterName]);
 };
 
 export const loadFilter = async function (currentFilterName) {

@@ -40,5 +40,3 @@ export const trackMarketPrices = async (playerPrices) => {
     authToken.token
   );
 };
-
-export const trackPlayers = async (players) => {};

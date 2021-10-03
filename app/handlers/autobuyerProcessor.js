@@ -99,7 +99,7 @@ export const stopAutoBuyer = (isPaused) => {
   sendUINotification(isPaused ? "Autobuyer Paused" : "Autobuyer Stopped");
   $("#" + idAbStatus)
     .css("color", "red")
-    .html("IDLE");
+    .html(isPaused ? "PAUSED" : "IDLE");
 };
 
 const searchTransferMarket = function (buyerSetting) {
@@ -154,10 +154,7 @@ const searchTransferMarket = function (buyerSetting) {
             );
 
             if (type === "player") {
-              const { trackPayLoad, playerPayLoad } = formRequestPayLoad(
-                player,
-                platform
-              );
+              const { trackPayLoad } = formRequestPayLoad(player, platform);
 
               auctionPrices.push(trackPayLoad);
             }
@@ -272,7 +269,7 @@ const searchTransferMarket = function (buyerSetting) {
                 playerName,
                 checkPrice,
                 usersellPrice,
-                false,
+                checkPrice === buyNowPrice,
                 auction.tradeId
               );
               continue;
@@ -288,7 +285,7 @@ const searchTransferMarket = function (buyerSetting) {
 
             logWrite("skip >>> (No Actions Required)");
           }
-          if (auctionPrices.length) {
+          if (auctionPrices.length && auctionPrices.length < 12) {
             trackMarketPrices(auctionPrices);
           }
         } else {
@@ -310,11 +307,7 @@ const formRequestPayLoad = (player, platform) => {
     id,
     definitionId,
     _auction: { buyNowPrice, tradeId: auctionId, expires: expiresOn },
-    _metaData: { id: assetId, skillMoves, weakFoot } = {},
-    _attributes,
-    _staticData: { firstName, knownAs, lastName, name } = {},
-    nationId,
-    leagueId,
+    _metaData: { id: assetId } = {},
     rareflag,
     playStyle,
   } = player;
@@ -332,20 +325,8 @@ const formRequestPayLoad = (player, platform) => {
     updatedOn: new Date(),
     playStyle,
   };
-  const playerPayLoad = {
-    _id: definitionId,
-    nationId,
-    leagueId,
-    staticData: { firstName, knownAs, lastName, name },
-    skillMoves,
-    weakFoot,
-    assetId,
-    attributes: _attributes,
-    year: 21,
-    rareflag,
-  };
 
-  return { trackPayLoad, playerPayLoad };
+  return { trackPayLoad };
 };
 
 const writeToLogClosure = (

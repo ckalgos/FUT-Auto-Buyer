@@ -3,10 +3,22 @@ import {
   idSelectedFilter,
   idSelectFilterCount,
   idAbNumberFilterSearch,
+  idAbServerLogin,
+  idAbDownloadFilter,
+  idAbUploadFilter,
 } from "../../../elementIds.constants";
 import { getValue, setValue } from "../../../services/repository";
+import {
+  getUserAccessToken,
+  handleSignInSignOut,
+} from "../../../utils/authUtil";
 import { getUserFilters } from "../../../utils/dbUtil";
+import {
+  downloadFiltersFromServer,
+  uploadFiltersToServer,
+} from "../../../utils/filterSyncUtil";
 import { updateMultiFilterSettings } from "../../../utils/filterUtil";
+import { generateButton } from "../../../utils/uiUtils/generateButton";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import {
   deleteFilter,
@@ -73,15 +85,45 @@ export const filterHeaderSettingsView = async function () {
     `#${idFilterDropdown}`
   );
 
+  const isLoggedIn = await getUserAccessToken();
+
   const rootHeader =
     $(`<div style="width:100%;display: flex;flex-wrap: inherit;">
-               <div style="width:100%;" class="button-container">
+              <div class="buyer-settings" style="display:flex;justify-content:center">
+                ${generateButton(
+                  idAbServerLogin,
+                  isLoggedIn ? "Logout" : "Login to AB Server",
+                  () => {
+                    handleSignInSignOut();
+                  },
+                  "call-to-action"
+                )}
+              </div>
+               <div style="width:100%;" class="button-container">                   
                    <select class="filter-header-settings" id=${idFilterDropdown}>
                       <option selected="true" disabled>Choose filter to load</option>
                       ${Object.keys(await filters()).map(
                         (value) => `<option value='${value}'>${value}</option>`
                       )}
                    </select>
+                   ${generateButton(
+                     idAbUploadFilter,
+                     "⇧",
+                     () => {
+                       uploadFiltersToServer();
+                     },
+                     "filterSync",
+                     "Upload filters"
+                   )} 
+                   ${generateButton(
+                     idAbDownloadFilter,
+                     "⇩",
+                     () => {
+                       downloadFiltersFromServer();
+                     },
+                     "filterSync",
+                     "Download filters"
+                   )} 
                </div>
                <div id="btn-actions" style="width:100%;margin-top: 1%;" class="button-container"> 
                </div>
@@ -90,7 +132,9 @@ export const filterHeaderSettingsView = async function () {
   buttons.append(
     createButton(
       "Delete Filter",
-      () => deleteFilter.call(context),
+      () => {
+        deleteFilter.call(context);
+      },
       "call-to-action btn-delete-filter"
     ).__root
   );

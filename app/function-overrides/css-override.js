@@ -129,6 +129,13 @@ export const cssOverride = () => {
     background: #000; 
     height: 10px; 
     width: 0%
+  } 
+  .filterSync {
+    background: transparent;
+    color: #c4f750
+  }
+  .filterSync:hover {
+    background: transparent !important;
   }
   `;
   if (!isPhone()) {

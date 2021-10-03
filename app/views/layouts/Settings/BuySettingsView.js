@@ -17,7 +17,7 @@ export const buySettingsView = function () {
       ${generateTextInput("Buy Price", "", { idAbBuyPrice }, "<br/>")}
       ${generateTextInput(
         "No. of cards to buy",
-        10,
+        1000,
         { idAbCardCount },
         "(Works only with Buy price)"
       )}

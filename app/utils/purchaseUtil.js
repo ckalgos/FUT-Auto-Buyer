@@ -1,3 +1,4 @@
+import { errorCodeLookUp } from "../app.constants";
 import { idProgressAutobuyer } from "../elementIds.constants";
 import { stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import {
@@ -72,11 +73,17 @@ export const buyPlayer = (
               priceTxt,
               "buy",
               "success",
-              shouldList ? "selling for: " + sellPrice : "move to club"
+              sellPrice < 0
+                ? "move to transferlist"
+                : shouldList
+                ? "selling for: " + sellPrice
+                : "move to club"
             );
 
             setTimeout(function () {
-              if (shouldList) {
+              if (sellPrice < 0) {
+                services.Item.move(player, ItemPile.TRANSFER);
+              } else if (shouldList) {
                 updateProfit(sellPrice * 0.95 - price);
                 services.Item.list(
                   player,
@@ -126,7 +133,7 @@ export const buyPlayer = (
             priceTxt,
             isBin ? "buy" : "bid",
             "failure",
-            " ERR: " + status
+            " ERR: " + (errorCodeLookUp[status] || status)
           );
           if (notificationType === "L" || notificationType === "A") {
             sendNotificationToUser(

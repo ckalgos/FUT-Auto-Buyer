@@ -24,7 +24,7 @@ export const searchErrorHandler = (
     }
   } else {
     writeToLog(
-      "[!!!] Autostopping bot as search failed, please check if you can access transfer market in Web App",
+      `[!!!] Autostopping bot as search failed, please check if you can access transfer market in Web App ${response.status}`,
       idProgressAutobuyer
     );
   }

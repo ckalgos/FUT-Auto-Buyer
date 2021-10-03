@@ -56,7 +56,7 @@ export const safeSettingsView = function () {
   )}
   ${generateTextInput(
     "Stop After",
-    "1H",
+    "3H",
     { idAbStopAfter },
     "(S for seconds, M for Minutes, H for hours)",
     "text"

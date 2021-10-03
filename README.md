@@ -47,11 +47,10 @@
 
 ## Installation
 
-- Download the latest release from - [Latest Release](https://github.com/chithakumar13/Fifa21-AutoBuyer/releases/).
-- Add Tamper Monkey Extenstion to your Browser.
-- Navigate to Create Script -> Then to Utilities.
-- Under Utilities -> File (Import the two Scripts and Install it).
-- Installation And Demo - [Video Guide](https://www.youtube.com/watch?v=M3Jn4FI1nUw).
+- Add Tamper Monkey Extenstion to your Browser - [Link](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en-GB).
+- Click on fut-auto-buyer.user.js from - [Latest Release](https://github.com/chithakumar13/Fifa21-AutoBuyer/releases/).
+- Then click on Install/Update
+- Installation And Demo - [Video Guide](https://www.youtube.com/watch?v=WATch4hxhtk).
 
 Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 

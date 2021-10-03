@@ -5,6 +5,7 @@ import {
   idDiscordChannelId,
   idDiscordToken,
   idNotificationType,
+  idDetailedNotification,
   idTelegramBotToken,
   idTelegramChatId,
   idTestNotification,
@@ -56,6 +57,11 @@ export const notificationSettingsView = function () {
     { idNotificationType },
     "Type A for all notifications, B for buy or L for lost",
     "text"
+  )}
+  ${generateToggleInput(
+    "Detailed Notifications",
+    { idDetailedNotification },
+    "Log-Messages as notification and Autobuyer Stopped messages with reasons"
   )}
   <div class="price-filter buyer-settings-field">
   </div>

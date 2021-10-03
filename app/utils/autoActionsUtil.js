@@ -7,8 +7,8 @@ import {
 } from "../services/repository";
 import { convertToSeconds, getRandNum } from "./commonUtil";
 import { writeToLog } from "./logUtil";
+import { sendNotificationToUser } from "./notificationUtil";
 import { loadFilter } from "./userExternalUtil";
-import { sendNotificationToUser } from "../../../utils/notificationUtil";
 
 export const stopBotIfRequired = (buyerSetting) => {
   const purchasedCardCount = getValue("purchasedCardCount");

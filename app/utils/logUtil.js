@@ -51,6 +51,7 @@ export const writeToAbLog = (
   " | " +
   comments;
   writeToLog(message,idProgressAutobuyer);
+  return message;
 };
 
 export const showCaptchaLogs = function (captchaCloseTab) {

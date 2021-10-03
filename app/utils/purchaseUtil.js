@@ -42,6 +42,8 @@ export const buyPlayer = (
       async function (sender, data) {
         let priceTxt = formatString(price.toString(), 6);
         const notificationType = buyerSetting["idNotificationType"];
+        let sendDetailedNotification = buyerSetting["idDetailedNotification"];
+        let logMessage = "";
 
         if (data.success) {
           if (isBin) {
@@ -67,7 +69,7 @@ export const buyPlayer = (
           if (isBin) {
             let winCount = increAndGetStoreValue("winCount");
             let sym = " W:" + formatString(winCount.toString(), 4);
-            writeToAbLog(
+            logMessage = writeToAbLog(
               sym,
               playerName,
               priceTxt,
@@ -98,7 +100,7 @@ export const buyPlayer = (
           } else {
             let bidCount = increAndGetStoreValue("bidCount");
             let sym = " B:" + formatString(bidCount.toString(), 4);
-            writeToAbLog(
+            logMessage = writeToAbLog(
               sym,
               playerName,
               priceTxt,
@@ -119,15 +121,18 @@ export const buyPlayer = (
           }
 
           if (notificationType === "B" || notificationType === "A") {
-            sendNotificationToUser(
-              "| " + playerName.trim() + " | " + priceTxt.trim() + " | buy |"
-            );
+            if(sendDetailedNotification)
+              sendNotificationToUser(logMessage);
+            else
+              sendNotificationToUser(
+                `|  ${playerName.trim()}  | ${priceTxt.trim()} | buy |"`
+              );
           }
         } else {
           let lossCount = increAndGetStoreValue("lossCount");
           let sym = " L:" + formatString(lossCount.toString(), 4);
           let status = (data.error?.code || data.status) + "";
-          writeToAbLog(
+          logMessage = writeToAbLog(
             sym,
             playerName,
             priceTxt,
@@ -136,12 +141,11 @@ export const buyPlayer = (
             " ERR: " + (errorCodeLookUp[status] || status)
           );
           if (notificationType === "L" || notificationType === "A") {
-            sendNotificationToUser(
-              "| " +
-                playerName.trim() +
-                " | " +
-                priceTxt.trim() +
-                " | failure |"
+            if(sendDetailedNotification)
+              sendNotificationToUser(logMessage);
+            else
+              sendNotificationToUser(
+                `| ${playerName.trim()} | ${priceTxt.trim()} | failure |`
             );
           }
 
@@ -160,7 +164,7 @@ export const buyPlayer = (
               errorCodeCountMap.get(status).currentVal >=
                 buyerSetting["idAbStopErrorCodeCount"]
             ) {
-              writeToLog(
+              logMessage = writeToLog(
                 `[!!!] Autostopping bot since error code ${status} has occured ${
                   errorCodeCountMap.get(status).currentVal
                 } times\n`,
@@ -168,6 +172,8 @@ export const buyPlayer = (
               );
               errorCodeCountMap.clear();
               stopAutoBuyer();
+              if(sendDetailedNotification)
+                sendNotificationToUser(logMessage);
             }
           }
         }

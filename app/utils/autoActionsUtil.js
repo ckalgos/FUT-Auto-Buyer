@@ -50,6 +50,7 @@ export const switchFilterIfRequired = async function () {
     return false;
   }
   setValue("currentFilterCount", 1);
+  setValue("currentPage", 1);
   let filterName = availableFilters[getRandNum(0, availableFilters.length - 1)];
   await loadFilter.call(this, filterName);
   writeToLog(

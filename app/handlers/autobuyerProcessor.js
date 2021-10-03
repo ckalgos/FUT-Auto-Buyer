@@ -1,6 +1,10 @@
 import { idAbStatus, idAutoBuyerFoundLog } from "../elementIds.constants";
 import { trackMarketPrices } from "../services/analytics";
-import { getValue, setValue } from "../services/repository";
+import {
+  getValue,
+  increAndGetStoreValue,
+  setValue,
+} from "../services/repository";
 import {
   pauseBotIfRequired,
   stopBotIfRequired,
@@ -44,6 +48,7 @@ export const startAutoBuyer = async function (isResume) {
   if (!isResume) {
     setValue("botStartTime", new Date());
     setValue("purchasedCardCount", 0);
+    setValue("currentPage", 1);
   }
   let switchFilterWithContext = switchFilterIfRequired.bind(this);
   let srchTmWithContext = searchTransferMarket.bind(this);
@@ -114,7 +119,7 @@ const searchTransferMarket = function (buyerSetting) {
     const expiresIn = convertToSeconds(buyerSetting["idAbItemExpiring"]);
     const useRandMinBid = buyerSetting["idAbRandMinBidToggle"];
     const useRandMinBuy = buyerSetting["idAbRandMinBuyToggle"];
-    let currentPage = 1;
+    let currentPage = getValue("currentPage") || 1;
     if (useRandMinBid)
       searchCriteria.minBid = roundOffPrice(
         getRandNum(0, buyerSetting["idAbRandMinBidInput"])
@@ -143,6 +148,12 @@ const searchTransferMarket = function (buyerSetting) {
 
           let maxPurchases = buyerSetting["idAbMaxPurchases"];
           const auctionPrices = [];
+
+          if (currentPage <= 20 && response.data.items.length === 21) {
+            increAndGetStoreValue("currentPage");
+          } else {
+            setValue("currentPage", 1);
+          }
 
           for (let i = response.data.items.length - 1; i >= 0; i--) {
             let player = response.data.items[i];
@@ -200,12 +211,6 @@ const searchTransferMarket = function (buyerSetting) {
               buyTxt,
               expireTime
             );
-
-            if (currentPage <= 20 && response.data.items.length === 21) {
-              currentPage++;
-            } else {
-              currentPage = 1;
-            }
 
             if (maxPurchases < 1) {
               logWrite("skip >>> (Exceeded num of buys/bids per search)");

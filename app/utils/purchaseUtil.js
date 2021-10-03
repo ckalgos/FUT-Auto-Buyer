@@ -125,7 +125,7 @@ export const buyPlayer = (
               sendNotificationToUser(logMessage);
             else
               sendNotificationToUser(
-                `|  ${playerName.trim()}  | ${priceTxt.trim()} | buy |"`
+                `|  ${playerName.trim()}  | ${priceTxt.trim()} | buy |`
               );
           }
         } else {

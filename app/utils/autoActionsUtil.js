@@ -7,6 +7,7 @@ import {
 } from "../services/repository";
 import { convertToSeconds, getRandNum } from "./commonUtil";
 import { writeToLog } from "./logUtil";
+import { sendNotificationToUser } from "./notificationUtil";
 import { loadFilter } from "./userExternalUtil";
 
 export const stopBotIfRequired = (buyerSetting) => {
@@ -15,10 +16,15 @@ export const stopBotIfRequired = (buyerSetting) => {
 
   const botStartTime = getValue("botStartTime").getTime();
   let time = convertToSeconds(buyerSetting["idAbStopAfter"]);
+  let sendDetailedNotification = buyerSetting["idDetailedNotification"];
   let currentTime = new Date().getTime();
   let timeElapsed = (currentTime - botStartTime) / 1000;
 
   if (timeElapsed >= time || (cardsToBuy && purchasedCardCount >= cardsToBuy)) {
+    if(sendDetailedNotification)
+      sendNotificationToUser(`Autbuyer stopped | ${
+        timeElapsed ? "Time elapsed" : "Max pruchases count reached"
+      }`);
     stopAutoBuyer();
   }
 };

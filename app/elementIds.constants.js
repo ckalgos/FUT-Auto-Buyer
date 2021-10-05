@@ -77,3 +77,4 @@ export const idAbUserExternalPassword = "elem_" + generateId(15);
 export const idAbUploadFilter = "elem_" + generateId(15);
 export const idAbDownloadFilter = "elem_" + generateId(15);
 export const idAbFiltersToUpload = "elem_" + generateId(15);
+export const idDetailedNotification = "elem_" + generateId(15);

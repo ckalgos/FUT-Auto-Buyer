@@ -5,6 +5,7 @@ import {
   idDiscordChannelId,
   idDiscordToken,
   idNotificationType,
+  idDetailedNotification,
   idTelegramBotToken,
   idTelegramChatId,
   idTestNotification,
@@ -65,6 +66,11 @@ export const notificationSettingsView = function () {
     ""
   )}
   ${generateToggleInput("Sound Notification", { idAbSoundToggle }, "")}
+  ${generateToggleInput(
+    "Detailed Notifications",
+    { idDetailedNotification },
+    "Log-Messages as notification and Autobuyer Stopped messages with reasons"
+  )}
   <div class="btn-test-notification buyer-settings-field">
   ${generateButton(
     idTestNotification,

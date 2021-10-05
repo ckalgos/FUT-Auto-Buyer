@@ -39,20 +39,19 @@ export const writeToAbLog = (
   result,
   comments
 ) => {
-  writeToLog(
-    sym +
-      " | " +
-      ItemName +
-      " | " +
-      priceTxt +
-      " | " +
-      operation +
-      " | " +
-      result +
-      " | " +
-      comments,
-    idProgressAutobuyer
-  );
+  let message = sym +
+  " | " +
+  ItemName +
+  " | " +
+  priceTxt +
+  " | " +
+  operation +
+  " | " +
+  result +
+  " | " +
+  comments;
+  writeToLog(message,idProgressAutobuyer);
+  return message;
 };
 
 export const showCaptchaLogs = function (captchaCloseTab) {
@@ -75,6 +74,7 @@ export const writeToLog = function (message, log) {
   message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
   $log.val($log.val() + message);
   if ($log[0]) $log.scrollTop($log[0].scrollHeight);
+  return message;
 };
 
 export const clearLogs = () => {

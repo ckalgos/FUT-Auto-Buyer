@@ -40,7 +40,17 @@ const filters = async () => {
     setValue("filters", (await getUserFilters()) || {});
   }
 
-  return getValue("filters");
+  var filters = getValue("filters");
+
+  filters = Object.keys(filters).sort().reduce(
+    (obj, key) => {
+      obj[key] = filters[key];
+      return obj;
+    },
+    {}
+  );
+
+  return filters;
 };
 
 export const filterSettingsView = async function () {

@@ -43,9 +43,9 @@ export const sellSettingsView = function () {
     )}
     ${generateTextInput(
       "Sell Price",
-      -1,
+      "",
       { idAbSellPrice },
-      `Receive After Tax: <span id=${idSellAfterTax}>0</span>`
+      `(-1 to send to transferlist)<br />Receive After Tax: <span id=${idSellAfterTax}>0</span>`
     )}
     ${generateTextInput(
       "Clear sold count",

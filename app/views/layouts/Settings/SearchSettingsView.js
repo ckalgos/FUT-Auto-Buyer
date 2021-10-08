@@ -7,6 +7,7 @@ import {
   idAbRandMinBidToggle,
   idAbRandMinBuyInput,
   idAbRandMinBuyToggle,
+  idAbMaxSearchPage,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 
@@ -42,6 +43,12 @@ export const searchSettingsView = function () {
       ""
     )}
     ${generateToggleInput("Use random min buy", { idAbRandMinBuyToggle }, "")}
+    ${generateTextInput(
+      "Search result page limit",
+      5,
+      { idAbMaxSearchPage },
+      "No of. pages bot should move forward before going back to page 1"
+    )}
     ${generateToggleInput(
       "SKIP GK",
       { idAbAddFilterGK },

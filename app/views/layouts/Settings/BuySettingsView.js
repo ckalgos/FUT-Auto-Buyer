@@ -4,6 +4,7 @@ import {
   idAbCardCount,
   idAbItemExpiring,
   idAbMaxBid,
+  idAbSearchResult,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -28,7 +29,14 @@ export const buySettingsView = function () {
         { idAbItemExpiring },
         "(S for seconds, M for Minutes, H for hours)",
         "text"
-      )} 
+      )}
+      ${generateTextInput(
+        "Search result threshold",
+        21,
+        { idAbSearchResult },
+        "(Buy or bid cards only if the no.of search results <br/> is lesser than the specified value",
+        "text"
+      )}
       ${generateToggleInput("Bid Exact Price", { idAbBidExact }, "")}
      </div>
     `;

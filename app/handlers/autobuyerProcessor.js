@@ -48,6 +48,7 @@ export const startAutoBuyer = async function (isResume) {
   if (!isResume) {
     setValue("botStartTime", new Date());
     setValue("purchasedCardCount", 0);
+    setValue("searchFailedCount", 0);
     setValue("currentPage", 1);
   }
   let switchFilterWithContext = switchFilterIfRequired.bind(this);
@@ -132,6 +133,8 @@ const searchTransferMarket = function (buyerSetting) {
       this,
       async function (sender, response) {
         if (response.success) {
+          setValue("searchFailedCount", 0);
+          let validSearchCount = true;
           writeToLog(
             `= Received ${response.data.items.length} items - from page (${currentPage}) => config: (minbid: ${searchCriteria.minBid}-minbuy:${searchCriteria.minBuy})`,
             idAutoBuyerFoundLog
@@ -146,10 +149,17 @@ const searchTransferMarket = function (buyerSetting) {
               sendPinEvents("Transfer Market Results - List View");
           }
 
+          if (response.data.items.length > buyerSetting["idAbSearchResult"]) {
+            validSearchCount = false;
+          }
+
           let maxPurchases = buyerSetting["idAbMaxPurchases"];
           const auctionPrices = [];
 
-          if (currentPage <= 20 && response.data.items.length === 21) {
+          if (
+            currentPage < buyerSetting["idAbMaxSearchPage"] &&
+            response.data.items.length === 21
+          ) {
             increAndGetStoreValue("currentPage");
           } else {
             setValue("currentPage", 1);
@@ -211,6 +221,11 @@ const searchTransferMarket = function (buyerSetting) {
               buyTxt,
               expireTime
             );
+
+            if (!validSearchCount) {
+              logWrite("skip >>> (Exceeded search result threshold)");
+              continue;
+            }
 
             if (maxPurchases < 1) {
               logWrite("skip >>> (Exceeded num of buys/bids per search)");

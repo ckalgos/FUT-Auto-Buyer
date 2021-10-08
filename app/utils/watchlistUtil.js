@@ -99,7 +99,7 @@ export const watchListUtil = function (buyerSetting) {
                     sellPrice = await getSellPriceFromFutBin(
                       buyerSetting,
                       playerName,
-                      player.definitionId
+                      player
                     );
                   }
 
@@ -119,6 +119,19 @@ export const watchListUtil = function (buyerSetting) {
                     services.Item.move(player, ItemPile.CLUB);
                   }
                 }
+              }
+
+              let expiredItems = watchResponse.data.items.filter((item) => {
+                var t = item.getAuctionData();
+                return t.isExpired() || (t.isClosedTrade() && !t.isWon());
+              });
+
+              if (expiredItems.length) {
+                services.Item.untarget(expiredItems);
+                writeToLog(
+                  `Found ${expiredItems.length} expired items and removed from watchlist`,
+                  idAutoBuyerFoundLog
+                );
               }
 
               services.Item.clearTransferMarketCache();

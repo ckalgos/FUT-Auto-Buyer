@@ -60,7 +60,7 @@ export const buyPlayer = (
             sellPrice = await getSellPriceFromFutBin(
               buyerSetting,
               playerName,
-              player.definitionId
+              player
             );
           }
 
@@ -121,8 +121,7 @@ export const buyPlayer = (
           }
 
           if (notificationType === "B" || notificationType === "A") {
-            if(sendDetailedNotification)
-              sendNotificationToUser(logMessage);
+            if (sendDetailedNotification) sendNotificationToUser(logMessage);
             else
               sendNotificationToUser(
                 `|  ${playerName.trim()}  | ${priceTxt.trim()} | buy |`
@@ -141,12 +140,11 @@ export const buyPlayer = (
             " ERR: " + (errorCodeLookUp[status] || status)
           );
           if (notificationType === "L" || notificationType === "A") {
-            if(sendDetailedNotification)
-              sendNotificationToUser(logMessage);
+            if (sendDetailedNotification) sendNotificationToUser(logMessage);
             else
               sendNotificationToUser(
                 `| ${playerName.trim()} | ${priceTxt.trim()} | failure |`
-            );
+              );
           }
 
           if (buyerSetting["idAbStopErrorCode"]) {
@@ -172,8 +170,7 @@ export const buyPlayer = (
               );
               errorCodeCountMap.clear();
               stopAutoBuyer();
-              if(sendDetailedNotification)
-                sendNotificationToUser(logMessage);
+              if (sendDetailedNotification) sendNotificationToUser(logMessage);
             }
           }
         }

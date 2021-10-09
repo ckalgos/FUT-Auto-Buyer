@@ -11,7 +11,7 @@ export const searchErrorHandler = (
   canSolveCaptcha,
   captchaCloseTab
 ) => {
-  const shouldStopBot = false;
+  let shouldStopBot = false;
   if (
     response.status === UtasErrorCode.CAPTCHA_REQUIRED ||
     (response.error && response.error.code == UtasErrorCode.CAPTCHA_REQUIRED)
@@ -37,6 +37,11 @@ export const searchErrorHandler = (
         idProgressAutobuyer
       );
       if (sendDetailedNotification) sendNotificationToUser(message);
+    } else {
+      writeToLog(
+        `[!!!] Search failed - ${response.status}`,
+        idProgressAutobuyer
+      );
     }
   }
   if (shouldStopBot) {

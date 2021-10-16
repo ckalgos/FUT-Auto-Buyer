@@ -17,14 +17,14 @@ export const commonSettingsView = function () {
     "",
     { idAbStopErrorCode },
     "(Eg. 412,421,521)",
-    "text"
+    "text",
+    "^\\d+(,\\d+)*$"
   )}
   ${generateTextInput(
     "No. of times error code should occur",
     3,
     { idAbStopErrorCodeCount },
-    "<br />",
-    "number"
+    "<br />"
   )}
   ${generateToggleInput(
     "Auto Clear Log",

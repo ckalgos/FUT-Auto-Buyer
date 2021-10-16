@@ -2,7 +2,7 @@ import { idAutoBuyerFoundLog } from "../elementIds.constants";
 import { getValue, setValue } from "../services/repository";
 import { networkCallWithRetry } from "./commonUtil";
 import { writeToLog } from "./logUtil";
-import { roundOffPrice } from "./priceUtils";
+import { getBuyBidPrice, roundOffPrice } from "./priceUtils";
 import { getUserPlatform } from "./userUtil";
 
 export const fetchPricesFromFutBin = (definitionId, retries) => {
@@ -35,7 +35,7 @@ export const getSellPriceFromFutBin = async (
           ""
         )
       );
-      const futBinPercent = buyerSetting["idSellFutBinPercent"];
+      const futBinPercent = buyerSetting["idSellFutBinPercent"] || 100;
       let calculatedPrice = roundOffPrice((sellPrice * futBinPercent) / 100);
       await getPriceLimits(player);
       if (player.hasPriceLimits()) {
@@ -43,6 +43,10 @@ export const getSellPriceFromFutBin = async (
           player._itemPriceLimits.maximum,
           Math.max(player._itemPriceLimits.minimum, calculatedPrice)
         );
+
+        if (calculatedPrice === player._itemPriceLimits.minimum) {
+          calculatedPrice = getBuyBidPrice(calculatedPrice);
+        }
       }
       writeToLog(
         `= Futbin price for ${playerName}: ${sellPrice}: ${futBinPercent}% of sale price: ${calculatedPrice}`,

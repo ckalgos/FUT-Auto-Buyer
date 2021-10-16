@@ -14,7 +14,7 @@ import {
 } from "../../../utils/authUtil";
 import { getUserFilters } from "../../../utils/dbUtil";
 import {
-  downloadFiltersFromServer,
+  uploadFiltersLocal,
   uploadFiltersToServer,
 } from "../../../utils/filterSyncUtil";
 import { updateMultiFilterSettings } from "../../../utils/filterUtil";
@@ -40,15 +40,14 @@ const filters = async () => {
     setValue("filters", (await getUserFilters()) || {});
   }
 
-  var filters = getValue("filters");
+  let filters = getValue("filters");
 
-  filters = Object.keys(filters).sort().reduce(
-    (obj, key) => {
+  filters = Object.keys(filters)
+    .sort()
+    .reduce((obj, key) => {
       obj[key] = filters[key];
       return obj;
-    },
-    {}
-  );
+    }, {});
 
   return filters;
 };
@@ -75,6 +74,7 @@ export const filterSettingsView = async function () {
                   "(Count of searches performed before switching to another filter)",
                   "number",
                   null,
+                  null,
                   (value) => setValue("fiterSearchCount", parseInt(value) || 3)
                 )}
             </div>
@@ -95,7 +95,7 @@ export const filterHeaderSettingsView = async function () {
     `#${idFilterDropdown}`
   );
 
-  const isLoggedIn = await getUserAccessToken();
+  const isLoggedIn = await getUserAccessToken(true);
 
   const rootHeader =
     $(`<div style="width:100%;display: flex;flex-wrap: inherit;">
@@ -116,20 +116,21 @@ export const filterHeaderSettingsView = async function () {
                         (value) => `<option value='${value}'>${value}</option>`
                       )}
                    </select>
+                   
                    ${generateButton(
-                     idAbUploadFilter,
+                     idAbDownloadFilter,
                      "⇧",
                      () => {
-                       uploadFiltersToServer();
+                       uploadFiltersLocal();
                      },
                      "filterSync",
                      "Upload filters"
                    )} 
                    ${generateButton(
-                     idAbDownloadFilter,
+                     idAbUploadFilter,
                      "⇩",
                      () => {
-                       downloadFiltersFromServer();
+                       uploadFiltersToServer();
                      },
                      "filterSync",
                      "Download filters"

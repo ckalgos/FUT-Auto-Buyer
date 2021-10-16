@@ -67,6 +67,10 @@ export const generateMenuItems = function () {
 export const clearSettingMenus = async () => {
   deleteAllMenu();
   await appendMenuItems();
+  const autoBuyerInstance = getValue("AutoBuyerInstance");
+  UTMarketSearchFiltersViewController.prototype._eResetSelected.call(
+    autoBuyerInstance
+  );
 };
 
 export const setDefaultActiveTab = () => {

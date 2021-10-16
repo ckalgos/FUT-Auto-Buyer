@@ -56,7 +56,8 @@ export const notificationSettingsView = function () {
     "",
     { idNotificationType },
     "Type A for all notifications, B for buy or L for lost",
-    "text"
+    "text",
+    "[A|B|L]$"
   )}
   <div class="price-filter buyer-settings-field">
   </div>
@@ -69,7 +70,7 @@ export const notificationSettingsView = function () {
   ${generateToggleInput(
     "Detailed Notifications",
     { idDetailedNotification },
-    "Log-Messages as notification and Autobuyer Stopped messages with reasons"
+    "Send detailed notification message"
   )}
   <div class="btn-test-notification buyer-settings-field">
   ${generateButton(

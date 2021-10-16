@@ -45,6 +45,7 @@ export const startAutoBuyer = async function (isResume) {
   if (isActive) return;
   sendUINotification(isResume ? "Autobuyer Resumed" : "Autobuyer Started");
   setValue("autoBuyerActive", true);
+  setValue("autoBuyerState", "Active");
   if (!isResume) {
     setValue("botStartTime", new Date());
     setValue("purchasedCardCount", 0);
@@ -102,6 +103,7 @@ export const stopAutoBuyer = (isPaused) => {
   if (!isPaused) {
     playAudio("finish");
   }
+  setValue("autoBuyerState", isPaused ? "Paused" : "Stopped");
   sendUINotification(isPaused ? "Autobuyer Paused" : "Autobuyer Stopped");
   $("#" + idAbStatus)
     .css("color", "red")

@@ -29,6 +29,18 @@ export const hideLoader = () => {
   $(".loaderIcon ").css("display", "none");
 };
 
+export const downloadJson = (json, fileName) => {
+  const dataStr =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(json, null, 4));
+  const link = document.createElement("a");
+  link.setAttribute("href", dataStr);
+  link.setAttribute("download", `${fileName}.json`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 export const convertToSeconds = (val) => {
   if (val) {
     let valInterval = val[val.length - 1].toUpperCase();
@@ -93,23 +105,23 @@ export const networkCallWithRetry = (execution, delay, retries) =>
       });
   });
 
-  export const playAudio = function (eventType) {
-    const buyerSetting = getValue("BuyerSettings");
-    if (buyerSetting["idAbSoundToggle"]) {
-      let elem = document.getElementById(idWinMp3);
-  
-      if (eventType == "capatcha") {
-        elem = document.getElementById(idCapatchaMp3);
-      }
-  
-      if (eventType == "finish") {
-        elem = document.getElementById(idFinishMp3);
-      }
-  
-      elem.currentTime = 0;
-      elem.play();
+export const playAudio = function (eventType) {
+  const buyerSetting = getValue("BuyerSettings");
+  if (buyerSetting["idAbSoundToggle"]) {
+    let elem = document.getElementById(idWinMp3);
+
+    if (eventType == "capatcha") {
+      elem = document.getElementById(idCapatchaMp3);
     }
-  };
+
+    if (eventType == "finish") {
+      elem = document.getElementById(idFinishMp3);
+    }
+
+    elem.currentTime = 0;
+    elem.play();
+  }
+};
 
 export const createElementFromHTML = (htmlString) => {
   var div = document.createElement("div");

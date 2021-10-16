@@ -1,5 +1,9 @@
 import { idProgressAutobuyer } from "../elementIds.constants";
-import { getValue, increAndGetStoreValue } from "../services/repository";
+import {
+  getValue,
+  increAndGetStoreValue,
+  setValue,
+} from "../services/repository";
 import { playAudio } from "../utils/commonUtil";
 import { showCaptchaLogs, writeToLog } from "../utils/logUtil";
 import { sendNotificationToUser } from "../utils/notificationUtil";
@@ -25,6 +29,7 @@ export const searchErrorHandler = (
       solveCaptcha();
     } else {
       showCaptchaLogs(captchaCloseTab);
+      setValue("lastErrorMessage", "Captcha Triggerred");
     }
   } else {
     const buyerSetting = getValue("BuyerSettings");
@@ -35,6 +40,10 @@ export const searchErrorHandler = (
       let message = writeToLog(
         `[!!!] Autostopping bot as search failed for ${searchFailedCount} consecutive times, please check if you can access transfer market in Web App ${response.status}`,
         idProgressAutobuyer
+      );
+      setValue(
+        "lastErrorMessage",
+        `Search failed ${searchFailedCount} consecutive times`
       );
       if (sendDetailedNotification) sendNotificationToUser(message);
     } else {

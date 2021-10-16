@@ -80,3 +80,5 @@ export const idAbUploadFilter = "elem_" + generateId(15);
 export const idAbDownloadFilter = "elem_" + generateId(15);
 export const idAbFiltersToUpload = "elem_" + generateId(15);
 export const idDetailedNotification = "elem_" + generateId(15);
+export const idAbFiltersFileToUpload = "elem_" + generateId(15);
+export const idSellCheckBuyPrice = "elem_" + generateId(15);

@@ -8,6 +8,7 @@ import { sendUINotification } from "./notificationUtil";
 import { showPopUp } from "./popupUtil";
 import { Auth } from "../external/aws-amplify";
 import { hideLoader, showLoader } from "./commonUtil";
+import { initializeDiscord } from "../services/discordService";
 
 export const handleSignInSignOut = async () => {
   const isLoggedIn = $(`#${idAbServerLogin}`).text() === "Logout";
@@ -48,6 +49,7 @@ const loginHandler = async () => {
     const authResponse = await Auth.signIn(userName, password);
     sendUINotification(`Welcome back ${authResponse.username} !!!`);
     $(`#${idAbServerLogin}`).html("Logout");
+    await initDiscord();
   } catch (err) {
     sendUINotification(
       err.message || "Error occured when trying to login",
@@ -57,12 +59,27 @@ const loginHandler = async () => {
   hideLoader();
 };
 
-export const getUserAccessToken = async () => {
+export const getUserAccessToken = async (initialize) => {
   try {
     const session = await Auth.currentSession();
     const token = session.getAccessToken().getJwtToken();
+    if (initialize) {
+      await initDiscord();
+    }
     return token;
   } catch (err) {
     return null;
+  }
+};
+
+const initDiscord = async () => {
+  const { attributes } = await Auth.currentAuthenticatedUser({
+    bypassCache: true,
+  });
+  if (attributes) {
+    const userDiscordToken = attributes["custom:discord_token"];
+    const userDiscordChannelId = attributes["custom:dicord_channelId"];
+    userDiscordToken &&
+      initializeDiscord(userDiscordToken, userDiscordChannelId);
   }
 };

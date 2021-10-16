@@ -8,6 +8,15 @@ import { sendUINotification } from "./notificationUtil";
 const filterDropdownId = `#${ElementIds.idFilterDropdown}`;
 const selectedFilterId = `#${ElementIds.idSelectedFilter}`;
 
+const validateSettings = () => {
+  if (document.querySelectorAll(":invalid").length) {
+    sendUINotification(
+      "Settings with invalid value found, fix these values for autobuyer to work as intended",
+      UINotificationType.NEGATIVE
+    );
+  }
+};
+
 export const saveFilterDetails = function (self) {
   const btnContext = this;
   $(btnContext).addClass("active");
@@ -25,6 +34,8 @@ export const saveFilterDetails = function (self) {
       .filter(":selected")
       .val();
 
+    validateSettings();
+
     if (currentFilterName === "Choose filter to load") {
       currentFilterName = undefined;
     }
@@ -32,6 +43,7 @@ export const saveFilterDetails = function (self) {
 
     if (filterName) {
       saveFilterInDB(filterName, settingsJson);
+      setValue("currentFilter", filterName);
       $(btnContext).removeClass("active");
       sendUINotification("Changes saved successfully");
     } else {
@@ -85,6 +97,7 @@ export const loadFilter = async function (currentFilterName) {
       $(id).val(value);
     }
   }
+  validateSettings();
 };
 
 export const deleteFilter = async function () {
@@ -94,18 +107,13 @@ export const deleteFilter = async function () {
     $(`${filterDropdownId}`).prop("selectedIndex", 0);
 
     await clearSettingMenus();
-    this._viewmodel.playerData = null;
-
-    Object.assign(
-      this._viewmodel.searchCriteria,
-      this._viewmodel.defaultSearchCriteria
-    );
     this.viewDidAppear();
 
     delete getValue("filters")[filterName];
     $(`${selectedFilterId}` + ` option[value="${filterName}"]`).remove();
     updateMultiFilterSettings();
     deleteFilters(filterName);
+    setValue("currentFilter", null);
     sendUINotification("Changes saved successfully");
   }
 };

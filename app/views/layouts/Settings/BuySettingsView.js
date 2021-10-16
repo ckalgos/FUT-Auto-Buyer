@@ -28,14 +28,14 @@ export const buySettingsView = function () {
         "1H",
         { idAbItemExpiring },
         "(S for seconds, M for Minutes, H for hours)",
-        "text"
+        "text",
+        "\\d+[H|M|S|h|m|s]$"
       )}
       ${generateTextInput(
         "Search result threshold",
         21,
         { idAbSearchResult },
-        "(Buy or bid cards only if the no.of search results <br/> is lesser than the specified value",
-        "text"
+        "(Buy or bid cards only if the no.of search results <br/> is lesser than the specified value"
       )}
       ${generateToggleInput("Bid Exact Price", { idAbBidExact }, "")}
      </div>

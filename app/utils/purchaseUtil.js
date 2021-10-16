@@ -64,6 +64,11 @@ export const buyPlayer = (
             );
           }
 
+          const checkBuyPrice = buyerSetting["idSellCheckBuyPrice"];
+          if (checkBuyPrice && price > sellPrice) {
+            sellPrice = -1;
+          }
+
           const shouldList = sellPrice && !isNaN(sellPrice) && isValidRating;
 
           if (isBin) {

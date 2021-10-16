@@ -1,3 +1,4 @@
+import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import { getValue } from "../services/repository";
 
 let discordClient = null;
@@ -16,6 +17,9 @@ export const sendPinEvents = (pageId) => {
 
 export const sendNotificationToUser = (message, isTestMessage) => {
   const buyerSetting = getValue("BuyerSettings");
+  if (!isTestMessage) {
+    sendUINotification(message);
+  }
   if (buyerSetting["idAbMessageNotificationToggle"] || isTestMessage) {
     sendNotificationToExternal(buyerSetting, message);
     isTestMessage && sendUINotification("Test Notification Sent");
@@ -69,10 +73,11 @@ const initializeDiscordClient = (cb) => {
   client.on("message", function (message) {
     if (message.author.id == client.user.id) return;
     if (/start/i.test(message.content)) {
-      window.activateAutoBuyer(true);
+      const instance = getValue("AutoBuyerInstance");
+      startAutoBuyer.call(instance);
       message.channel.sendMessage("Bot started successfully");
     } else if (/stop/i.test(message.content)) {
-      window.deactivateAutoBuyer(true);
+      stopAutoBuyer();
       message.channel.sendMessage("Bot stopped successfully");
     }
   });

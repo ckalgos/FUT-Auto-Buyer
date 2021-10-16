@@ -131,12 +131,15 @@ export const cssOverride = () => {
     width: 0%
   } 
   .filterSync {
-    display: none;
     background: transparent;
     color: #c4f750
   }
   .filterSync:hover {
     background: transparent !important;
+  }
+  .numericInput:invalid {
+    color: red;
+    border: 1px solid;
   }
   `;
   if (!isPhone()) {

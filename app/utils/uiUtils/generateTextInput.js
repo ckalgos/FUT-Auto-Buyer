@@ -15,6 +15,7 @@ export const generateTextInput = (
   id,
   info,
   type = "number",
+  pattern = "*",
   additionalClasses = "buyer-settings-field",
   customCallBack = null
 ) => {
@@ -46,7 +47,7 @@ export const generateTextInput = (
        </div>
        <div class="buttonInfo">
            <div class="inputBox">
-               <input type="${type}" class="numericInput" id='${id[key]}' placeholder=${placeholder}>
+               <input pattern="${pattern}" type="${type}" class="numericInput" id='${id[key]}' placeholder=${placeholder}>
            </div>
        </div>
     </div>`;

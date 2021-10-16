@@ -6,6 +6,7 @@ import {
   idSellRatingThreshold,
   idSellFutBinPrice,
   idSellFutBinPercent,
+  idSellCheckBuyPrice,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -41,6 +42,11 @@ export const sellSettingsView = function () {
       { idSellFutBinPercent },
       `(Sale Price percent of FUTBIN Price)`
     )}
+    ${generateToggleInput(
+      "Check buy price before listing",
+      { idSellCheckBuyPrice },
+      "(List only if Buy Price is lesser than Sale Price)"
+    )}
     ${generateTextInput(
       "Sell Price",
       "",
@@ -51,7 +57,7 @@ export const sellSettingsView = function () {
       "Clear sold count",
       10,
       { idAbMinDeleteCount },
-      "(Clear sold items when reach a specified count)"
+      "(Clear sold items when reach a specified count)<br />"
     )}
     ${generateTextInput(
       "Rating Threshold",

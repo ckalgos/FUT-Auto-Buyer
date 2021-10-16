@@ -1,4 +1,4 @@
-# Fifa21-AutoBuyer
+# FUT AutoBuyer
 
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
@@ -7,15 +7,15 @@
 [![Total Downloads](https://img.shields.io/github/downloads/chithakumar13/Fifa21-AutoBuyer/total.svg)]()
 
 <p align="center"> 
-  <h3 align="center">Fifa21 AutoBuyer</h3>
+  <h3 align="center">FUT AutoBuyer</h3>
 
   <p align="center">
-    FIFA 21 Auto Buyer For Web App!
+    Autobuyer from FIFA Ultimate Team Webapp!
     <br />  
     <br /> 
-    <a href="https://github.com/chithakumar13/Fifa21-AutoBuyer/issues">Report Bug</a>
+    <a href="https://github.com/chithakumar13/FUT-Auto-Buyer/issues">Report Bug</a>
     ·
-    <a href="https://github.com/chithakumar13/Fifa21-AutoBuyer/issues">Request Feature</a>
+    <a href="https://github.com/chithakumar13/FUT-Auto-Buyer/issues">Request Feature</a>
   .
   <a href="https://www.youtube.com/channel/UC5eLkjmLU2TcE4oiJM9PsyA?sub_confirmation=1">Subscribe</a>
   
@@ -48,7 +48,7 @@
 ## Installation
 
 - Add Tamper Monkey Extenstion to your Browser - [Link](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en-GB).
-- Click on fut-auto-buyer.user.js from - [Latest Release](https://github.com/chithakumar13/Fifa21-AutoBuyer/releases/).
+- Click on fut-auto-buyer.user.js from - [Latest Release](https://github.com/chithakumar13/FUT-Auto-Buyer/releases/).
 - Then click on Install/Update
 - Installation And Demo - [Video Guide](https://www.youtube.com/watch?v=WATch4hxhtk).
 
@@ -227,7 +227,7 @@ Now in Ultimate Team Web App, new menu will be added as AutoBuyer.
 
 ## Roadmap
 
-See the [open issues](https://github.com/chithakumar13/Fifa21-AutoBuyer/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/chithakumar13/FUT-Auto-Buyer/issues) for a list of proposed features (and known issues).
 
 ## 💬 Community
 
@@ -241,7 +241,7 @@ If you are looking for help or any new feature request, join our discord group
 
 ## Developer-Guide
 
-<a href="https://discord.gg/AHqdCWRw69">Join this discord channel</a>
+<a href="https://discord.gg/cktHYmp">Join this discord channel</a>
 
 <!-- CONTRIBUTING -->
 
@@ -261,15 +261,15 @@ Any contributions you make are **greatly appreciated**.
 
 Instagram - [@Instagram](https://www.instagram.com/i_m_ck13/) - chithakumar13@gmail.com
 
-Project Link: [https://github.com/chithakumar13/Fifa21-AutoBuyer](https://github.com/chithakumar13/Fifa21-AutoBuyer)
+Project Link: [https://github.com/chithakumar13/FUT-Auto-Buyer](https://github.com/chithakumar13/FUT-Auto-Buyer)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
 [contributors-shield]: https://img.shields.io/github/contributors/chithakumar13/Fifa21-AutoBuyer.svg?style=flat-square
-[contributors-url]: https://github.com/chithakumar13/Fifa21-AutoBuyer/graphs/contributors
+[contributors-url]: https://github.com/chithakumar13/FUT-Auto-Buyer/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/chithakumar13/Fifa21-AutoBuyer.svg?style=flat-square
-[forks-url]: https://github.com/chithakumar13/Fifa21-AutoBuyer/network/members
+[forks-url]: https://github.com/chithakumar13/FUT-Auto-Buyer/network/members
 [stars-shield]: https://img.shields.io/github/stars/chithakumar13/Fifa21-AutoBuyer.svg?style=flat-square
-[stars-url]: https://github.com/chithakumar13/Fifa21-AutoBuyer/stargazers
+[stars-url]: https://github.com/chithakumar13/FUT-Auto-Buyer/stargazers
 [issues-shield]: https://img.shields.io/github/issues/chithakumar13/Fifa21-AutoBuyer.svg?style=flat-square
-[issues-url]: https://github.com/chithakumar13/Fifa21-AutoBuyer/issues
+[issues-url]: https://github.com/chithakumar13/FUT-Auto-Buyer/issues

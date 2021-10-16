@@ -21,7 +21,8 @@ export const safeSettingsView = function () {
     "7-15",
     { idAbWaitTime },
     "(Random second range eg. 7-15)",
-    "text"
+    "text",
+    "\\d+-\\d+$"
   )}
   ${generateTextInput(
     "Max purchases per search request",
@@ -40,7 +41,8 @@ export const safeSettingsView = function () {
     "5-8S",
     { idAbPauseFor },
     "(S for seconds, M for Minutes, H for hours eg. 0-0S)",
-    "text"
+    "text",
+    "\\d+-\\d+[H|M|S|h|m|s]$"
   )}
   ${generateToggleInput(
     "Add Delay After Buy",
@@ -52,14 +54,16 @@ export const safeSettingsView = function () {
     "1S",
     { idAbDelayToAdd },
     "(S for seconds, M for Minutes, H for hours)",
-    "text"
+    "text",
+    "\\d+[H|M|S|h|m|s]$"
   )}
   ${generateTextInput(
     "Stop After",
     "3H",
     { idAbStopAfter },
     "(S for seconds, M for Minutes, H for hours)",
-    "text"
+    "text",
+    "\\d+[H|M|S|h|m|s]$"
   )} 
   </div>`;
 };

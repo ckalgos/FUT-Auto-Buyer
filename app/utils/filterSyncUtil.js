@@ -1,7 +1,11 @@
-import { idAbFiltersToUpload, idAbServerLogin } from "../elementIds.constants";
+import {
+  idAbFiltersFileToUpload,
+  idAbFiltersToUpload,
+  idAbServerLogin,
+} from "../elementIds.constants";
 import { getValue } from "../services/repository";
 import { getUserAccessToken } from "./authUtil";
-import { hideLoader, showLoader } from "./commonUtil";
+import { downloadJson, hideLoader, showLoader } from "./commonUtil";
 import { sendUINotification } from "./notificationUtil";
 import { showPopUp } from "./popupUtil";
 import { saveFilterInDB } from "./userExternalUtil";
@@ -10,26 +14,85 @@ export const uploadFiltersToServer = () => {
   if (!checkIfLoggedIn()) return;
   const userFilters = getValue("filters");
 
-  let filterMessage = `Choose filters to upload <br /> <br />
+  let filterMessage = `Choose filters to Download <br /> <br />
   <select  multiple="multiple" class="multiselect-filter filter-header-settings" id="${idAbFiltersToUpload}"
       style="overflow-y : scroll">
       ${Object.keys(userFilters).map(
         (value) => `<option value='${value}'>${value}</option>`
       )}
-   </select> <br /> <br /> <br />
-   <h3>This is override/delete all the existings filters in the server</h3>`;
+   </select> <br /> <br /> <br />`;
+  //  <h3>This is override/delete all the existings filters in the server</h3>`;
 
   showPopUp(
     [
       { labelEnum: enums.UIDialogOptions.OK },
       { labelEnum: enums.UIDialogOptions.CANCEL },
     ],
-    "Upload filters",
+    "Download filters",
     filterMessage,
-    async (text) => {
-      text === 2 && (await uploadFilters(userFilters));
+    (text) => {
+      text === 2 && downloadLocal(userFilters);
     }
   );
+};
+
+export const downloadLocal = (userFilters) => {
+  const filterToDownload = {};
+  const selectedFilters = $(`#${idAbFiltersToUpload}`).val() || [];
+  if (!selectedFilters.length) {
+    sendUINotification("No filter selected", UINotificationType.NEGATIVE);
+    return;
+  }
+  for (let filter of selectedFilters) {
+    const currentFilter = userFilters[filter];
+    const parsedFilter = JSON.parse(currentFilter);
+    filterToDownload[filter] = parsedFilter;
+  }
+  downloadJson({ filters: filterToDownload }, "filters");
+  sendUINotification("Filters downloaded successfully");
+};
+
+export const uploadFiltersLocal = () => {
+  if (!checkIfLoggedIn()) return;
+
+  let uploadMessage = `Upload Filter Json file <br /> <br />
+  <input accept=".json" type="file" id="${idAbFiltersFileToUpload}">
+   </input> <br /> <br /> <br />
+   Uploading filters will override filters with the same name`;
+  showPopUp(
+    [
+      { labelEnum: enums.UIDialogOptions.OK },
+      { labelEnum: enums.UIDialogOptions.CANCEL },
+    ],
+    "Upload filters",
+    uploadMessage,
+    (text) => {
+      text === 2 && uploadLocalFilterConfirm();
+    }
+  );
+};
+
+const uploadLocalFilterConfirm = () => {
+  const myFile = $(`#${idAbFiltersFileToUpload}`).prop("files");
+  if (!myFile || !myFile[0]) {
+    sendUINotification("No filter file selected", UINotificationType.NEGATIVE);
+    return;
+  }
+  const file = myFile[0];
+  const fileReader = new FileReader();
+  fileReader.onload = (evt) => {
+    const parsedFilters = JSON.parse(evt.target.result);
+    if (!parsedFilters || !parsedFilters.filters) {
+      sendUINotification("Not a valid filters file");
+      return;
+    }
+
+    for (let filter in parsedFilters.filters) {
+      saveFilterInDB(filter, parsedFilters.filters[filter]);
+    }
+    sendUINotification("Filters uploaded successfully");
+  };
+  fileReader.readAsText(file);
 };
 
 export const downloadFiltersFromServer = () => {

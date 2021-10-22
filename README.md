@@ -209,6 +209,15 @@ Using mobile? No problem, you can get the app for your os below
 
 - If enabled tool will gives sound notification for actions like buy card / captcha trigger etc...
 
+### No.-of-search-For-each-filter
+
+- Define the numbers of searches before switching to a new filter
+
+### Use-filters-in-order
+
+- If toggled, the bot will switch filters in sequence: A-B-C-A-B-C
+- If left untoggled, the bot will switch fitlers in a random sequence, which could lead to a pattern like this: A-A-A-B-A-C
+
 ## Prerequisites
 
 - To use this tool, the user should have access to the transfer market.

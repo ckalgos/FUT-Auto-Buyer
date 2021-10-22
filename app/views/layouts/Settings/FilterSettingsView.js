@@ -73,7 +73,7 @@ export const filterSettingsView = async function () {
                         "Use filters in order",
                         { idAbFilterOrder },
                         "Use filters in order <br> instead of randomizing",
-                        "mrgTop10",
+                        "mrgTop10 w-full",
                         (evt) => {
                           let useSequential = getValue("useSequential");
                           if (useSequential) {

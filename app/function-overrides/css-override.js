@@ -141,6 +141,9 @@ export const cssOverride = () => {
     color: red;
     border: 1px solid;
   }
+  .w-full {
+    width: 100% !important;
+  }
   `;
   if (!isPhone()) {
     style.innerText += getScrollBarStyle();

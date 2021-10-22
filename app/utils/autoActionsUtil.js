@@ -47,6 +47,8 @@ export const switchFilterIfRequired = async function () {
   const availableFilters = getValue("selectedFilters");
   const fiterSearchCount = getValue("fiterSearchCount");
   const currentFilterCount = getValue("currentFilterCount");
+  let useSequential = getValue("useSequential");
+  let currentMultiFilter = getValue("currentMultiFilter");
   if (
     !availableFilters ||
     !availableFilters.length ||
@@ -57,7 +59,22 @@ export const switchFilterIfRequired = async function () {
   }
   setValue("currentFilterCount", 1);
   setValue("currentPage", 1);
-  let filterName = availableFilters[getRandNum(0, availableFilters.length - 1)];
+
+
+  if ( useSequential ) {
+    if ( currentMultiFilter < availableFilters.length - 1 ) {
+      currentMultiFilter++;
+    } else {
+      currentMultiFilter = 0;
+    }
+  } else {
+    currentMultiFilter = getRandNum(0, availableFilters.length - 1);
+
+  }
+
+  setValue("currentMultiFilter", currentMultiFilter);
+  let filterName = availableFilters[currentMultiFilter];
+
   await loadFilter.call(this, filterName);
   writeToLog(
     `---------------------------  Running for filter ${filterName}  ---------------------------------------------`,

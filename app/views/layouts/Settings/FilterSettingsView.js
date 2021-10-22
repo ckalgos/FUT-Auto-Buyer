@@ -6,6 +6,7 @@ import {
   idAbServerLogin,
   idAbDownloadFilter,
   idAbUploadFilter,
+  idAbFilterOrder
 } from "../../../elementIds.constants";
 import { getValue, setValue } from "../../../services/repository";
 import {
@@ -20,6 +21,7 @@ import {
 import { updateMultiFilterSettings } from "../../../utils/filterUtil";
 import { generateButton } from "../../../utils/uiUtils/generateButton";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
+import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 import {
   deleteFilter,
   loadFilter,
@@ -65,7 +67,26 @@ export const filterSettingsView = async function () {
                        (value) => `<option value='${value}'>${value}</option>`
                      )}
                     </select>
-                    <label style="white-space: nowrap;width: 50%;" id="${idSelectFilterCount}" >No Filter Selected</label>
+                    <div style="width: 50%; display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
+                      <label style="white-space: nowrap;width: 100%;" id="${idSelectFilterCount}" >No Filter Selected</label>
+                      ${generateToggleInput(
+                        "Use filters in order",
+                        { idAbFilterOrder },
+                        "Use filters in order <br> instead of randomizing",
+                        "mrgTop10",
+                        (evt) => {
+                          let useSequential = getValue("useSequential");
+                          if (useSequential) {
+                            useSequential = false;
+                            $(evt.currentTarget).removeClass("toggled");
+                          } else {
+                            useSequential = true;
+                            $(evt.currentTarget).addClass("toggled");
+                          }
+                          setValue("useSequential", useSequential);
+                        }
+                      )}
+                    </div>
                 </div>
                 ${generateTextInput(
                   "No. of search For each filter",

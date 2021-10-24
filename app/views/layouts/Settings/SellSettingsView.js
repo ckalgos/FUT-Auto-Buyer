@@ -7,6 +7,7 @@ import {
   idSellFutBinPrice,
   idSellFutBinPercent,
   idSellCheckBuyPrice,
+  idFutBinDuration,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -52,6 +53,14 @@ export const sellSettingsView = function () {
       "",
       { idAbSellPrice },
       `(-1 to send to transferlist)<br />Receive After Tax: <span id=${idSellAfterTax}>0</span>`
+    )}
+    ${generateTextInput(
+      "List Duration",
+      "1H",
+      { idFutBinDuration },
+      "List Duration when listing",
+      "text",
+      "\\d+[H|M|S|h|m|s]$"
     )}
     ${generateTextInput(
       "Clear sold count",

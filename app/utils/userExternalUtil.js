@@ -97,6 +97,18 @@ export const loadFilter = async function (currentFilterName) {
       $(id).val(value);
     }
   }
+  if (
+    buyerSettings["idAddIgnorePlayersList"] &&
+    buyerSettings["idAddIgnorePlayersList"].length
+  ) {
+    for (let { displayName } of buyerSettings["idAddIgnorePlayersList"]) {
+      checkAndAppendOption(
+        `#${ElementIds.idAddIgnorePlayersList}`,
+        displayName
+      );
+    }
+  }
+
   validateSettings();
 };
 

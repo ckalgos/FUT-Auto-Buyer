@@ -4,7 +4,10 @@ import { safeSettingsView } from "./Settings/SafeSettingsView";
 import { captchaSettingsView } from "./Settings/CaptchaSettingsView";
 import { notificationSettingsView } from "./Settings/NotificationSettingsView";
 import { commonSettingsView } from "./Settings/CommonSettingsView";
-import { searchSettingsView } from "./Settings/SearchSettingsView";
+import {
+  destoryPlayerInput,
+  searchSettingsView,
+} from "./Settings/SearchSettingsView";
 import { filterSettingsView } from "./Settings/FilterSettingsView";
 import { getValue } from "../../services/repository";
 import { updateMultiFilterSettings } from "../../utils/filterUtil";
@@ -100,7 +103,10 @@ const appendMenuItems = async () => {
   if (legacyView) {
     $(".menu-container").css("display", "none");
     $(".buyer-settings-wrapper").css("display", "");
-    $(".search-price-header").attr("style", "display: flex !important");
+    $(".buyer-settings-wrapper .search-price-header").attr(
+      "style",
+      "display: flex !important"
+    );
   }
 
   setTimeout(() => {
@@ -121,6 +127,7 @@ const deleteAllMenu = () => {
   settingsLookup.forEach((value, key) => {
     $(value.selector).remove();
   });
+  destoryPlayerInput();
 };
 
 const onSettingChange = function (e, t, i) {

@@ -4,6 +4,7 @@ import {
 } from "../elementIds.constants";
 import { getValue, setValue } from "../services/repository";
 import {
+  convertToSeconds,
   formatString,
   getRandWaitTime,
   promisifyTimeOut,
@@ -118,7 +119,8 @@ export const watchListUtil = function (buyerSetting) {
                     await sellWonItems(
                       player,
                       sellPrice,
-                      buyerSetting["idAbWaitTime"]
+                      buyerSetting["idAbWaitTime"],
+                      buyerSetting["idFutBinDuration"]
                     );
                   } else {
                     services.Item.move(player, ItemPile.CLUB);
@@ -205,7 +207,7 @@ const tryBidItems = async (player, bidPrice, sellPrice, buyerSetting) => {
   }
 };
 
-const sellWonItems = async (player, sellPrice, waitRange) => {
+const sellWonItems = async (player, sellPrice, waitRange, sellDuration) => {
   let auction = player._auction;
   let playerName = formatString(player._staticData.name, 15);
   sellBids.add(auction.tradeId);
@@ -221,6 +223,11 @@ const sellWonItems = async (player, sellPrice, waitRange) => {
   player.clearAuction();
 
   await promisifyTimeOut(function () {
-    services.Item.list(player, getSellBidPrice(sellPrice), sellPrice, 3600);
+    services.Item.list(
+      player,
+      getSellBidPrice(sellPrice),
+      sellPrice,
+      convertToSeconds(sellDuration || "1H") || 3600
+    );
   }, getRandWaitTime(waitRange));
 };

@@ -26,6 +26,9 @@ export const getSellPriceFromFutBin = async (
   let sellPrice;
   try {
     const definitionId = player.definitionId;
+    if (player.type !== "player") {
+      return sellPrice;
+    }
     const futBinResponse = await fetchPricesFromFutBin(definitionId, 3);
     if (futBinResponse.status === 200) {
       const futBinPrices = JSON.parse(futBinResponse.responseText);
@@ -36,7 +39,7 @@ export const getSellPriceFromFutBin = async (
         )
       );
       const futBinPercent = buyerSetting["idSellFutBinPercent"] || 100;
-      let calculatedPrice = roundOffPrice((sellPrice * futBinPercent) / 100);
+      let calculatedPrice = (sellPrice * futBinPercent) / 100;
       await getPriceLimits(player);
       if (player.hasPriceLimits()) {
         calculatedPrice = Math.min(
@@ -48,6 +51,7 @@ export const getSellPriceFromFutBin = async (
           calculatedPrice = getBuyBidPrice(calculatedPrice);
         }
       }
+      calculatedPrice = roundOffPrice(calculatedPrice);
       writeToLog(
         `= Futbin price for ${playerName}: ${sellPrice}: ${futBinPercent}% of sale price: ${calculatedPrice}`,
         idAutoBuyerFoundLog

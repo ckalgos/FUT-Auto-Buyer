@@ -83,10 +83,15 @@ AutoBuyerViewController.prototype.init = function () {
           if (legacyView) {
             $(".settings-menu").css("display", "none");
             $(".buyer-settings-wrapper").css("display", "");
-            $(".search-price-header").attr("style", "display: flex !important");
+            $(".buyer-settings-wrapper .search-price-header").attr(
+              "style",
+              "display: flex !important"
+            );
           } else {
             $(".buyer-settings-wrapper").css("display", "none");
-            $(".search-price-header").removeAttr("style");
+            $(".buyer-settings-wrapper .search-price-header").removeAttr(
+              "style"
+            );
             $(".settings-menu").css("display", "block");
             $(".buy-settings-view").css("display", "");
             setDefaultActiveTab();

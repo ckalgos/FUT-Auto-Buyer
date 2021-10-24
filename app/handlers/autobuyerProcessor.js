@@ -113,16 +113,28 @@ export const stopAutoBuyer = (isPaused) => {
 const searchTransferMarket = function (buyerSetting) {
   const platform = getUserPlatform();
   return new Promise((resolve) => {
-    sendPinEvents("Transfer Market Search");
-    updateRequestCount();
-    let searchCriteria = this._viewmodel.searchCriteria;
-
-    services.Item.clearTransferMarketCache();
-
     const expiresIn = convertToSeconds(buyerSetting["idAbItemExpiring"]);
     const useRandMinBid = buyerSetting["idAbRandMinBidToggle"];
     const useRandMinBuy = buyerSetting["idAbRandMinBuyToggle"];
     let currentPage = getValue("currentPage") || 1;
+    const playersToIgnore = new Set(
+      (buyerSetting["idAddIgnorePlayersList"] || []).map(({ id }) => id)
+    );
+
+    let bidPrice = buyerSetting["idAbMaxBid"];
+    let userBuyNowPrice = buyerSetting["idAbBuyPrice"];
+
+    if (!userBuyNowPrice && !bidPrice) {
+      writeToLog(
+        "skip search >>> (No Buy or Bid Price given)",
+        idAutoBuyerFoundLog
+      );
+      return resolve();
+    }
+
+    sendPinEvents("Transfer Market Search");
+    updateRequestCount();
+    let searchCriteria = this._viewmodel.searchCriteria;
     if (useRandMinBid)
       searchCriteria.minBid = roundOffPrice(
         getRandNum(0, buyerSetting["idAbRandMinBidInput"])
@@ -131,6 +143,8 @@ const searchTransferMarket = function (buyerSetting) {
       searchCriteria.minBuy = roundOffPrice(
         getRandNum(0, buyerSetting["idAbRandMinBuyInput"])
       );
+    services.Item.clearTransferMarketCache();
+
     services.Item.searchTransferMarket(searchCriteria, currentPage).observe(
       this,
       async function (sender, response) {
@@ -171,6 +185,7 @@ const searchTransferMarket = function (buyerSetting) {
             let player = response.data.items[i];
             let auction = player._auction;
             let type = player.type;
+            let { id } = player._metaData || {};
             let playerRating = parseInt(player.rating);
             let expires = services.Localization.localizeAuctionTimeRemaining(
               auction.expires
@@ -185,7 +200,6 @@ const searchTransferMarket = function (buyerSetting) {
             let buyNowPrice = auction.buyNowPrice;
             let currentBid = auction.currentBid || auction.startingBid;
             let isBid = auction.currentBid;
-            let bidPrice = buyerSetting["idAbMaxBid"];
 
             let priceToBid = buyerSetting["idAbBidExact"]
               ? bidPrice
@@ -199,7 +213,6 @@ const searchTransferMarket = function (buyerSetting) {
               ? getBuyBidPrice(currentBid)
               : currentBid;
 
-            let userBuyNowPrice = buyerSetting["idAbBuyPrice"];
             let usersellPrice = buyerSetting["idAbSellPrice"];
             let minRating = buyerSetting["idAbMinRating"];
             let maxRating = buyerSetting["idAbMaxRating"];
@@ -224,6 +237,11 @@ const searchTransferMarket = function (buyerSetting) {
               expireTime
             );
 
+            if (playersToIgnore.has(id)) {
+              logWrite("skip >>> (Ignored player)");
+              continue;
+            }
+
             if (!validSearchCount) {
               logWrite("skip >>> (Exceeded search result threshold)");
               continue;
@@ -231,11 +249,6 @@ const searchTransferMarket = function (buyerSetting) {
 
             if (maxPurchases < 1) {
               logWrite("skip >>> (Exceeded num of buys/bids per search)");
-              continue;
-            }
-
-            if (!userBuyNowPrice && !bidPrice) {
-              logWrite("skip >>> (No Buy or Bid Price given)");
               continue;
             }
 

@@ -15,6 +15,7 @@ export const checkAndAppendOption = function (dropdownSelector, optionName) {
       $("<option></option>").attr("value", optionName).text(optionName)
     );
   }
+  return exist;
 };
 
 export const updateMultiFilterSettings = function (e) {

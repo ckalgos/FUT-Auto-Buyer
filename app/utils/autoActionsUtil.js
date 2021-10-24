@@ -1,4 +1,7 @@
-import { idAutoBuyerFoundLog } from "../elementIds.constants";
+import {
+  idAutoBuyerFoundLog,
+  idProgressAutobuyer,
+} from "../elementIds.constants";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import {
   getValue,
@@ -18,13 +21,29 @@ export const stopBotIfRequired = (buyerSetting) => {
   let time = convertToSeconds(buyerSetting["idAbStopAfter"]);
   let sendDetailedNotification = buyerSetting["idDetailedNotification"];
   let currentTime = new Date().getTime();
-  let timeElapsed = (currentTime - botStartTime) / 1000;
+  let timeElapsed = (currentTime - botStartTime) / 1000 >= time;
+  const isSelling =
+    buyerSetting["idSellCheckBuyPrice"] || buyerSetting["idSellFutBinPrice"];
+  const isTransferListFull =
+    isSelling &&
+    repositories.Item &&
+    repositories.Item.transfer.length >=
+      repositories.Item.pileSizes._collection[5];
 
-  if (timeElapsed >= time || (cardsToBuy && purchasedCardCount >= cardsToBuy)) {
-    if(sendDetailedNotification)
-      sendNotificationToUser(`Autbuyer stopped | ${
-        timeElapsed ? "Time elapsed" : "Max pruchases count reached"
-      }`);
+  if (
+    isTransferListFull ||
+    timeElapsed ||
+    (cardsToBuy && purchasedCardCount >= cardsToBuy)
+  ) {
+    const message = timeElapsed
+      ? "Time elapsed"
+      : isTransferListFull
+      ? "Transfer list is full"
+      : "Max pruchases count reached";
+
+    if (sendDetailedNotification)
+      sendNotificationToUser(`Autobuyer stopped | ${message}`);
+    writeToLog(`Autobuyer stopped | ${message}`, idProgressAutobuyer);
     stopAutoBuyer();
   }
 };
@@ -57,7 +76,13 @@ export const switchFilterIfRequired = async function () {
   }
   setValue("currentFilterCount", 1);
   setValue("currentPage", 1);
-  let filterName = availableFilters[getRandNum(0, availableFilters.length - 1)];
+  const currentFilterIndex = getValue("currentFilterIndex") || 0;
+  let filterIndex = getValue("runSequentially")
+    ? currentFilterIndex % availableFilters.length
+    : getRandNum(0, availableFilters.length - 1);
+
+  setValue("currentFilterIndex", filterIndex + 1);
+  let filterName = availableFilters[filterIndex];
   await loadFilter.call(this, filterName);
   writeToLog(
     `---------------------------  Running for filter ${filterName}  ---------------------------------------------`,

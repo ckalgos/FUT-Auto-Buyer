@@ -1,4 +1,5 @@
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
+import { generateButton } from "../../../utils/uiUtils/generateButton";
 import {
   idAbAddFilterGK,
   idAbMinRating,
@@ -8,15 +9,115 @@ import {
   idAbRandMinBuyInput,
   idAbRandMinBuyToggle,
   idAbMaxSearchPage,
+  idAddIgnorePlayers,
+  idAddIgnorePlayersList,
+  idRemoveIgnorePlayers,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
+import { checkAndAppendOption } from "../../../utils/filterUtil";
+import { getValue, setValue } from "../../../services/repository";
+let playerInput;
+
+export const destoryPlayerInput = () => {
+  playerInput.destroy();
+  playerInput = null;
+};
+const playerIgnoreList = function () {
+  playerInput = new UTPlayerSearchControl();
+  const playerListId = `#${idAddIgnorePlayersList}`;
+  const element = $(`
+            <div class="price-filter buyer-settings-field">
+              <div class="info">
+               <span class="secondary label">
+                  <button id='idAddIgnorePlayers_tooltip' style="font-size:16px" class="flat camel-case">Players To Ignore</button><br/>
+                  <small>Players to avoid Bidding/Buying</small>
+                </span>
+              </div>
+              <div class="ignore-players displayCenterFlx">
+                ${generateButton(
+                  idAddIgnorePlayers,
+                  "+",
+                  () => {
+                    const displayName = `${playerInput._playerNameInput.value}(${playerInput.selected.rating})`;
+                    const exists = checkAndAppendOption(
+                      playerListId,
+                      displayName
+                    );
+                    $(`${playerListId} option[value="${displayName}"]`).attr(
+                      "selected",
+                      true
+                    );
+                    if (!exists) {
+                      const buyerSetting = getValue("BuyerSettings") || {};
+                      const existingPlayersList =
+                        buyerSetting["idAddIgnorePlayersList"] || [];
+                      existingPlayersList.push({
+                        id: playerInput.selected.id,
+                        displayName,
+                      });
+                      buyerSetting["idAddIgnorePlayersList"] =
+                        existingPlayersList;
+                      setValue("BuyerSettings", buyerSetting);
+                    }
+                  },
+                  "btn-standard filterSync action-icons"
+                )}                
+                </div>
+              </div>
+              <div class="price-filter buyer-settings-field">
+                <div class="info">
+                <span class="secondary label">
+                  <button id='idAddIgnorePlayers_tooltip' style="font-size:16px" class="flat camel-case">Remove from Ignore List</button><br/>
+                <small><br/></small>
+              </span>
+                </div>
+                <div class="displayCenterFlx">
+                  <select style="width:90%;height: 3rem;font-size: 1.5rem;" class="filter-header-settings" id=${idAddIgnorePlayersList}>
+                    <option selected="true" disabled>Ignored Players List</option>                            
+                  </select>
+                  ${generateButton(
+                    idRemoveIgnorePlayers,
+                    "❌",
+                    () => {
+                      const playerName = $(`${playerListId} option`)
+                        .filter(":selected")
+                        .val();
+                      if (playerName != "Ignored Players List") {
+                        $(
+                          `${playerListId}` + ` option[value="${playerName}"]`
+                        ).remove();
+                        $(`${playerListId}`).prop("selectedIndex", 0);
+                        const buyerSetting = getValue("BuyerSettings") || {};
+                        let existingPlayersList =
+                          buyerSetting["idAddIgnorePlayersList"] || [];
+                        existingPlayersList = existingPlayersList.filter(
+                          ({ displayName }) => displayName != playerName
+                        );
+                        buyerSetting["idAddIgnorePlayersList"] =
+                          existingPlayersList;
+                        setValue("BuyerSettings", buyerSetting);
+                      }
+                    },
+                    "btn-standard filterSync font15 action-icons"
+                  )}
+                </div>
+              </div>              
+              `);
+
+  $(playerInput.__root).insertBefore(element.find(`#${idAddIgnorePlayers}`));
+  playerInput.init();
+  playerInput._playerNameInput.setPlaceholder("Search Player To Ignore");
+  return element;
+};
 
 export const searchSettingsView = function () {
-  return `<div style='display : none' class='buyer-settings-wrapper results-filter-view'>  
+  const element =
+    $(`<div style='display : none' class='buyer-settings-wrapper results-filter-view'>  
     <hr class="search-price-header header-hr">
-    <div class="search-price-header">
+    <div class="search-price-header place-holder">
       <h1 class="secondary">Search Settings:</h1>
-    </div> 
+    </div>
+  
     ${generateTextInput(
       "Min Rating",
       10,
@@ -47,12 +148,16 @@ export const searchSettingsView = function () {
       "Search result page limit",
       5,
       { idAbMaxSearchPage },
-      "No of. pages bot should move forward before going back to page 1"
+      "No of. pages bot should move <br /> forward before going back to page 1"
     )}
     ${generateToggleInput(
       "SKIP GK",
       { idAbAddFilterGK },
       "(Skip all goalkeepers <br/> to buy / bid a card)"
     )}
-  </div>`;
+  </div>`);
+
+  const parentEl = element.find(".place-holder");
+  playerIgnoreList().insertAfter(parentEl);
+  return element;
 };

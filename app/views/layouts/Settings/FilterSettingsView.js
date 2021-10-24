@@ -6,6 +6,7 @@ import {
   idAbServerLogin,
   idAbDownloadFilter,
   idAbUploadFilter,
+  idRunFilterSequential,
 } from "../../../elementIds.constants";
 import { getValue, setValue } from "../../../services/repository";
 import {
@@ -20,6 +21,7 @@ import {
 import { updateMultiFilterSettings } from "../../../utils/filterUtil";
 import { generateButton } from "../../../utils/uiUtils/generateButton";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
+import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 import {
   deleteFilter,
   loadFilter,
@@ -52,7 +54,26 @@ const filters = async () => {
   return filters;
 };
 
+const handleSequenceToggle = (evt) => {
+  let runSequentially = getValue("runSequentially");
+  if (runSequentially) {
+    runSequentially = false;
+    $(evt.currentTarget).removeClass("toggled");
+  } else {
+    runSequentially = true;
+    $(evt.currentTarget).addClass("toggled");
+  }
+  setValue("runSequentially", runSequentially);
+  return runSequentially;
+};
+
 export const filterSettingsView = async function () {
+  if (getValue("runSequentially")) {
+    setValue("runSequentially", false);
+    setTimeout(() => {
+      $(`#${idRunFilterSequential}`).click();
+    });
+  }
   return `<div style='display : none' class='buyer-settings-wrapper filter-settings-view'>  
                 <hr class="search-price-header header-hr">
                 <div class="search-price-header">
@@ -71,11 +92,18 @@ export const filterSettingsView = async function () {
                   "No. of search For each filter",
                   getValue("fiterSearchCount") || 3,
                   { idAbNumberFilterSearch },
-                  "(Count of searches performed before switching to another filter)",
+                  "(Count of searches performed before <br/> switching to another filter)",
                   "number",
                   null,
-                  null,
+                  "buyer-settings-field",
                   (value) => setValue("fiterSearchCount", parseInt(value) || 3)
+                )}
+                ${generateToggleInput(
+                  "Switch filter sequentially",
+                  { idRunFilterSequential },
+                  "",
+                  "buyer-settings-field",
+                  handleSequenceToggle
                 )}
             </div>
     `;

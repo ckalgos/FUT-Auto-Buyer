@@ -96,7 +96,8 @@ export const buyPlayer = (
                   player,
                   getSellBidPrice(sellPrice),
                   sellPrice,
-                  3600
+                  convertToSeconds(buyerSetting["idFutBinDuration"] || "1H") ||
+                    3600
                 );
               } else {
                 services.Item.move(player, ItemPile.CLUB);

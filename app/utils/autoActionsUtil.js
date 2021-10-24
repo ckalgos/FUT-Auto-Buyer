@@ -22,8 +22,8 @@ export const stopBotIfRequired = (buyerSetting) => {
   let sendDetailedNotification = buyerSetting["idDetailedNotification"];
   let currentTime = new Date().getTime();
   let timeElapsed = (currentTime - botStartTime) / 1000 >= time;
-  const isSelling =
-    buyerSetting["idSellCheckBuyPrice"] || buyerSetting["idSellFutBinPrice"];
+  const isSelling = false;
+  // buyerSetting["idSellCheckBuyPrice"] || buyerSetting["idSellFutBinPrice"];
   const isTransferListFull =
     isSelling &&
     repositories.Item &&
@@ -39,7 +39,7 @@ export const stopBotIfRequired = (buyerSetting) => {
       ? "Time elapsed"
       : isTransferListFull
       ? "Transfer list is full"
-      : "Max pruchases count reached";
+      : "Max purchases count reached";
 
     if (sendDetailedNotification)
       sendNotificationToUser(`Autobuyer stopped | ${message}`);

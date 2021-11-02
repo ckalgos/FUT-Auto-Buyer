@@ -12,6 +12,9 @@ import {
   idAddIgnorePlayers,
   idAddIgnorePlayersList,
   idRemoveIgnorePlayers,
+  idAddAllowedPlayers,
+  idAddAllowedPlayersList,
+  idRemoveAllowedPlayers,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { checkAndAppendOption } from "../../../utils/filterUtil";
@@ -110,6 +113,94 @@ const playerIgnoreList = function () {
   return element;
 };
 
+const playerAllowedList = function () {
+  playerInput = new UTPlayerSearchControl();
+  const playerListId = `#${idAddAllowedPlayersList}`;
+  const element = $(`
+            <div class="price-filter buyer-settings-field">
+              <div class="info">
+               <span class="secondary label">
+                  <button id='idAddAllowedPlayers_tooltip' style="font-size:16px" class="flat camel-case">Players To Allowed</button><br/>
+                  <small>Players to avoid Bidding/Buying</small>
+                </span>
+              </div>
+              <div class="ignore-players displayCenterFlx">
+                ${generateButton(
+                  idAddAllowedPlayers,
+                  "+",
+                  () => {
+                    const displayName = `${playerInput._playerNameInput.value}(${playerInput.selected.rating})`;
+                    const exists = checkAndAppendOption(
+                      playerListId,
+                      displayName
+                    );
+                    $(`${playerListId} option[value="${displayName}"]`).attr(
+                      "selected",
+                      true
+                    );
+                    if (!exists) {
+                      const buyerSetting = getValue("BuyerSettings") || {};
+                      const existingPlayersList =
+                        buyerSetting["idAddAllowedPlayersList"] || [];
+                      existingPlayersList.push({
+                        id: playerInput.selected.id,
+                        displayName,
+                      });
+                      buyerSetting["idAddAllowedPlayersList"] =
+                        existingPlayersList;
+                      setValue("BuyerSettings", buyerSetting);
+                    }
+                  },
+                  "btn-standard filterSync action-icons"
+                )}                
+                </div>
+              </div>
+              <div class="price-filter buyer-settings-field">
+                <div class="info">
+                <span class="secondary label">
+                  <button id='idAddAllowedPlayers_tooltip' style="font-size:16px" class="flat camel-case">Remove from Allowed List</button><br/>
+                <small><br/></small>
+              </span>
+                </div>
+                <div class="displayCenterFlx">
+                  <select style="width:90%;height: 3rem;font-size: 1.5rem;" class="filter-header-settings" id=${idAddAllowedPlayersList}>
+                    <option selected="true" disabled>Allowed Players List</option>                            
+                  </select>
+                  ${generateButton(
+                    idRemoveAllowedPlayers,
+                    "❌",
+                    () => {
+                      const playerName = $(`${playerListId} option`)
+                        .filter(":selected")
+                        .val();
+                      if (playerName != "Allowed Players List") {
+                        $(
+                          `${playerListId}` + ` option[value="${playerName}"]`
+                        ).remove();
+                        $(`${playerListId}`).prop("selectedIndex", 0);
+                        const buyerSetting = getValue("BuyerSettings") || {};
+                        let existingPlayersList =
+                          buyerSetting["idAddAllowedPlayersList"] || [];
+                        existingPlayersList = existingPlayersList.filter(
+                          ({ displayName }) => displayName != playerName
+                        );
+                        buyerSetting["idAddAllowedPlayersList"] =
+                          existingPlayersList;
+                        setValue("BuyerSettings", buyerSetting);
+                      }
+                    },
+                    "btn-standard filterSync font15 action-icons"
+                  )}
+                </div>
+              </div>              
+              `);
+
+  $(playerInput.__root).insertBefore(element.find(`#${idAddAllowedPlayers}`));
+  playerInput.init();
+  playerInput._playerNameInput.setPlaceholder("Search Player To Allow");
+  return element;
+};
+
 export const searchSettingsView = function () {
   const element =
     $(`<div style='display : none' class='buyer-settings-wrapper results-filter-view'>  
@@ -159,5 +250,6 @@ export const searchSettingsView = function () {
 
   const parentEl = element.find(".place-holder");
   playerIgnoreList().insertAfter(parentEl);
+  playerAllowedList().insertAfter(parentEl);
   return element;
 };

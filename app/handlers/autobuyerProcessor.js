@@ -121,6 +121,10 @@ const searchTransferMarket = function (buyerSetting) {
       (buyerSetting["idAddIgnorePlayersList"] || []).map(({ id }) => id)
     );
 
+    const playersToAllowed = new Set(
+      (buyerSetting["idAddAllowedPlayersList"] || []).map(({ id }) => id)
+    );
+
     let bidPrice = buyerSetting["idAbMaxBid"];
     let userBuyNowPrice = buyerSetting["idAbBuyPrice"];
 
@@ -239,6 +243,11 @@ const searchTransferMarket = function (buyerSetting) {
 
             if (playersToIgnore.has(id)) {
               logWrite("skip >>> (Ignored player)");
+              continue;
+            }
+
+            if (!playersToAllowed.has(id)) {
+              logWrite("skip >>> (Not Allowed player)");
               continue;
             }
 

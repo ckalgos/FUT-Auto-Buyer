@@ -86,4 +86,7 @@ export const idRunFilterSequential = "elem_" + generateId(15);
 export const idAddIgnorePlayers = "elem_" + generateId(15);
 export const idRemoveIgnorePlayers = "elem_" + generateId(15);
 export const idAddIgnorePlayersList = "elem_" + generateId(15);
+export const idAddAllowedPlayers = "elem_" + generateId(15);
+export const idRemoveAllowedPlayers = "elem_" + generateId(15);
+export const idAddAllowedPlayersList = "elem_" + generateId(15);
 export const idFutBinDuration = "elem_" + generateId(15);

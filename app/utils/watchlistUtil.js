@@ -90,6 +90,7 @@ export const watchListUtil = function (buyerSetting) {
 
                 for (var i = 0; i < boughtItems.length; i++) {
                   const player = boughtItems[i];
+                  const price = player._auction.currentBid;
                   const ratingThreshold = buyerSetting["idSellRatingThreshold"];
                   let playerRating = parseInt(player.rating);
                   const isValidRating =

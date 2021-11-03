@@ -87,3 +87,8 @@ export const idAddIgnorePlayers = "elem_" + generateId(15);
 export const idRemoveIgnorePlayers = "elem_" + generateId(15);
 export const idAddIgnorePlayersList = "elem_" + generateId(15);
 export const idFutBinDuration = "elem_" + generateId(15);
+
+export const idShouldSort = "elem_" + generateId(15);
+export const idSortBy = "elem_" + generateId(15);
+export const idSortOrder = "elem_" + generateId(15);
+

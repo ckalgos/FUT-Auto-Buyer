@@ -164,7 +164,12 @@ export const searchSettingsView = function () {
       "",
       "BuyerSettings"
     )}
-    ${generateToggleInput("Use random min buy", { idAbRandMinBuyToggle }, "")}
+    ${generateToggleInput(
+      "Use random min buy",
+      { idAbRandMinBuyToggle },
+      "",
+      "BuyerSettings"
+    )}
     ${generateToggleInput(
       "SKIP GK",
       { idAbAddFilterGK },

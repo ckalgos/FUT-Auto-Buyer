@@ -6,7 +6,7 @@ import { getValue, setValue } from "../services/repository";
 import {
   convertToSeconds,
   formatString,
-  getRandNumberInRange,
+  getRandWaitTime,
   promisifyTimeOut,
   wait,
 } from "./commonUtil";
@@ -230,5 +230,5 @@ const sellWonItems = async (player, sellPrice, waitRange, sellDuration) => {
       sellPrice,
       convertToSeconds(sellDuration || "1H") || 3600
     );
-  }, getRandNumberInRange(waitRange));
+  }, getRandWaitTime(waitRange));
 };

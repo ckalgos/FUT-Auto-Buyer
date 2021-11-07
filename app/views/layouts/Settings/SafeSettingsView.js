@@ -34,16 +34,18 @@ export const safeSettingsView = function () {
   )}
   ${generateTextInput(
     "Pause Cycle",
-    15,
+    "10-15",
     { idAbCycleAmount },
-    "(No. of searches performed before triggering Pause)",
-    "CommonSettings"
+    "(No. of searches performed <br/> before triggering Pause eg. 10-15)",
+    "CommonSettings",
+    "text",
+    "\\d+-\\d+$"
   )}
   ${generateTextInput(
     "Pause For",
     "5-8S",
     { idAbPauseFor },
-    "(S for seconds, M for Minutes, H for hours eg. 0-0S)",
+    "(S for seconds, M for Minutes, H for hours eg. 0-0S)<br/><br/>",
     "CommonSettings",
     "text",
     "\\d+-\\d+[H|M|S|h|m|s]$"
@@ -65,12 +67,12 @@ export const safeSettingsView = function () {
   )}
   ${generateTextInput(
     "Stop After",
-    "3H",
+    "3-4H",
     { idAbStopAfter },
-    "(S for seconds, M for Minutes, H for hours)",
+    "(S for seconds, M for Minutes, H for hours eg. 3-4H)",
     "CommonSettings",
     "text",
-    "\\d+[H|M|S|h|m|s]$"
+    "\\d+-\\d+[H|M|S|h|m|s]$"
   )} 
   </div>`;
 };

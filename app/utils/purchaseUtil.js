@@ -10,7 +10,7 @@ import {
 import {
   convertToSeconds,
   formatString,
-  getRandNumberInRange,
+  getRandWaitTime,
   playAudio,
   wait,
 } from "./commonUtil";
@@ -103,7 +103,7 @@ export const buyPlayer = (
               } else {
                 services.Item.move(player, ItemPile.CLUB);
               }
-            }, getRandNumberInRange(buyerSetting["idAbWaitTime"]));
+            }, getRandWaitTime(buyerSetting["idAbWaitTime"]));
           } else {
             let bidCount = increAndGetStoreValue("bidCount");
             let sym = " B:" + formatString(bidCount.toString(), 4);

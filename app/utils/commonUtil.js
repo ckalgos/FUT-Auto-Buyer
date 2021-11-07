@@ -55,6 +55,27 @@ export const convertToSeconds = (val) => {
   return 0;
 };
 
+export const convertRangeToSeconds = (val) => {
+  if (val) {
+    let valInterval = val[val.length - 1].toUpperCase();
+    let valInTime = getRandWaitTime(val.substring(0, val.length - 1)) / 1000;
+    let multipler = valInterval === "M" ? 60 : valInterval === "H" ? 3600 : 1;
+    if (valInTime) {
+      valInTime = valInTime * multipler;
+    }
+    return valInTime;
+  }
+  return 0;
+};
+
+export const getRandNumberInRange = (range) => {
+  const rangeVal = getRangeValue(range);
+  if (rangeVal.length >= 2) {
+    return getRandNum(rangeVal[0], rangeVal[1]);
+  }
+  return 0;
+};
+
 export const getRandNum = (min, max) =>
   Math.round(Math.random() * (max - min) + min);
 
@@ -65,7 +86,7 @@ export const getRangeValue = (range) => {
   return [];
 };
 
-export const getRandNumberInRange = (range) => {
+export const getRandWaitTime = (range) => {
   if (range) {
     const [start, end] = range.split("-").map((a) => parseInt(a));
     return Math.round(Math.random() * (end - start) + start) * 1000;

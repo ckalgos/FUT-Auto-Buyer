@@ -6,7 +6,7 @@ import { getValue, setValue } from "../services/repository";
 import {
   convertToSeconds,
   formatString,
-  getRandWaitTime,
+  getRandNumberInRange,
   promisifyTimeOut,
   wait,
 } from "./commonUtil";
@@ -134,7 +134,7 @@ export const watchListUtil = function (buyerSetting) {
                 return t.isExpired() || (t.isClosedTrade() && !t.isWon());
               });
 
-              if (expiredItems.length) {
+              if (buyerSetting["idAutoClearExpired"] && expiredItems.length) {
                 services.Item.untarget(expiredItems);
                 writeToLog(
                   `Found ${expiredItems.length} expired items and removed from watchlist`,
@@ -230,5 +230,5 @@ const sellWonItems = async (player, sellPrice, waitRange, sellDuration) => {
       sellPrice,
       convertToSeconds(sellDuration || "1H") || 3600
     );
-  }, getRandWaitTime(waitRange));
+  }, getRandNumberInRange(waitRange));
 };

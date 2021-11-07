@@ -1,5 +1,6 @@
 import { idProgressAutobuyer } from "../elementIds.constants";
 import {
+  getBuyerSettings,
   getValue,
   increAndGetStoreValue,
   setValue,
@@ -32,7 +33,7 @@ export const searchErrorHandler = (
       setValue("lastErrorMessage", "Captcha Triggerred");
     }
   } else {
-    const buyerSetting = getValue("BuyerSettings");
+    const buyerSetting = getBuyerSettings();
     let sendDetailedNotification = buyerSetting["idDetailedNotification"];
     const searchFailedCount = increAndGetStoreValue("searchFailedCount");
     if (searchFailedCount >= 3) {

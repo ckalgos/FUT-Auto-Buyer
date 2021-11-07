@@ -13,18 +13,27 @@ db.transaction(function (tx) {
       tx.executeSql(
         `CREATE UNIQUE INDEX idx_filters_filterName ON Filters (filterName);`
       );
-    },
-    function (tx, results) {
-      console.log(results);
     }
   );
 });
 
-export const getUserFilters = () => {
+db.transaction(function (tx) {
+  tx.executeSql(
+    `CREATE TABLE IF NOT EXISTS CommonSettings (filterName,settings);`,
+    [],
+    function (tx, results) {
+      tx.executeSql(
+        `CREATE UNIQUE INDEX idx_commonsettings_filterName ON CommonSettings (filterName);`
+      );
+    }
+  );
+});
+
+export const getUserFilters = (tableName = "Filters") => {
   return new Promise((resolve, reject) => {
     db.transaction(function (tx) {
       tx.executeSql(
-        "SELECT * FROM Filters",
+        `SELECT * FROM ${tableName}`,
         [],
         function (tx, results) {
           const filters = {};
@@ -43,11 +52,11 @@ export const getUserFilters = () => {
   });
 };
 
-export const insertFilters = (filterName, jsonData) => {
+export const insertFilters = (filterName, jsonData, tableName = "Filters") => {
   return new Promise((resolve, reject) => {
     db.transaction(function (tx) {
       tx.executeSql(
-        "REPLACE INTO Filters(filterName,settings) Values (?,?)",
+        `REPLACE INTO ${tableName}(filterName,settings) Values (?,?)`,
         [filterName, jsonData],
         function (tx, results) {
           resolve(true);

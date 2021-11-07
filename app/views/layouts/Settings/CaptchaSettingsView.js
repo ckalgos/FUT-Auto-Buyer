@@ -19,23 +19,44 @@ export const captchaSettingsView = function () {
     ${generateToggleInput(
       "Close Web App on <br/> Captcha Trigger",
       { idAbCloseTabToggle },
-      ""
+      "",
+      "CommonSettings"
     )}
-    ${generateToggleInput("Auto Solve Captcha", { idAbSolveCaptcha }, "")}
+    ${generateToggleInput(
+      "Auto Solve Captcha",
+      { idAbSolveCaptcha },
+      "",
+      "CommonSettings"
+    )}
     ${generateTextInput(
       "Anti-Captcha Key",
       "",
       { idAntiCaptchKey },
       "",
+      "CommonSettings",
       "text"
     )}
-    ${generateTextInput("Proxy Address", "", { idProxyAddress }, "", "text")}
-    ${generateTextInput("Proxy Port", "", { idProxyPort }, "")}
+    ${generateTextInput(
+      "Proxy Address",
+      "",
+      { idProxyAddress },
+      "",
+      "CommonSettings",
+      "text"
+    )}
+    ${generateTextInput(
+      "Proxy Port",
+      "",
+      { idProxyPort },
+      "",
+      "CommonSettings"
+    )}
     ${generateTextInput(
       "Proxy User Name (Optional)",
       "",
       { idProxyLogin },
       "",
+      "CommonSettings",
       "text"
     )}
     ${generateTextInput(
@@ -43,6 +64,7 @@ export const captchaSettingsView = function () {
       "",
       { idProxyPassword },
       "",
+      "CommonSettings",
       "text"
     )} 
     `;

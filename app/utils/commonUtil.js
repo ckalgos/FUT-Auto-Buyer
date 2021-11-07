@@ -1,5 +1,6 @@
 import { idCapatchaMp3, idWinMp3, idFinishMp3 } from "../elementIds.constants";
-import { getValue } from "../services/repository";
+import { getBuyerSettings } from "../services/repository";
+import * as ElementIds from "../elementIds.constants";
 
 export const generateId = (length) => {
   let result = "";
@@ -64,7 +65,7 @@ export const getRangeValue = (range) => {
   return [];
 };
 
-export const getRandWaitTime = (range) => {
+export const getRandNumberInRange = (range) => {
   if (range) {
     const [start, end] = range.split("-").map((a) => parseInt(a));
     return Math.round(Math.random() * (end - start) + start) * 1000;
@@ -106,7 +107,7 @@ export const networkCallWithRetry = (execution, delay, retries) =>
   });
 
 export const playAudio = function (eventType) {
-  const buyerSetting = getValue("BuyerSettings");
+  const buyerSetting = getBuyerSettings();
   if (buyerSetting["idAbSoundToggle"]) {
     let elem = document.getElementById(idWinMp3);
 
@@ -133,4 +134,21 @@ export const getTimerProgress = function (timer) {
   if (!timer) return 0;
   var time = new Date().getTime();
   return (Math.max(0, timer.end - time) / (timer.end - timer.start)) * 100;
+};
+
+export const updateSettingsView = function (settings) {
+  for (let key of Object.keys(settings)) {
+    const value = settings[key];
+    if (settings[key + "isDefaultValue"]) continue;
+    const id = `#${ElementIds[key]}`;
+    if (typeof value == "boolean") {
+      if (value) {
+        $(id).addClass("toggled");
+        continue;
+      }
+      $(id).removeClass("toggled");
+    } else {
+      $(id).val(value);
+    }
+  }
 };

@@ -12,6 +12,7 @@ import {
   idAddIgnorePlayers,
   idAddIgnorePlayersList,
   idRemoveIgnorePlayers,
+  idAbIgnoreAllowToggle,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { checkAndAppendOption } from "../../../utils/filterUtil";
@@ -29,8 +30,7 @@ const playerIgnoreList = function () {
             <div class="price-filter buyer-settings-field">
               <div class="info">
                <span class="secondary label">
-                  <button id='idAddIgnorePlayers_tooltip' style="font-size:16px" class="flat camel-case">Players To Ignore</button><br/>
-                  <small>Players to avoid Bidding/Buying</small>
+                  <button id='idAddIgnorePlayers_tooltip' style="font-size:16px" class="flat camel-case">Players List</button><br/>
                 </span>
               </div>
               <div class="ignore-players displayCenterFlx">
@@ -67,13 +67,12 @@ const playerIgnoreList = function () {
               <div class="price-filter buyer-settings-field">
                 <div class="info">
                 <span class="secondary label">
-                  <button id='idAddIgnorePlayers_tooltip' style="font-size:16px" class="flat camel-case">Remove from Ignore List</button><br/>
-                <small><br/></small>
-              </span>
+                  <button id='idAddIgnorePlayers_tooltip' style="font-size:16px" class="flat camel-case">Remove from Players List</button><br/>
+                </span>
                 </div>
                 <div class="displayCenterFlx">
                   <select style="width:90%;height: 3rem;font-size: 1.5rem;" class="filter-header-settings" id=${idAddIgnorePlayersList}>
-                    <option selected="true" disabled>Ignored Players List</option>                            
+                    <option selected="true" disabled>Players List</option>                            
                   </select>
                   ${generateButton(
                     idRemoveIgnorePlayers,
@@ -106,7 +105,7 @@ const playerIgnoreList = function () {
 
   $(playerInput.__root).insertBefore(element.find(`#${idAddIgnorePlayers}`));
   playerInput.init();
-  playerInput._playerNameInput.setPlaceholder("Search Player To Ignore");
+  playerInput._playerNameInput.setPlaceholder("Search Players");
   return element;
 };
 
@@ -117,43 +116,60 @@ export const searchSettingsView = function () {
     <div class="search-price-header place-holder">
       <h1 class="secondary">Search Settings:</h1>
     </div>
+    ${generateToggleInput(
+      "Ignore/Buy Players List",
+      { idAbIgnoreAllowToggle },
+      "(If toggled bot will only buy/bid <br/> the above players <br/> else bot will ignore the <br/> players when bidding/buying )",
+      "BuyerSettings"
+    )}
   
     ${generateTextInput(
       "Min Rating",
       10,
       { idAbMinRating },
-      "Minimum Player Rating"
+      "Minimum Player Rating",
+      "BuyerSettings"
     )}
     ${generateTextInput(
       "Max Rating",
       100,
       { idAbMaxRating },
-      "Maximum Player Rating"
+      "Maximum Player Rating<br /><br />",
+      "BuyerSettings"
+    )}    
+    ${generateTextInput(
+      "Search result page limit",
+      5,
+      { idAbMaxSearchPage },
+      "No of. pages bot should move <br /> forward before going back to page 1",
+      "BuyerSettings"
     )}
     ${generateTextInput(
       "Max value of random min bid",
       300,
       { idAbRandMinBidInput },
-      ""
+      "",
+      "BuyerSettings"
     )}
-    ${generateToggleInput("Use random min bid", { idAbRandMinBidToggle }, "")}
+    ${generateToggleInput(
+      "Use random min bid",
+      { idAbRandMinBidToggle },
+      "",
+      "BuyerSettings"
+    )}
     ${generateTextInput(
       "Max value of random min buy",
       300,
       { idAbRandMinBuyInput },
-      ""
+      "",
+      "BuyerSettings"
     )}
     ${generateToggleInput("Use random min buy", { idAbRandMinBuyToggle }, "")}
-    ${generateTextInput(
-      "Search result page limit",
-      5,
-      { idAbMaxSearchPage },
-      "No of. pages bot should move <br /> forward before going back to page 1"
-    )}
     ${generateToggleInput(
       "SKIP GK",
       { idAbAddFilterGK },
-      "(Skip all goalkeepers <br/> to buy / bid a card)"
+      "(Skip all goalkeepers <br/> to buy / bid a card)",
+      "BuyerSettings"
     )}
   </div>`);
 

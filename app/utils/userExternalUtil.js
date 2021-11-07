@@ -1,6 +1,10 @@
 import * as ElementIds from "../elementIds.constants";
-import { getValue, setValue } from "../services/repository";
-import { clearSettingMenus } from "../views/layouts/MenuItemView";
+import { getBuyerSettings, getValue, setValue } from "../services/repository";
+import {
+  clearSettingMenus,
+  updateCommonSettings,
+} from "../views/layouts/MenuItemView";
+import { updateSettingsView } from "./commonUtil";
 import { deleteFilters, insertFilters } from "./dbUtil";
 import { checkAndAppendOption, updateMultiFilterSettings } from "./filterUtil";
 import { sendUINotification } from "./notificationUtil";
@@ -20,7 +24,8 @@ const validateSettings = () => {
 export const saveFilterDetails = function (self) {
   const btnContext = this;
   $(btnContext).addClass("active");
-  let buyerSetting = getValue("BuyerSettings");
+  let buyerSetting = getBuyerSettings(true);
+  let commonSettings = getValue("CommonSettings");
   setTimeout(function () {
     let settingsJson = {};
     const viewModel = self._viewmodel;
@@ -43,6 +48,11 @@ export const saveFilterDetails = function (self) {
 
     if (filterName) {
       saveFilterInDB(filterName, settingsJson);
+      insertFilters(
+        "CommonSettings",
+        JSON.stringify(commonSettings),
+        "CommonSettings"
+      );
       setValue("currentFilter", filterName);
       $(btnContext).removeClass("active");
       sendUINotification("Changes saved successfully");
@@ -68,11 +78,14 @@ export const loadFilter = async function (currentFilterName) {
   await clearSettingMenus();
   const filterSetting = getValue("filters")[currentFilterName];
   if (!filterSetting) return;
-  const {
+  let {
     searchCriteria: { criteria, playerData, buyerSettings },
   } = JSON.parse(filterSetting);
+  await updateCommonSettings();
+  const commonSettings = getValue("CommonSettings") || {};
   setValue("BuyerSettings", buyerSettings);
   setValue("currentFilter", currentFilterName);
+  buyerSettings = { ...buyerSettings, ...commonSettings };
   this._viewmodel.playerData = {};
   Object.assign(this._viewmodel.searchCriteria, criteria);
   Object.assign(this._viewmodel.playerData, playerData);
@@ -83,20 +96,8 @@ export const loadFilter = async function (currentFilterName) {
 
   this.viewDidAppear();
 
-  for (let key of Object.keys(buyerSettings)) {
-    const value = buyerSettings[key];
-    if (buyerSettings[key + "isDefaultValue"]) continue;
-    const id = `#${ElementIds[key]}`;
-    if (typeof value == "boolean") {
-      if (value) {
-        $(id).addClass("toggled");
-        continue;
-      }
-      $(id).removeClass("toggled");
-    } else {
-      $(id).val(value);
-    }
-  }
+  updateSettingsView(buyerSettings);
+
   if (
     buyerSettings["idAddIgnorePlayersList"] &&
     buyerSettings["idAddIgnorePlayersList"].length

@@ -1,5 +1,5 @@
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
-import { getValue } from "../services/repository";
+import { getBuyerSettings, getValue } from "../services/repository";
 
 let discordClient = null;
 
@@ -16,7 +16,7 @@ export const sendPinEvents = (pageId) => {
 };
 
 export const sendNotificationToUser = (message, isTestMessage) => {
-  const buyerSetting = getValue("BuyerSettings");
+  const buyerSetting = getBuyerSettings();
   if (!isTestMessage) {
     sendUINotification(message);
   }
@@ -46,12 +46,14 @@ const sendMessageToTelegram = (telegramToken, telegramChatId, message) => {
 const sendMessageToDiscord = (channelId, message) => {
   if (channelId) {
     if (discordClient) {
-      discordClient.channels.get(channelId).send(message);
+      const channel = discordClient.channels.get(channelId);
+      channel && channel.send(message);
     } else {
       discordClient = initializeDiscordClient(() => {
         setTimeout(() => {
           if (discordClient) {
-            discordClient.channels.get(channelId).send(message);
+            const channel = discordClient.channels.get(channelId);
+            channel && channel.send(message);
           }
         }, 200);
       });
@@ -60,26 +62,28 @@ const sendMessageToDiscord = (channelId, message) => {
 };
 
 const initializeDiscordClient = (cb) => {
-  const buyerSetting = getValue("BuyerSettings");
+  const buyerSetting = getBuyerSettings();
   const client = new Discord.Client();
   let discordToken = buyerSetting["idDiscordToken"];
   if (!discordToken) return null;
-  client.login(discordToken);
-  client.on("ready", function () {
-    if (cb) {
-      cb();
-    }
-  });
-  client.on("message", function (message) {
-    if (message.author.id == client.user.id) return;
-    if (/start/i.test(message.content)) {
-      const instance = getValue("AutoBuyerInstance");
-      startAutoBuyer.call(instance);
-      message.channel.sendMessage("Bot started successfully");
-    } else if (/stop/i.test(message.content)) {
-      stopAutoBuyer();
-      message.channel.sendMessage("Bot stopped successfully");
-    }
-  });
+  try {
+    client.login(discordToken);
+    client.on("ready", function () {
+      if (cb) {
+        cb();
+      }
+    });
+    client.on("message", function (message) {
+      if (message.author.id == client.user.id) return;
+      if (/start/i.test(message.content)) {
+        const instance = getValue("AutoBuyerInstance");
+        startAutoBuyer.call(instance);
+        message.channel.sendMessage("Bot started successfully");
+      } else if (/stop/i.test(message.content)) {
+        stopAutoBuyer();
+        message.channel.sendMessage("Bot stopped successfully");
+      }
+    });
+  } catch (err) {}
   return client;
 };

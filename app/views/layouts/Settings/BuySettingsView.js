@@ -5,6 +5,8 @@ import {
   idAbItemExpiring,
   idAbMaxBid,
   idAbSearchResult,
+  idBuyFutBinPrice,
+  idBuyFutBinPercent,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -15,19 +17,46 @@ export const buySettingsView = function () {
       <div class="search-price-header"> 
          <h1 class="secondary">Buy/Bid Settings:</h1>
       </div>
-      ${generateTextInput("Buy Price", "", { idAbBuyPrice }, "<br/>")}
+      ${generateToggleInput(
+        "Find Buy Price",
+        { idBuyFutBinPrice },
+        "(Uses Futbin price for Buy/Bid)",
+        "BuyerSettings"
+      )}
+      ${generateTextInput(
+        "Buy Price Percent",
+        100,
+        { idBuyFutBinPercent },
+        `(Buy Price percent of FUTBIN Price)`,
+        "BuyerSettings"
+      )}
+      ${generateTextInput(
+        "Buy Price",
+        "",
+        { idAbBuyPrice },
+        "<br/>",
+        "BuyerSettings"
+      )}
       ${generateTextInput(
         "No. of cards to buy",
         1000,
         { idAbCardCount },
-        "(Works only with Buy price)"
+        "(Works only with Buy price)",
+        "BuyerSettings"
       )}
-      ${generateTextInput("Bid Price", "", { idAbMaxBid }, "<br/>")}
+      ${generateTextInput(
+        "Bid Price",
+        "",
+        { idAbMaxBid },
+        "<br/>",
+        "BuyerSettings"
+      )}
       ${generateTextInput(
         "Bid items expiring in",
         "1H",
         { idAbItemExpiring },
         "(S for seconds, M for Minutes, H for hours)",
+        "BuyerSettings",
         "text",
         "\\d+[H|M|S|h|m|s]$"
       )}
@@ -35,9 +64,15 @@ export const buySettingsView = function () {
         "Search result threshold",
         21,
         { idAbSearchResult },
-        "(Buy or bid cards only if the no.of search results <br/> is lesser than the specified value"
+        "(Buy or bid cards only if the no.of search results <br/> is lesser than the specified value",
+        "BuyerSettings"
       )}
-      ${generateToggleInput("Bid Exact Price", { idAbBidExact }, "")}
+      ${generateToggleInput(
+        "Bid Exact Price",
+        { idAbBidExact },
+        "",
+        "BuyerSettings"
+      )}
      </div>
     `;
 };

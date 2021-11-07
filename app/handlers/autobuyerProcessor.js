@@ -1,6 +1,11 @@
-import { idAbStatus, idAutoBuyerFoundLog } from "../elementIds.constants";
+import {
+  idAbStatus,
+  idAutoBuyerFoundLog,
+  idProgressAutobuyer,
+} from "../elementIds.constants";
 import { trackMarketPrices } from "../services/analytics";
 import {
+  getBuyerSettings,
   getValue,
   increAndGetStoreValue,
   setValue,
@@ -17,6 +22,7 @@ import {
   getRangeValue,
   playAudio,
 } from "../utils/commonUtil";
+import { addFutbinCachePrice } from "../utils/futbinUtil";
 import { writeToDebugLog, writeToLog } from "../utils/logUtil";
 import { sendPinEvents, sendUINotification } from "../utils/notificationUtil";
 import {
@@ -58,7 +64,7 @@ export const startAutoBuyer = async function (isResume) {
   let transferListWithContext = transferListUtil.bind(this);
   let pauseBotWithContext = pauseBotIfRequired.bind(this);
   await switchFilterWithContext();
-  let buyerSetting = getValue("BuyerSettings");
+  let buyerSetting = getBuyerSettings();
   !isResume && (await addUserWatchItems());
   sendPinEvents("Hub - Transfers");
   await srchTmWithContext(buyerSetting);
@@ -74,7 +80,7 @@ export const startAutoBuyer = async function (isResume) {
     const isBuyerActive = getValue("autoBuyerActive");
     if (isBuyerActive) {
       await switchFilterWithContext();
-      buyerSetting = getValue("BuyerSettings");
+      buyerSetting = getBuyerSettings();
       sendPinEvents("Hub - Transfers");
       await srchTmWithContext(buyerSetting);
       sendPinEvents("Hub - Transfers");
@@ -116,15 +122,17 @@ const searchTransferMarket = function (buyerSetting) {
     const expiresIn = convertToSeconds(buyerSetting["idAbItemExpiring"]);
     const useRandMinBid = buyerSetting["idAbRandMinBidToggle"];
     const useRandMinBuy = buyerSetting["idAbRandMinBuyToggle"];
+    const futBinBuyPercent = buyerSetting["idBuyFutBinPercent"] || 100;
     let currentPage = getValue("currentPage") || 1;
-    const playersToIgnore = new Set(
+    const playersList = new Set(
       (buyerSetting["idAddIgnorePlayersList"] || []).map(({ id }) => id)
     );
 
     let bidPrice = buyerSetting["idAbMaxBid"];
     let userBuyNowPrice = buyerSetting["idAbBuyPrice"];
+    let useFutBinPrice = buyerSetting["idBuyFutBinPrice"];
 
-    if (!userBuyNowPrice && !bidPrice) {
+    if (!userBuyNowPrice && !bidPrice && !useFutBinPrice) {
       writeToLog(
         "skip search >>> (No Buy or Bid Price given)",
         idAutoBuyerFoundLog
@@ -163,6 +171,9 @@ const searchTransferMarket = function (buyerSetting) {
             );
             currentPage === 1 &&
               sendPinEvents("Transfer Market Results - List View");
+            if (useFutBinPrice && response.data.items[0].type === "player") {
+              await addFutbinCachePrice(response.data.items);
+            }
           }
 
           if (response.data.items.length > buyerSetting["idAbSearchResult"]) {
@@ -197,6 +208,20 @@ const searchTransferMarket = function (buyerSetting) {
               auctionPrices.push(trackPayLoad);
             }
 
+            if (useFutBinPrice) {
+              const existingValue = getValue(player.definitionId);
+              if (existingValue && existingValue.price) {
+                const futBinBuyPrice = roundOffPrice(
+                  (existingValue.price * futBinBuyPercent) / 100
+                );
+                userBuyNowPrice = futBinBuyPrice;
+              } else {
+                writeToLog(
+                  `Error fetch fetching Price for ${player._staticData.name}`,
+                  idProgressAutobuyer
+                );
+              }
+            }
             let buyNowPrice = auction.buyNowPrice;
             let currentBid = auction.currentBid || auction.startingBid;
             let isBid = auction.currentBid;
@@ -237,7 +262,10 @@ const searchTransferMarket = function (buyerSetting) {
               expireTime
             );
 
-            if (playersToIgnore.has(id)) {
+            if (
+              (!buyerSetting["idAbIgnoreAllowToggle"] && playersList.has(id)) ||
+              (buyerSetting["idAbIgnoreAllowToggle"] && !playersList.has(id))
+            ) {
               logWrite("skip >>> (Ignored player)");
               continue;
             }
@@ -277,8 +305,8 @@ const searchTransferMarket = function (buyerSetting) {
             }
 
             if (buyNowPrice <= userBuyNowPrice) {
-              logWrite("attempt buy: " + buyNowPrice);
               maxPurchases--;
+              logWrite("attempt buy: " + buyNowPrice);
               currentBids.add(auction.tradeId);
               await buyPlayer(
                 player,
@@ -320,7 +348,7 @@ const searchTransferMarket = function (buyerSetting) {
 
             logWrite("skip >>> (No Actions Required)");
           }
-          if (auctionPrices.length && auctionPrices.length < 12) {
+          if (false) {
             trackMarketPrices(auctionPrices);
           }
         } else {

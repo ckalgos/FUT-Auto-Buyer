@@ -20,7 +20,7 @@ export const buySettingsView = function () {
       ${generateToggleInput(
         "Find Buy Price",
         { idBuyFutBinPrice },
-        "(Uses Futbin price for Buy/Bid)",
+        "(Uses Futbin price for Buy Price)",
         "BuyerSettings"
       )}
       ${generateTextInput(

@@ -220,6 +220,7 @@ const searchTransferMarket = function (buyerSetting) {
                   `Error fetch fetching Price for ${player._staticData.name}`,
                   idProgressAutobuyer
                 );
+                continue;
               }
             }
             let buyNowPrice = auction.buyNowPrice;

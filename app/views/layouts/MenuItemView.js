@@ -9,8 +9,9 @@ import {
   searchSettingsView,
 } from "./Settings/SearchSettingsView";
 import { filterSettingsView } from "./Settings/FilterSettingsView";
-import { getValue } from "../../services/repository";
+import { getValue, setValue } from "../../services/repository";
 import { updateMultiFilterSettings } from "../../utils/filterUtil";
+import { getUserFilters } from "../../utils/dbUtil";
 
 const settingsLookup = new Map();
 settingsLookup.set(0, {
@@ -63,7 +64,7 @@ export const generateMenuItems = function () {
   menuRoot = $(menuItems.__root);
   menuRoot.find(".menu-container").css("overflow-x", "auto");
 
-  appendMenuItems();
+  appendMenuItems(true);
   return menuItems;
 };
 
@@ -83,7 +84,15 @@ export const setDefaultActiveTab = () => {
   });
 };
 
-const appendMenuItems = async () => {
+export const updateCommonSettings = async () => {
+  let commonSettings = await getUserFilters("CommonSettings");
+  commonSettings = JSON.parse(commonSettings["CommonSettings"] || "{}");
+  if (!$.isEmptyObject(commonSettings)) {
+    setValue("CommonSettings", commonSettings);
+  }
+};
+
+const appendMenuItems = async (isInit) => {
   menuItems.setActiveTab(0);
   menuRoot.append(buySettingsView.call(this));
   menuRoot.append(sellSettingsView.call(this));
@@ -109,7 +118,7 @@ const appendMenuItems = async () => {
     );
   }
 
-  setTimeout(() => {
+  setTimeout(async () => {
     const selectedFilters = getValue("selectedFilters") || [];
     $.each(selectedFilters, function (idx, val) {
       $(".multiselect-filter option[value='" + val + "']").prop(
@@ -117,6 +126,9 @@ const appendMenuItems = async () => {
         "selected"
       );
     });
+    if (isInit) {
+      await updateCommonSettings();
+    }
     if (selectedFilters.length) {
       updateMultiFilterSettings();
     }

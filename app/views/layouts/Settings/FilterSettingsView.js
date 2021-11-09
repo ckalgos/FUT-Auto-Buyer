@@ -37,9 +37,14 @@ $(document).on(
   `#${idSelectedFilter}`
 );
 
+const getUserFilterAsync = async () => {
+  let filters = await getUserFilters();
+  return filters;
+};
+
 const filters = async () => {
   if (!getValue("filters")) {
-    setValue("filters", (await getUserFilters()) || {});
+    setValue("filters", (await getUserFilterAsync()) || {});
   }
 
   let filters = getValue("filters");
@@ -93,6 +98,7 @@ export const filterSettingsView = async function () {
                   getValue("fiterSearchCount") || 3,
                   { idAbNumberFilterSearch },
                   "(Count of searches performed before <br/> switching to another filter)",
+                  "CommonSettings",
                   "number",
                   null,
                   "buyer-settings-field",
@@ -102,6 +108,7 @@ export const filterSettingsView = async function () {
                   "Switch filter sequentially",
                   { idRunFilterSequential },
                   "",
+                  "CommonSettings",
                   "buyer-settings-field",
                   handleSequenceToggle
                 )}

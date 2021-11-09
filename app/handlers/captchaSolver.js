@@ -1,10 +1,10 @@
 import { idProgressAutobuyer } from "../elementIds.constants";
-import { getValue } from "../services/repository";
+import { getBuyerSettings, getValue } from "../services/repository";
 import { showCaptchaLogs, writeToLog } from "../utils/logUtil";
 import { startAutoBuyer } from "./autobuyerProcessor";
 
 export const solveCaptcha = () => {
-  const buyerSetting = getValue("BuyerSettings");
+  const buyerSetting = getBuyerSettings();
   let apikey = buyerSetting["idAntiCaptchKey"];
   let websiteURL = "https://www.ea.com/fifa/ultimate-team/web-app/";
   let websitePublicKey = "A4EECF77-AC87-8C8D-5754-BF882F72063B";

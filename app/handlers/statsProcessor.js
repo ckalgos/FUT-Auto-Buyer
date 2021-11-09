@@ -21,6 +21,7 @@ setValue("sessionStats", {
   coins: "-",
   coinsNumber: 0,
   searchCount: 0,
+  previousPause: 0,
   profit: 0,
   sessionId: Date.now().toString(36) + Math.random().toString(36).substr(2),
 });

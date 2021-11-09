@@ -3,22 +3,32 @@ import {
   idProgressAutobuyer,
 } from "../elementIds.constants";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
+import { updateStats } from "../handlers/statsProcessor";
 import {
   getValue,
   increAndGetStoreValue,
   setValue,
 } from "../services/repository";
-import { convertToSeconds, getRandNum } from "./commonUtil";
+import {
+  convertRangeToSeconds,
+  getRandNum,
+  getRandNumberInRange,
+} from "./commonUtil";
 import { writeToLog } from "./logUtil";
 import { sendNotificationToUser } from "./notificationUtil";
 import { loadFilter } from "./userExternalUtil";
+
+let stopAfter, pauseCycle;
 
 export const stopBotIfRequired = (buyerSetting) => {
   const purchasedCardCount = getValue("purchasedCardCount");
   const cardsToBuy = buyerSetting["idAbCardCount"];
 
   const botStartTime = getValue("botStartTime").getTime();
-  let time = convertToSeconds(buyerSetting["idAbStopAfter"]);
+  let time = stopAfter || convertRangeToSeconds(buyerSetting["idAbStopAfter"]);
+  if (!stopAfter) {
+    stopAfter = time;
+  }
   let sendDetailedNotification = buyerSetting["idDetailedNotification"];
   let currentTime = new Date().getTime();
   let timeElapsed = (currentTime - botStartTime) / 1000 >= time;
@@ -44,6 +54,7 @@ export const stopBotIfRequired = (buyerSetting) => {
     if (sendDetailedNotification)
       sendNotificationToUser(`Autobuyer stopped | ${message}`);
     writeToLog(`Autobuyer stopped | ${message}`, idProgressAutobuyer);
+    stopAfter = null;
     stopAutoBuyer();
   }
 };
@@ -51,12 +62,18 @@ export const stopBotIfRequired = (buyerSetting) => {
 export const pauseBotIfRequired = function (buyerSetting) {
   const isBuyerActive = getValue("autoBuyerActive");
   if (!isBuyerActive) return;
-  const pauseFor = convertToSeconds(buyerSetting["idAbPauseFor"]) * 1000;
-  const cycleAmount = buyerSetting["idAbCycleAmount"];
-  const searchCount = getValue("sessionStats").searchCount;
-  if (searchCount && !(searchCount % cycleAmount)) {
+  const pauseFor = convertRangeToSeconds(buyerSetting["idAbPauseFor"]) * 1000;
+  const cycleAmount =
+    pauseCycle || getRandNumberInRange(buyerSetting["idAbCycleAmount"]);
+  if (!pauseCycle) {
+    pauseCycle = cycleAmount;
+  }
+  const { searchCount, previousPause } = getValue("sessionStats");
+  if (searchCount && !((searchCount - previousPause) % cycleAmount)) {
+    updateStats("previousPause", searchCount);
     stopAutoBuyer(true);
     return setTimeout(() => {
+      pauseCycle = getRandNumberInRange(buyerSetting["idAbCycleAmount"]);
       startAutoBuyer.call(this, true);
     }, pauseFor);
   }

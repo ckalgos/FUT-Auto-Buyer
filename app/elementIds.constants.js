@@ -69,6 +69,7 @@ export const idProxyLogin = "elem_" + generateId(15);
 export const idAntiCaptchKey = "elem_" + generateId(15);
 export const idProxyPassword = "elem_" + generateId(15);
 export const idAutoClearLog = "elem_" + generateId(15);
+export const idAutoClearExpired = "elem_" + generateId(15);
 export const idSellRatingThreshold = "elem_" + generateId(15);
 export const idSellFutBinPrice = "elem_" + generateId(15);
 export const idSellFutBinPercent = "elem_" + generateId(15);
@@ -92,3 +93,6 @@ export const idShouldSort = "elem_" + generateId(15);
 export const idSortBy = "elem_" + generateId(15);
 export const idSortOrder = "elem_" + generateId(15);
 
+export const idAbIgnoreAllowToggle = "elem_" + generateId(15);
+export const idBuyFutBinPrice = "elem_" + generateId(15);
+export const idBuyFutBinPercent = "elem_" + generateId(15);

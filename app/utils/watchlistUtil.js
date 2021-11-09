@@ -134,7 +134,7 @@ export const watchListUtil = function (buyerSetting) {
                 return t.isExpired() || (t.isClosedTrade() && !t.isWon());
               });
 
-              if (expiredItems.length) {
+              if (buyerSetting["idAutoClearExpired"] && expiredItems.length) {
                 services.Item.untarget(expiredItems);
                 writeToLog(
                   `Found ${expiredItems.length} expired items and removed from watchlist`,

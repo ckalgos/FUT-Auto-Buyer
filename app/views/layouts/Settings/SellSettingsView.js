@@ -35,30 +35,35 @@ export const sellSettingsView = function () {
     ${generateToggleInput(
       "Find Sale Price",
       { idSellFutBinPrice },
-      "(Uses Futbin price for listing)"
+      "(Uses Futbin price for listing)",
+      "BuyerSettings"
     )}
     ${generateTextInput(
       "Sell Price Percent",
       100,
       { idSellFutBinPercent },
-      `(Sale Price percent of FUTBIN Price)`
+      `(Sale Price percent of FUTBIN Price)`,
+      "BuyerSettings"
     )}
     ${generateToggleInput(
       "Check buy price before listing",
       { idSellCheckBuyPrice },
-      "(List only if Buy Price <br /> is lesser than Sale Price)"
+      "(List only if Buy Price <br /> is lesser than Sale Price)",
+      "BuyerSettings"
     )}
     ${generateTextInput(
       "Sell Price",
       "",
       { idAbSellPrice },
-      `(-1 to send to transferlist)<br />Receive After Tax: <span id=${idSellAfterTax}>0</span>`
+      `(-1 to send to transferlist)<br />Receive After Tax: <span id=${idSellAfterTax}>0</span>`,
+      "BuyerSettings"
     )}
     ${generateTextInput(
       "List Duration",
       "1H",
       { idFutBinDuration },
       "List Duration when listing",
+      "BuyerSettings",
       "text",
       "\\d+[H|M|S|h|m|s]$"
     )}
@@ -66,14 +71,21 @@ export const sellSettingsView = function () {
       "Clear sold count",
       10,
       { idAbMinDeleteCount },
-      "(Clear sold items when reach a specified count)<br />"
+      "(Clear sold items when reach a specified count)<br />",
+      "BuyerSettings"
     )}
     ${generateTextInput(
       "Rating Threshold",
       100,
       { idSellRatingThreshold },
-      "(Rating threshold to list the sniped player)"
+      "(Rating threshold to list the sniped player)",
+      "BuyerSettings"
     )}
-    ${generateToggleInput("Relist Unsold Items", { idAbSellToggle }, "")}
+    ${generateToggleInput(
+      "Relist Unsold Items",
+      { idAbSellToggle },
+      "",
+      "BuyerSettings"
+    )}
     </div>`;
 };

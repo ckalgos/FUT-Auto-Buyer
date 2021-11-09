@@ -16,11 +16,12 @@ const getToken = () => {
   if (!authToken) {
     authToken = localStorage.getItem("abAuthToken");
     if (authToken) {
-      const payload = atob(authToken.split(".")[1]);
-      const expiration = new Date(payload.exp);
+      const payload = JSON.parse(atob(authToken.split(".")[1]));
+      const expiration = new Date(payload.exp * 1000);
       if (expiration.getTime() > new Date().getTime()) {
         return { token: authToken };
       }
+      return null;
     }
   }
   return authToken;

@@ -1,5 +1,6 @@
 import { idCapatchaMp3, idWinMp3, idFinishMp3 } from "../elementIds.constants";
-import { getValue } from "../services/repository";
+import { getBuyerSettings } from "../services/repository";
+import * as ElementIds from "../elementIds.constants";
 
 export const generateId = (length) => {
   let result = "";
@@ -50,6 +51,27 @@ export const convertToSeconds = (val) => {
       valInTime = valInTime * multipler;
     }
     return valInTime;
+  }
+  return 0;
+};
+
+export const convertRangeToSeconds = (val) => {
+  if (val) {
+    let valInterval = val[val.length - 1].toUpperCase();
+    let valInTime = getRandWaitTime(val.substring(0, val.length - 1)) / 1000;
+    let multipler = valInterval === "M" ? 60 : valInterval === "H" ? 3600 : 1;
+    if (valInTime) {
+      valInTime = valInTime * multipler;
+    }
+    return valInTime;
+  }
+  return 0;
+};
+
+export const getRandNumberInRange = (range) => {
+  const rangeVal = getRangeValue(range);
+  if (rangeVal.length >= 2) {
+    return getRandNum(rangeVal[0], rangeVal[1]);
   }
   return 0;
 };
@@ -106,7 +128,7 @@ export const networkCallWithRetry = (execution, delay, retries) =>
   });
 
 export const playAudio = function (eventType) {
-  const buyerSetting = getValue("BuyerSettings");
+  const buyerSetting = getBuyerSettings();
   if (buyerSetting["idAbSoundToggle"]) {
     let elem = document.getElementById(idWinMp3);
 
@@ -133,4 +155,21 @@ export const getTimerProgress = function (timer) {
   if (!timer) return 0;
   var time = new Date().getTime();
   return (Math.max(0, timer.end - time) / (timer.end - timer.start)) * 100;
+};
+
+export const updateSettingsView = function (settings) {
+  for (let key of Object.keys(settings)) {
+    const value = settings[key];
+    if (settings[key + "isDefaultValue"]) continue;
+    const id = `#${ElementIds[key]}`;
+    if (typeof value == "boolean") {
+      if (value) {
+        $(id).addClass("toggled");
+        continue;
+      }
+      $(id).removeClass("toggled");
+    } else {
+      $(id).val(value);
+    }
+  }
 };

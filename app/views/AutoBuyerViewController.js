@@ -1,8 +1,8 @@
-import { idAbCompactView } from "../elementIds.constants";
+import { idAbCompactView, idFilterDropdown } from "../elementIds.constants";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import { statsProcessor } from "../handlers/statsProcessor";
 import { getValue, setValue } from "../services/repository";
-import { createElementFromHTML } from "../utils/commonUtil";
+import { createElementFromHTML, updateSettingsView } from "../utils/commonUtil";
 import { clearLogs } from "../utils/logUtil";
 import { generateToggleInput } from "../utils/uiUtils/generateToggleInput";
 import { createButton } from "./layouts/ButtonView";
@@ -57,6 +57,7 @@ AutoBuyerViewController.prototype.init = function () {
   btnContainer.find(".call-to-action").remove();
   const btnReset = btnContainer.find('button:contains("Reset")');
   btnReset.on("click", async function () {
+    $(`#${idFilterDropdown}`).prop("selectedIndex", 0);
     await clearSettingMenus();
   });
 
@@ -68,6 +69,7 @@ AutoBuyerViewController.prototype.init = function () {
       generateToggleInput(
         "Legacy View",
         { idAbCompactView },
+        "",
         "",
         "mrgTop10",
         (evt) => {
@@ -122,6 +124,7 @@ AutoBuyerViewController.prototype.getNavigationTitle = function () {
     $(HeaderView()).insertAfter(title);
     $(".ut-navigation-container-view--content").append(logView());
     initializeLog();
+    updateSettingsView(getValue("CommonSettings") || {});
   });
   return `AutoBuyer `;
 };

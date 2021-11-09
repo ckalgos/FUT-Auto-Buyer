@@ -2,7 +2,7 @@ import {
   idAutoBuyerFoundLog,
   idProgressAutobuyer,
 } from "../elementIds.constants";
-import { getValue } from "../services/repository";
+import { getBuyerSettings, getValue } from "../services/repository";
 import { initializeLog } from "../views/layouts/LogView";
 import { sendNotificationToUser } from "./notificationUtil";
 
@@ -39,18 +39,19 @@ export const writeToAbLog = (
   result,
   comments
 ) => {
-  let message = sym +
-  " | " +
-  ItemName +
-  " | " +
-  priceTxt +
-  " | " +
-  operation +
-  " | " +
-  result +
-  " | " +
-  comments;
-  writeToLog(message,idProgressAutobuyer);
+  let message =
+    sym +
+    " | " +
+    ItemName +
+    " | " +
+    priceTxt +
+    " | " +
+    operation +
+    " | " +
+    result +
+    " | " +
+    comments;
+  writeToLog(message, idProgressAutobuyer);
   return message;
 };
 
@@ -84,7 +85,7 @@ export const clearLogs = () => {
 };
 
 setInterval(() => {
-  const settings = getValue("BuyerSettings");
+  const settings = getBuyerSettings();
   let autoClearLog = settings && settings["idAutoClearLog"];
   autoClearLog && clearLogs();
 }, 120000);

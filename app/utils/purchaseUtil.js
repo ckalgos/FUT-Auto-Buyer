@@ -2,6 +2,7 @@ import { errorCodeLookUp } from "../app.constants";
 import { idProgressAutobuyer } from "../elementIds.constants";
 import { stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import {
+  getBuyerSettings,
   getValue,
   increAndGetStoreValue,
   setValue,
@@ -35,7 +36,7 @@ export const buyPlayer = (
   isBin,
   tradeId
 ) => {
-  const buyerSetting = getValue("BuyerSettings");
+  const buyerSetting = getBuyerSettings();
   return new Promise((resolve) => {
     services.Item.bid(player, price).observe(
       this,
@@ -56,7 +57,7 @@ export const buyPlayer = (
             !ratingThreshold || playerRating <= ratingThreshold;
 
           const useFutBinPrice = buyerSetting["idSellFutBinPrice"];
-          if (isValidRating && useFutBinPrice) {
+          if (isValidRating && useFutBinPrice && isBin) {
             sellPrice = await getSellPriceFromFutBin(
               buyerSetting,
               playerName,
@@ -143,7 +144,7 @@ export const buyPlayer = (
             priceTxt,
             isBin ? "buy" : "bid",
             "failure",
-            " ERR: " + (errorCodeLookUp[status] || status)
+            `ERR: (${errorCodeLookUp[status] + "(" + status + ")" || status})`
           );
           if (notificationType === "L" || notificationType === "A") {
             if (sendDetailedNotification) sendNotificationToUser(logMessage);

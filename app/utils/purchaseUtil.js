@@ -85,7 +85,9 @@ export const buyPlayer = (
                 ? "move to transferlist"
                 : shouldList
                 ? "selling for: " + sellPrice
-                : "move to club"
+                : "move to club",
+			        "Profit: ",
+				        (sellPrice * 0.95) - price
             );
 
             setTimeout(function () {

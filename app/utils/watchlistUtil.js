@@ -33,6 +33,10 @@ export const watchListUtil = function (buyerSetting) {
         return item._auction && item._auction._tradeState === "active";
       });
 
+      if (!activeItems.length) {
+        return resolve();
+      }
+
       services.Item.refreshAuctions(activeItems).observe(
         this,
         function (t, refreshResponse) {
@@ -74,6 +78,7 @@ export const watchListUtil = function (buyerSetting) {
 
               if (
                 isAutoBuyerActive &&
+                !buyerSetting["idAbDontMoveWon"] &&
                 ((sellPrice && !isNaN(sellPrice)) || useFutBinPrice)
               ) {
                 let boughtItems = watchResponse.data.items.filter(function (

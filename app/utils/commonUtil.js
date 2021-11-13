@@ -57,6 +57,7 @@ export const convertToSeconds = (val) => {
 
 export const convertRangeToSeconds = (val) => {
   if (val) {
+    val = val + "";
     let valInterval = val[val.length - 1].toUpperCase();
     let valInTime = getRandWaitTime(val.substring(0, val.length - 1)) / 1000;
     let multipler = valInterval === "M" ? 60 : valInterval === "H" ? 3600 : 1;
@@ -73,7 +74,7 @@ export const getRandNumberInRange = (range) => {
   if (rangeVal.length >= 2) {
     return getRandNum(rangeVal[0], rangeVal[1]);
   }
-  return 0;
+  return rangeVal[0] || 0;
 };
 
 export const getRandNum = (min, max) =>
@@ -81,7 +82,7 @@ export const getRandNum = (min, max) =>
 
 export const getRangeValue = (range) => {
   if (range) {
-    return range.split("-").map((a) => parseInt(a));
+    return (range + "").split("-").map((a) => parseInt(a));
   }
   return [];
 };

@@ -14,7 +14,8 @@ export const setRandomInterval = (intervalFunction, start, end) => {
       runInterval();
     };
 
-    const delay = Math.round(Math.random() * (end - start) + start) * 1000;
+    const delay =
+      parseFloat((Math.random() * (end - start) + start).toFixed(1)) * 1000;
     searchInterval.end = searchInterval.start + delay;
     setValue("searchInterval", searchInterval);
     timeout = setTimeout(timeoutFunction, delay);

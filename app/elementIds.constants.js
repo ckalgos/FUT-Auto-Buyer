@@ -91,3 +91,6 @@ export const idFutBinDuration = "elem_" + generateId(15);
 export const idAbIgnoreAllowToggle = "elem_" + generateId(15);
 export const idBuyFutBinPrice = "elem_" + generateId(15);
 export const idBuyFutBinPercent = "elem_" + generateId(15);
+export const idAbBidFutBin = "elem_" + generateId(15);
+export const idAbDontMoveWon = "elem_" + generateId(15);
+export const idAbResumeAfterErrorOccured = "elem_" + generateId(15);

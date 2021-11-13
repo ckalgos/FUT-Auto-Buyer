@@ -3,6 +3,7 @@ import {
   idAutoClearLog,
   idAutoClearExpired,
   idAbStopErrorCodeCount,
+  idAbResumeAfterErrorOccured,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -28,6 +29,15 @@ export const commonSettingsView = function () {
     { idAbStopErrorCodeCount },
     "<br />",
     "CommonSettings"
+  )}
+  ${generateTextInput(
+    "Resume bot after",
+    "",
+    { idAbResumeAfterErrorOccured },
+    "(S for seconds, M for Minutes, H for hours eg. 0-0S)<br/><br/>",
+    "CommonSettings",
+    "text",
+    "\\d+-\\d+[H|M|S|h|m|s]$"
   )}
   ${generateToggleInput(
     "Auto Clear Log",

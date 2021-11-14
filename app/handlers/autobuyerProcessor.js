@@ -1,7 +1,7 @@
 import {
   idAbStatus,
   idAutoBuyerFoundLog,
-  idProgressAutobuyer,
+  idProgressAutobuyer
 } from "../elementIds.constants";
 import { trackMarketPrices } from "../services/analytics";
 import {
@@ -43,33 +43,27 @@ let passInterval = null;
 const currentBids = new Set();
 
 const sortPlayers = (playerList, sortOrder) => {
-  let sortBy = document.querySelector(".select-sortBy").value
-  if (sortOrder === true)
+  let sortBy = getValue("sortPlayersBy") || "buy";
+
+  if (sortBy === "reverse")
   {
-    if (sortBy == "bid")
-      return playerList.sort((a , b) => {
-        let bidA = a._auction.currentBid || a._auction.startingBid
-        let bidB = b._auction.currentBid || b._auction.startingBid
-        return bidA - bidB
-      })
-    else if (sortBy == "buy")
-      return playerList.sort((a , b) => a._auction.buyNowPrice - b._auction.buyNowPrice)
-    else
-      return playerList.sort((a , b) => parseInt(a.rating) - parseInt(b.rating))
+    let reversed = playerList.reverse()
+    return reversed
   }
-  else
-  {
-    if (sortBy == "bid")
-    return playerList.sort((a , b) => {
+
+  if (sortBy === "bid")
+    playerList.sort((a , b) => {
       let bidA = a._auction.currentBid || a._auction.startingBid
       let bidB = b._auction.currentBid || b._auction.startingBid
-      return bidB - bidA
+      return bidA - bidB
     })
-    else if (sortBy == "buy")
-      return playerList.sort((a , b) => b._auction.buyNowPrice - a._auction.buyNowPrice)
-    else
-      return playerList.sort((a , b) => parseInt(b.rating) - parseInt(a.rating))
-  }
+  else if (sortBy === "buy")
+    playerList.sort((a , b) => a._auction.buyNowPrice - b._auction.buyNowPrice)
+  else if (sortBy === "rating")
+    playerList.sort((a , b) => parseInt(a.rating) - parseInt(b.rating))
+  if (!sortOrder)
+    playerList.reverse()
+  return playerList
 }
 
 export const startAutoBuyer = async function (isResume) {
@@ -221,8 +215,8 @@ const searchTransferMarket = function (buyerSetting) {
           } else {
             setValue("currentPage", 1);
           }
-          if (buyerSetting["idShouldSort"])
-            response.data.items = sortPlayers(response.data.items, buyerSetting["idSortOrder"])
+          if (buyerSetting["idAbShouldSort"])
+            response.data.items = sortPlayers(response.data.items, buyerSetting["idAbSortOrder"])
           for (let i = response.data.items.length - 1; i >= 0; i--) {
             let player = response.data.items[i];
             let auction = player._auction;

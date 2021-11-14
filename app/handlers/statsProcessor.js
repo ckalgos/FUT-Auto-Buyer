@@ -79,7 +79,7 @@ export const exportStatsExternal = () => {
       type: "statsUpdate",
     };
     await sendMessageToDiscord(JSON.stringify(payload));
-  }, 3000);
+  }, 5000);
 };
 
 export const updateStats = (key, value) => {

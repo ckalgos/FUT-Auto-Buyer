@@ -1,6 +1,6 @@
 import { errorCodeLookUp } from "../app.constants";
 import { idProgressAutobuyer } from "../elementIds.constants";
-import { stopAutoBuyer } from "../handlers/autobuyerProcessor";
+import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import {
   getBuyerSettings,
   getValue,
@@ -8,6 +8,7 @@ import {
   setValue,
 } from "../services/repository";
 import {
+  convertRangeToSeconds,
   convertToSeconds,
   formatString,
   getRandWaitTime,
@@ -85,25 +86,30 @@ export const buyPlayer = (
                 ? "move to transferlist"
                 : shouldList
                 ? "selling for: " + sellPrice
+                : buyerSetting["idAbDontMoveWon"]
+                ? ""
                 : "move to club"
             );
 
-            setTimeout(function () {
-              if (sellPrice < 0) {
-                services.Item.move(player, ItemPile.TRANSFER);
-              } else if (shouldList) {
-                updateProfit(sellPrice * 0.95 - price);
-                services.Item.list(
-                  player,
-                  getSellBidPrice(sellPrice),
-                  sellPrice,
-                  convertToSeconds(buyerSetting["idFutBinDuration"] || "1H") ||
-                    3600
-                );
-              } else {
-                services.Item.move(player, ItemPile.CLUB);
-              }
-            }, getRandWaitTime(buyerSetting["idAbWaitTime"]));
+            if (!buyerSetting["idAbDontMoveWon"]) {
+              setTimeout(function () {
+                if (sellPrice < 0) {
+                  services.Item.move(player, ItemPile.TRANSFER);
+                } else if (shouldList) {
+                  updateProfit(sellPrice * 0.95 - price);
+                  services.Item.list(
+                    player,
+                    getSellBidPrice(sellPrice),
+                    sellPrice,
+                    convertToSeconds(
+                      buyerSetting["idFutBinDuration"] || "1H"
+                    ) || 3600
+                  );
+                } else {
+                  services.Item.move(player, ItemPile.CLUB);
+                }
+              }, getRandWaitTime(buyerSetting["idAbWaitTime"]));
+            }
           } else {
             let bidCount = increAndGetStoreValue("bidCount");
             let sym = " B:" + formatString(bidCount.toString(), 4);
@@ -178,6 +184,20 @@ export const buyPlayer = (
               errorCodeCountMap.clear();
               stopAutoBuyer();
               if (sendDetailedNotification) sendNotificationToUser(logMessage);
+
+              if (buyerSetting["idAbResumeAfterErrorOccured"]) {
+                const pauseFor = convertRangeToSeconds(
+                  buyerSetting["idAbResumeAfterErrorOccured"]
+                );
+
+                writeToLog(
+                  `Bot will resume after ${pauseFor}(s)`,
+                  idProgressAutobuyer
+                );
+                setTimeout(() => {
+                  startAutoBuyer.call(getValue("AutoBuyerInstance"));
+                }, pauseFor * 1000);
+              }
             }
           }
         }

@@ -1,10 +1,11 @@
 import {
-  idAbBidExact,
-  idAbBuyPrice,
+  idAbBidExact, idAbBidFutBin, idAbBuyPrice,
   idAbCardCount,
   idAbItemExpiring,
   idAbMaxBid,
-  idAbSearchResult, idAbShouldSort, idAbSortBy, idAbSortOrder, idBuyFutBinPercent, idBuyFutBinPrice
+  idAbSearchResult, idAbShouldSort,
+  idAbSortBy,
+  idAbSortOrder, idBuyFutBinPercent, idBuyFutBinPrice
 } from "../../../elementIds.constants";
 import { setValue } from "../../../services/repository";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
@@ -34,6 +35,18 @@ export const buySettingsView = function () {
         100,
         { idBuyFutBinPercent },
         `(Buy Price percent of FUTBIN Price)`,
+        "BuyerSettings"
+      )}
+      ${generateToggleInput(
+        "Bid For FUTBIN Price",
+        { idAbBidFutBin },
+        "(Bid if the current bid is lesser than FUTBIN Pice)",
+        "BuyerSettings"
+      )}
+      ${generateToggleInput(
+        "Bid Exact Price",
+        { idAbBidExact },
+        "",
         "BuyerSettings"
       )}
       ${generateTextInput(

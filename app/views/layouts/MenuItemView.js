@@ -84,11 +84,12 @@ export const setDefaultActiveTab = () => {
   });
 };
 
-export const updateCommonSettings = async () => {
+export const updateCommonSettings = async (isInit) => {
   let commonSettings = await getUserFilters("CommonSettings");
   commonSettings = JSON.parse(commonSettings["CommonSettings"] || "{}");
   if (!$.isEmptyObject(commonSettings)) {
-    setValue("CommonSettings", commonSettings);
+    const currentValue = isInit ? getValue("CommonSettings") : {};
+    setValue("CommonSettings", { ...(currentValue || {}), ...commonSettings });
   }
 };
 
@@ -127,7 +128,7 @@ const appendMenuItems = async (isInit) => {
       );
     });
     if (isInit) {
-      await updateCommonSettings();
+      await updateCommonSettings(isInit);
     }
     if (selectedFilters.length) {
       updateMultiFilterSettings();

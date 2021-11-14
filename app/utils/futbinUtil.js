@@ -40,9 +40,11 @@ export const getSellPriceFromFutBin = async (
       let calculatedPrice = (sellPrice * futBinPercent) / 100;
       await getPriceLimits(player);
       if (player.hasPriceLimits()) {
-        calculatedPrice = Math.min(
-          player._itemPriceLimits.maximum,
-          Math.max(player._itemPriceLimits.minimum, calculatedPrice)
+        calculatedPrice = roundOffPrice(
+          Math.min(
+            player._itemPriceLimits.maximum,
+            Math.max(player._itemPriceLimits.minimum, calculatedPrice)
+          )
         );
 
         if (calculatedPrice === player._itemPriceLimits.minimum) {

@@ -1,25 +1,25 @@
 import {
   idAbStatus,
   idAutoBuyerFoundLog,
-  idProgressAutobuyer,
+  idProgressAutobuyer
 } from "../elementIds.constants";
 import {
   getBuyerSettings,
   getValue,
   increAndGetStoreValue,
-  setValue,
+  setValue
 } from "../services/repository";
 import {
   pauseBotIfRequired,
   stopBotIfRequired,
-  switchFilterIfRequired,
+  switchFilterIfRequired
 } from "../utils/autoActionsUtil";
 import {
   convertToSeconds,
   formatString,
   getRandNum,
   getRangeValue,
-  playAudio,
+  playAudio
 } from "../utils/commonUtil";
 import { addFutbinCachePrice } from "../utils/futbinUtil";
 import { writeToDebugLog, writeToLog } from "../utils/logUtil";
@@ -27,7 +27,7 @@ import { sendPinEvents, sendUINotification } from "../utils/notificationUtil";
 import {
   getBuyBidPrice,
   getSellBidPrice,
-  roundOffPrice,
+  roundOffPrice
 } from "../utils/priceUtils";
 import { buyPlayer, checkRating } from "../utils/purchaseUtil";
 import { updateRequestCount } from "../utils/statsUtil";
@@ -39,6 +39,30 @@ import { searchErrorHandler } from "./errorHandler";
 let interval = null;
 let passInterval = null;
 const currentBids = new Set();
+
+const sortPlayers = (playerList, sortOrder) => {
+  let sortBy = getValue("sortPlayersBy") || "buy";
+
+  if (sortBy === "reverse")
+  {
+    let reversed = playerList.reverse()
+    return reversed
+  }
+
+  if (sortBy === "bid")
+    playerList.sort((a , b) => {
+      let bidA = a._auction.currentBid || a._auction.startingBid
+      let bidB = b._auction.currentBid || b._auction.startingBid
+      return bidA - bidB
+    })
+  else if (sortBy === "buy")
+    playerList.sort((a , b) => a._auction.buyNowPrice - b._auction.buyNowPrice)
+  else if (sortBy === "rating")
+    playerList.sort((a , b) => parseInt(a.rating) - parseInt(b.rating))
+  if (!sortOrder)
+    playerList.reverse()
+  return playerList
+}
 
 export const startAutoBuyer = async function (isResume) {
   $("#" + idAbStatus)
@@ -191,7 +215,8 @@ const searchTransferMarket = function (buyerSetting) {
           } else {
             setValue("currentPage", 1);
           }
-
+          if (buyerSetting["idAbShouldSort"])
+            response.data.items = sortPlayers(response.data.items, buyerSetting["idAbSortOrder"])
           for (
             let i = response.data.items.length - 1;
             i >= 0 && getValue("autoBuyerActive");

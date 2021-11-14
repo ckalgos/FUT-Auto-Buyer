@@ -19,5 +19,6 @@ module.exports = {
       "https://github.com/chithakumar13/fut-auto-buyer/releases/latest/download/fut-auto-buyer.user.js",
     downloadURL:
       "https://github.com/chithakumar13/fut-auto-buyer/releases/latest/download/fut-auto-buyer.user.js",
+    noFrame: true
   },
 };

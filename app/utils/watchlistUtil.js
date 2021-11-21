@@ -111,7 +111,7 @@ export const watchListUtil = function (buyerSetting) {
                   }
 
                   const checkBuyPrice = buyerSetting["idSellCheckBuyPrice"];
-                  if (checkBuyPrice && price > sellPrice) {
+                  if (checkBuyPrice && price > (sellPrice * 95) / 100) {
                     sellPrice = -1;
                   }
 

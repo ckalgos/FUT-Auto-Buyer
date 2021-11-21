@@ -114,6 +114,9 @@ export const cssOverride = () => {
   .mrgTop10 {
     margin-top: 10px;
   }
+  .mrgRgt10 {
+    margin-right: 10px;
+  }
   .header-hr {
     padding: 0px !important;
     width: 96% !important;
@@ -163,6 +166,9 @@ export const cssOverride = () => {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  .ut-toggle-cell-view--label{
+    overflow: unset;
   }
   `;
   if (!isPhone()) {

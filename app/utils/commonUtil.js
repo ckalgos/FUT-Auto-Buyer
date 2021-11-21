@@ -42,6 +42,17 @@ export const downloadJson = (json, fileName) => {
   document.body.removeChild(link);
 };
 
+export const downloadCsv = (csvContent, fileName) => {
+  const encodedUri =
+    "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURIComponent(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `${fileName}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 export const convertToSeconds = (val) => {
   if (val) {
     let valInterval = val[val.length - 1].toUpperCase();

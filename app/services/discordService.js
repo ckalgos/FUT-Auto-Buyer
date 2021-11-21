@@ -1,4 +1,5 @@
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
+import { updateMultiFilterSettings } from "../utils/filterUtil";
 import { getValue } from "./repository";
 
 let discordClient;
@@ -24,6 +25,9 @@ export const initializeDiscord = (discordToken, channelId) => {
       case "stop": {
         return stopAutoBuyer();
       }
+      case "switchFilter": {
+        switchFilters(content.value && JSON.parse(content.value));
+      }
     }
     message.delete(5000);
   });
@@ -38,6 +42,22 @@ export const sendMessageToDiscord = async (message) => {
       messageRef.delete(5000);
     }
   }
+};
+
+const switchFilters = (filters) => {
+  const shouldStart = getValue("autoBuyerActive");
+  stopAutoBuyer();
+  $(".multiselect-filter").val([]);
+  for (const filter of filters) {
+    $(".multiselect-filter option[value='" + filter + "']").prop(
+      "selected",
+      "selected"
+    );
+  }
+  updateMultiFilterSettings();
+  if (!filters || !shouldStart) return;
+  const instance = getValue("AutoBuyerInstance");
+  startAutoBuyer.call(instance);
 };
 
 const parseContent = (content) => {

@@ -8,6 +8,7 @@ import {
   idSellFutBinPercent,
   idSellCheckBuyPrice,
   idFutBinDuration,
+  idAbDontMoveWon,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -51,6 +52,18 @@ export const sellSettingsView = function () {
       "(List only if Buy Price <br /> is lesser than Sale Price)",
       "BuyerSettings"
     )}
+    ${generateToggleInput(
+      "Relist Unsold Items",
+      { idAbSellToggle },
+      "",
+      "BuyerSettings"
+    )}
+    ${generateToggleInput(
+      "Dont move won items",
+      { idAbDontMoveWon },
+      "(Keep won items <br /> in Unassigned or Transfer Targets)",
+      "BuyerSettings"
+    )}
     ${generateTextInput(
       "Sell Price",
       "",
@@ -79,12 +92,6 @@ export const sellSettingsView = function () {
       100,
       { idSellRatingThreshold },
       "(Rating threshold to list the sniped player)",
-      "BuyerSettings"
-    )}
-    ${generateToggleInput(
-      "Relist Unsold Items",
-      { idAbSellToggle },
-      "",
       "BuyerSettings"
     )}
     </div>`;

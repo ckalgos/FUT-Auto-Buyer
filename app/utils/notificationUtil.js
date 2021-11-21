@@ -1,5 +1,6 @@
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
-import { getBuyerSettings, getValue } from "../services/repository";
+import { getBuyerSettings, getValue, setValue } from "../services/repository";
+import { loadFilter } from "./userExternalUtil";
 
 let discordClient = null;
 
@@ -61,7 +62,7 @@ const sendMessageToDiscord = (channelId, message) => {
   }
 };
 
-const initializeDiscordClient = (cb) => {
+export const initializeDiscordClient = (cb) => {
   const buyerSetting = getBuyerSettings();
   const client = new Discord.Client();
   let discordToken = buyerSetting["idDiscordToken"];
@@ -82,6 +83,23 @@ const initializeDiscordClient = (cb) => {
       } else if (/stop/i.test(message.content)) {
         stopAutoBuyer();
         message.channel.sendMessage("Bot stopped successfully");
+      } else if (/runfilter/i.test(message.content)) {
+        let filterName = message.content.split("-")[1];
+        if (filterName) {
+          filterName = filterName.toUpperCase();
+          stopAutoBuyer();
+          setValue("selectedFilters", []);
+          const instance = getValue("AutoBuyerInstance");
+          const isSuccess = loadFilter.call(instance, filterName);
+          if (!isSuccess) {
+            message.channel.sendMessage(`unable to find filter${filterName}`);
+            return;
+          }
+          startAutoBuyer.call(instance);
+          message.channel.sendMessage(`${filterName} started successfully`);
+        } else {
+          message.channel.sendMessage("Unable to find filter name");
+        }
       }
     });
   } catch (err) {}

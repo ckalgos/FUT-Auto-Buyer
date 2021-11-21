@@ -12,6 +12,8 @@ import { filterSettingsView } from "./Settings/FilterSettingsView";
 import { getValue, setValue } from "../../services/repository";
 import { updateMultiFilterSettings } from "../../utils/filterUtil";
 import { getUserFilters } from "../../utils/dbUtil";
+import { idAbSortBy } from "../../elementIds.constants";
+import { initializeDiscordClient } from "../../utils/notificationUtil";
 
 const settingsLookup = new Map();
 settingsLookup.set(0, {
@@ -84,11 +86,15 @@ export const setDefaultActiveTab = () => {
   });
 };
 
-export const updateCommonSettings = async () => {
+export const updateCommonSettings = async (isInit) => {
   let commonSettings = await getUserFilters("CommonSettings");
   commonSettings = JSON.parse(commonSettings["CommonSettings"] || "{}");
   if (!$.isEmptyObject(commonSettings)) {
-    setValue("CommonSettings", commonSettings);
+    const currentValue = isInit ? getValue("CommonSettings") : {};
+    setValue("CommonSettings", { ...(currentValue || {}), ...commonSettings });
+  }
+  if (isInit) {
+    initializeDiscordClient();
   }
 };
 
@@ -120,6 +126,10 @@ const appendMenuItems = async (isInit) => {
 
   setTimeout(async () => {
     const selectedFilters = getValue("selectedFilters") || [];
+    const { idAbSortBy: sortBy } = getValue("BuyerSettings") || {};
+    if (sortBy) {
+      $(`${idAbSortBy} option[value='${sortBy}']`).prop("selected", "selected");
+    }
     $.each(selectedFilters, function (idx, val) {
       $(".multiselect-filter option[value='" + val + "']").prop(
         "selected",
@@ -127,7 +137,7 @@ const appendMenuItems = async (isInit) => {
       );
     });
     if (isInit) {
-      await updateCommonSettings();
+      await updateCommonSettings(isInit);
     }
     if (selectedFilters.length) {
       updateMultiFilterSettings();

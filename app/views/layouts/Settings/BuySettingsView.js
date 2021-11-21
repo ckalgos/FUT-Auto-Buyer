@@ -4,12 +4,18 @@ import {
   idAbCardCount,
   idAbItemExpiring,
   idAbMaxBid,
-  idAbSearchResult, idBuyFutBinPercent, idBuyFutBinPrice, idShouldSort,
-  idSortBy,
-  idSortOrder
+  idAbSearchResult, idAbShouldSort, idAbSortBy, idAbSortOrder, idBuyFutBinPercent, idBuyFutBinPrice
 } from "../../../elementIds.constants";
+import { setValue } from "../../../services/repository";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
+
+const updateAbSortBy = () => {
+  const sortBy = $(`#${idAbSortBy}`).val() || "buy";
+  setValue("sortPlayersBy", sortBy);
+}
+
+$(document).on( { change: updateAbSortBy }, `#${idAbSortBy}` );
 
 export const buySettingsView = function () {
   return `<div class='buyer-settings-wrapper buy-settings-view'>
@@ -73,18 +79,16 @@ export const buySettingsView = function () {
         "",
         "BuyerSettings"
       )}
-<<<<<<< HEAD
-      ${generateToggleInput("Bid Exact Price", { idAbBidExact }, "<br />")}
-      ${generateToggleInput("Sort players", { idShouldSort }, "<br />")}
+      ${generateToggleInput("Sort players", { idAbShouldSort }, "<br />", "BuyerSettings")}
       <div style="width:50%;" class="displayCenterFlx">
-      <select style="width:95%;height: 3rem;font-size: 1.5rem;" class="select-sortBy" id="${idSortBy}">
-        <option value="buy" selected="true">Buy now price</option>
+      <select style="width:95%;height: 3rem;font-size: 1.5rem;" class="select-sortBy filter-header-settings" id="${idAbSortBy}">
+        <option value="buy" selected>Buy now price</option>
         <option value="bid">Bid now price</option>
         <option value="rating">Player rating</option>
+        <option value="reverse">reverse</option>
       </select>
-=======
->>>>>>> 56c360503d6cfd543767110006fb1ec8fdbaa77e
      </div>
-     ${generateToggleInput("Order", { idSortOrder }, "(Enabled = descending, Disabled = ascending)<br />")}
+     ${generateToggleInput("Order", { idAbSortOrder }, "(Enabled = descending, Disabled = ascending)<br />", "BuyerSettings")}
+     </div>
     `;
 };

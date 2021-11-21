@@ -5,20 +5,79 @@ import {
   getBuyerSettings,
   getValue,
   increAndGetStoreValue,
-  setValue,
+  setValue
 } from "../services/repository";
 import {
   convertToSeconds,
   formatString,
   getRandWaitTime,
+  hideLoader,
   playAudio,
-  wait,
+  showLoader,
+  wait
 } from "./commonUtil";
 import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToAbLog, writeToLog } from "./logUtil";
-import { sendNotificationToUser } from "./notificationUtil";
+import { sendNotificationToUser, sendUINotification } from "./notificationUtil";
 import { getSellBidPrice } from "./priceUtils";
 import { updateProfit } from "./statsUtil";
+
+const createAntiBypassIframes = async () => {
+  return new Promise((resolve) => {
+    for (let i = 0; i < 4; i++) {
+      let tmp = document.createElement("iframe")
+      tmp.style.display = "none"
+      tmp.src = "https://www.ea.com/fifa/ultimate-team/web-app/"
+      document.body.appendChild(tmp)
+    }
+    resolve()
+  })
+}
+
+const removeIframes = () => {
+  return new Promise((resolve) => {
+    for (let z = 0; z < 4; z++) {
+      document.querySelector(`iframe`).remove()
+      resolve()
+    }
+  })
+}
+
+const softbanIsBypassed = () => {
+  return new Promise(async (resolve) => {
+    let iframeArray = Array.from(document.querySelectorAll("iframe"))
+    let iframeFullyLoadedNb = 0;
+    let interval = setInterval(async() => {
+      for (let i = 0; i < iframeArray.length; i++) {
+        if (iframeFullyLoadedNb === iframeArray.length)
+        {
+          clearInterval(interval)
+          await removeIframes()
+          resolve(false)
+        }
+        if (iframeArray[i].contentDocument.body.querySelector("body > div.view-modal-container.form-modal > section")) {
+          await removeIframes()
+          resolve(true)
+        }
+        else if (iframeArray[i].contentDocument.body.querySelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > div.view-navbar-clubinfo"))
+          iframeFullyLoadedNb++;
+      }
+    }, 500)
+  })
+}
+
+const bypassSoftban = () => {
+  return new Promise(async (resolve) => {
+    for (let i = 0; i < 10; i++) {
+      await createAntiBypassIframes()
+      let isBypassed = await softbanIsBypassed()
+      if (isBypassed)
+        resolve(true)
+      await removeIframes()
+    }
+    resolve(false)
+  })
+}
 
 export const checkRating = (
   cardRating,
@@ -84,8 +143,8 @@ export const buyPlayer = (
               sellPrice < 0
                 ? "move to transferlist"
                 : shouldList
-                ? "selling for: " + sellPrice
-                : "move to club"
+                  ? "selling for: " + sellPrice
+                  : "move to club"
             );
 
             setTimeout(function () {
@@ -98,7 +157,7 @@ export const buyPlayer = (
                   getSellBidPrice(sellPrice),
                   sellPrice,
                   convertToSeconds(buyerSetting["idFutBinDuration"] || "1H") ||
-                    3600
+                  3600
                 );
               } else {
                 services.Item.move(player, ItemPile.CLUB);
@@ -154,6 +213,25 @@ export const buyPlayer = (
               );
           }
 
+          if (buyerSetting["idBypassSoftBan"] && status == 429) {
+            showLoader()
+            sendUINotification("Softban detected");
+
+            // stopAutoBuyer(true)
+            let isBypassed = await bypassSoftban()
+            hideLoader()
+            if (isBypassed)
+            {
+              sendUINotification("Softban successfully bypassed");
+              // startAutoBuyer.call(this, true);
+            }
+            else
+            {
+              sendUINotification("Softban cant be bypassed");
+            // stopAutoBuyer(true)
+            }
+          }
+
           if (buyerSetting["idAbStopErrorCode"]) {
             const errorCodes = new Set(
               buyerSetting["idAbStopErrorCode"].split(",")
@@ -163,15 +241,13 @@ export const buyPlayer = (
               errorCodeCountMap.set(status, { currentVal: 0 });
 
             errorCodeCountMap.get(status).currentVal++;
-
             if (
               errorCodes.has(status) &&
               errorCodeCountMap.get(status).currentVal >=
-                buyerSetting["idAbStopErrorCodeCount"]
+              buyerSetting["idAbStopErrorCodeCount"] && !buyerSetting["idBypassSoftBan"]
             ) {
               logMessage = writeToLog(
-                `[!!!] Autostopping bot since error code ${status} has occured ${
-                  errorCodeCountMap.get(status).currentVal
+                `[!!!] Autostopping bot since error code ${status} has occured ${errorCodeCountMap.get(status).currentVal
                 } times\n`,
                 idProgressAutobuyer
               );

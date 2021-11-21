@@ -1,25 +1,25 @@
-name: 🐛 Ban Report
+name: 🚫 Ban Report
 description: If you got banned for using the script, let us know with the settings you used in the bot
-title: "bug: "
-labels: ["bug"]
+title: "ban: "
+labels: ["ban"]
 body:
   - type: checkboxes
     attributes:
       label: Prerequisites
       description: Please ensure you have completed all of the following.
       options:
-        - label: I have searched for [existing issues](https://github.com/chithakumar13/FUT-Auto-Buyer/issues) that already report this problem, without success.
+        - label: I havent used any other script which could have caused the ban.
           required: true
   - type: input
     attributes:
       label: Script Version
-      description: Please select which version of script has this issue impacts.
+      description: Please select which version of the script.
     validations:
       required: true
   - type: dropdown
     attributes:
       label: Platform
-      description: Please select the platforms on which you are facing this issue.
+      description: Please select the platforms.
       multiple: true
       options:
         - Webapp
@@ -29,22 +29,16 @@ body:
         required: true
   - type: textarea
     attributes:
-      label: Current Behavior
-      description: A clear description of what the bug is and how it manifests.
+      label: Safety Settings
+      description: Please share the Safety settings used when running the bot.
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Expected Behavior
-      description: A clear description of what you expected to happen.
+      label: Filter Used
+      description: Please download the filter used when running the bot and share it here.
     validations:
-      required: true
-  - type: textarea
-    attributes:
-      label: Steps to Reproduce
-      description: Please explain the steps required to duplicate this issue.
-    validations:
-      required: true
+      required: false
   - type: textarea
     attributes:
       label: Additional Information

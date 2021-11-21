@@ -10,7 +10,11 @@ import {
   idAbAvailableItems,
   idAbActiveTransfers,
   idAbProfit,
+  idAbCountDown,
+  idAbDownloadStats,
 } from "../../elementIds.constants";
+import { downloadStats } from "../../utils/statsUtil";
+import { generateButton } from "../../utils/uiUtils/generateButton";
 
 export const BuyerStatus = () => {
   return `<span style='color:red' id="${idAbStatus}"> IDLE </span> | REQUEST COUNT: <span id="${idAbRequestCount}">0</span> 
@@ -18,22 +22,43 @@ export const BuyerStatus = () => {
 };
 
 export const HeaderView = () => {
-  return `<div class="view-navbar-clubinfo">
+  return `
   <div class="view-navbar-clubinfo-data">
-     <div class="view-navbar-clubinfo-name">
-        <div style="float: left;">Search:</div>
-        <div class="stats-progress">
-           <div id=${idAbSearchProgress} class="stats-fill"></div>
-        </div>
-     </div>
-     <div class="view-navbar-clubinfo-name">
-        <div style="float: left;">Statistics:</div>
-        <div class="stats-progress">
-           <div id=${idAbStatisticsProgress} class="stats-fill"></div>
-        </div>     
-     </div>
+    <div class="view-navbar-clubinfo-name">
+    ${generateButton(
+      idAbDownloadStats,
+      "⇩",
+      () => {
+        downloadStats();
+      },
+      "filterSync",
+      "Download Stats"
+    )}
+    </div>
   </div>
-</div>
+  <div class="view-navbar-clubinfo">
+    <div class="view-navbar-clubinfo-data">
+      <div class="view-navbar-clubinfo-name">
+        <span id=${idAbCountDown} style="font-weight: bold;">00:00:00</span>
+      </div>
+    </div>
+  </div>
+  <div class="view-navbar-clubinfo">
+    <div class="view-navbar-clubinfo-data">
+       <div class="view-navbar-clubinfo-name">
+          <div style="float: left;">Search:</div>
+          <div class="stats-progress">
+             <div id=${idAbSearchProgress} class="stats-fill"></div>
+          </div>
+       </div>
+       <div class="view-navbar-clubinfo-name">
+          <div style="float: left;">Statistics:</div>
+          <div class="stats-progress">
+             <div id=${idAbStatisticsProgress} class="stats-fill"></div>
+          </div>     
+       </div>
+    </div>
+  </div>
   <div class="view-navbar-currency" style="margin-left: 10px;">
     <div class="view-navbar-currency-coins">Coins: <span  id=${idAbCoins}></span></div>
     <div class="view-navbar-currency-coins">Profit: <span  id=${idAbProfit}></span></div>

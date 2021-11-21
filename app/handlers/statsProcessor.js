@@ -2,6 +2,7 @@ import {
   idAbActiveTransfers,
   idAbAvailableItems,
   idAbCoins,
+  idAbCountDown,
   idAbProfit,
   idAbRequestCount,
   idAbSearchProgress,
@@ -24,6 +25,7 @@ setValue("sessionStats", {
   previousPause: 0,
   profit: 0,
   sessionId: Date.now().toString(36) + Math.random().toString(36).substr(2),
+  transactions: [],
 });
 
 export const statsProcessor = () => {
@@ -42,6 +44,8 @@ export const statsProcessor = () => {
     $("#" + idAbActiveTransfers).html(currentStats.activeTransfers);
     $("#" + idAbProfit).html(currentStats.profit);
 
+    updateTimer();
+
     if (currentStats.unsoldItems) {
       $("#" + idAbUnsoldItems).css("color", "red");
     } else {
@@ -56,6 +60,27 @@ export const statsProcessor = () => {
   }, 1000);
 };
 
+const updateTimer = () => {
+  const startTime = getValue("botStartTime");
+  if (startTime && getValue("autoBuyerActive")) {
+    const diffInSeconds = (new Date().getTime() - startTime.getTime()) / 1000;
+    const mins = Math.floor(diffInSeconds / 60);
+    const secs = Math.floor(diffInSeconds % 60);
+    const hrs = Math.floor(mins / 60);
+    const timeString =
+      (hrs < 10 ? "0" : "") +
+      hrs +
+      ":" +
+      (mins < 10 ? "0" : "") +
+      mins +
+      ":" +
+      (secs < 10 ? "0" : "") +
+      secs;
+    $("#" + idAbCountDown).html(timeString);
+    updateStats("runningTime", timeString);
+  }
+};
+
 export const exportStatsExternal = () => {
   const persona = services.User.getUser().getSelectedPersona();
   const club = persona.getCurrentClub();
@@ -65,11 +90,13 @@ export const exportStatsExternal = () => {
     const availableFilters = getValue("filters") || {};
     const currentFilter = getValue("currentFilter");
     const lastErrorMessage = getValue("lastErrorMessage");
+    const selectedFilters = getValue("selectedFilters");
     const payload = {
       autoBuyerState,
       persona: persona.name,
       clublogo: club.assetId,
       availableFilters: Object.keys(availableFilters),
+      selectedFilters,
       currentFilter,
       lastErrorMessage,
       sessionId: currentStats.sessionId,
@@ -78,7 +105,7 @@ export const exportStatsExternal = () => {
       profit: currentStats.profit,
       type: "statsUpdate",
     };
-    await sendMessageToDiscord(JSON.stringify(payload));
+    await sendMessageToDiscord(btoa(JSON.stringify(payload)));
   }, 5000);
 };
 

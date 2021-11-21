@@ -19,7 +19,7 @@ import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToAbLog, writeToLog } from "./logUtil";
 import { sendNotificationToUser } from "./notificationUtil";
 import { getSellBidPrice } from "./priceUtils";
-import { updateProfit } from "./statsUtil";
+import { appendTransactions, updateProfit } from "./statsUtil";
 
 export const checkRating = (
   cardRating,
@@ -67,7 +67,7 @@ export const buyPlayer = (
           }
 
           const checkBuyPrice = buyerSetting["idSellCheckBuyPrice"];
-          if (checkBuyPrice && price > sellPrice) {
+          if (checkBuyPrice && price > (sellPrice * 95) / 100) {
             sellPrice = -1;
           }
 
@@ -76,6 +76,9 @@ export const buyPlayer = (
           if (isBin) {
             let winCount = increAndGetStoreValue("winCount");
             let sym = " W:" + formatString(winCount.toString(), 4);
+            appendTransactions(
+              `[${new Date().toLocaleTimeString()}] ${playerName.trim()} buy success - Price : ${price}`
+            );
             logMessage = writeToAbLog(
               sym,
               playerName,
@@ -113,6 +116,9 @@ export const buyPlayer = (
           } else {
             let bidCount = increAndGetStoreValue("bidCount");
             let sym = " B:" + formatString(bidCount.toString(), 4);
+            appendTransactions(
+              `[${new Date().toLocaleTimeString()}] ${playerName.trim()} bid success - Price : ${price}`
+            );
             logMessage = writeToAbLog(
               sym,
               playerName,
@@ -143,6 +149,9 @@ export const buyPlayer = (
         } else {
           let lossCount = increAndGetStoreValue("lossCount");
           let sym = " L:" + formatString(lossCount.toString(), 4);
+          appendTransactions(
+            `[${new Date().toLocaleTimeString()}] ${playerName.trim()} buy failed - Price : ${price}`
+          );
           let status = (data.error?.code || data.status) + "";
           logMessage = writeToAbLog(
             sym,

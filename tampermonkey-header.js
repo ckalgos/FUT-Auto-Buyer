@@ -2,7 +2,7 @@ module.exports = {
   headers: {
     name: "FUT Auto Buyer",
     namespace: "http://tampermonkey.net/",
-    version: "1.1.7",
+    version: "1.1.8",
     description: "FUT Auto Buyer",
     author: "CK Algos",
     match: [
@@ -19,6 +19,6 @@ module.exports = {
       "https://github.com/chithakumar13/fut-auto-buyer/releases/latest/download/fut-auto-buyer.user.js",
     downloadURL:
       "https://github.com/chithakumar13/fut-auto-buyer/releases/latest/download/fut-auto-buyer.user.js",
-    noFrame: true
+    noFrame: true,
   },
 };

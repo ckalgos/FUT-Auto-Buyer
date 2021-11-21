@@ -94,11 +94,5 @@ export const sellSettingsView = function () {
       "(Rating threshold to list the sniped player)",
       "BuyerSettings"
     )}
-    ${generateToggleInput(
-      "Relist Unsold Items",
-      { idAbSellToggle },
-      "",
-      "BuyerSettings"
-    )}
     </div>`;
 };

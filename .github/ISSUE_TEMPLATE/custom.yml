@@ -1,0 +1,51 @@
+name: 🐛 Ban Report
+description: If you got banned for using the script, let us know with the settings you used in the bot
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Prerequisites
+      description: Please ensure you have completed all of the following.
+      options:
+        - label: I have searched for [existing issues](https://github.com/chithakumar13/FUT-Auto-Buyer/issues) that already report this problem, without success.
+          required: true
+  - type: input
+    attributes:
+      label: Script Version
+      description: Please select which version of script has this issue impacts.
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Platform
+      description: Please select the platforms on which you are facing this issue.
+      multiple: true
+      options:
+        - Webapp
+        - Android
+        - ios
+    validations:
+        required: true
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: A clear description of what the bug is and how it manifests.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A clear description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: Please explain the steps required to duplicate this issue.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional Information
+      description: List any other information that is relevant to your issue. Browser version, related issues, suggestions on how to fix, console error screenshot, etc.

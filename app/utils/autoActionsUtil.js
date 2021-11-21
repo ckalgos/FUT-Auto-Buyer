@@ -17,7 +17,7 @@ import {
   showLoader
 } from "./commonUtil";
 import { writeToLog } from "./logUtil";
-import { sendNotificationToUser } from "./notificationUtil";
+import { sendNotificationToUser, sendUINotification } from "./notificationUtil";
 import bypassSoftban from "./softbanUtil";
 import { loadFilter } from "./userExternalUtil";
 
@@ -73,15 +73,15 @@ export const pauseBotIfRequired = async function (buyerSetting) {
   }
   const { searchCount, previousPause } = getValue("sessionStats");
 
-  if (getValue("softbanDetected") === true)
+  if (getValue("softbanDetected") === true && buyerSetting["idBypassSoftBan"])
   {
+    setValue("softbanDetected", false)
     showLoader()
     stopAutoBuyer(true);
-    let isBypassed = await bypassSoftban()
+    const isBypassed = await bypassSoftban()
     hideLoader()
     if (isBypassed)
     {
-      setValue("softbanDetected", value)
       sendUINotification("Softban successfully bypassed");
       startAutoBuyer.call(this, true);
     }

@@ -1,7 +1,8 @@
+import awsconfig from "./aws-exports";
+import Amplify from "./external/aws-amplify";
 import { initOverrides } from "./function-overrides";
 import { cssOverride } from "./function-overrides/css-override";
-// import awsconfig from "./aws-exports";
-// Amplify.configure(awsconfig);
+Amplify.configure(awsconfig);
 
 const initAutobuyer = function () {
   let isHomePageLoaded = false;

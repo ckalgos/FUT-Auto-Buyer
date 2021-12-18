@@ -5,7 +5,7 @@ import {
   getBuyerSettings,
   getValue,
   increAndGetStoreValue,
-  setValue,
+  setValue
 } from "../services/repository";
 import {
   convertRangeToSeconds,
@@ -13,7 +13,7 @@ import {
   formatString,
   getRandWaitTime,
   playAudio,
-  wait,
+  wait
 } from "./commonUtil";
 import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToAbLog, writeToLog } from "./logUtil";
@@ -167,6 +167,10 @@ export const buyPlayer = (
               sendNotificationToUser(
                 `| ${playerName.trim()} | ${priceTxt.trim()} | failure |`
               );
+          }
+
+          if (buyerSetting["idBypassSoftBan"] && status == 429) {
+            setValue("softbanDetected", true)
           }
 
           if (buyerSetting["idAbStopErrorCode"]) {

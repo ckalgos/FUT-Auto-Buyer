@@ -121,12 +121,15 @@ export const watchListUtil = function (buyerSetting) {
                   if (sellPrice < 0) {
                     services.Item.move(player, ItemPile.TRANSFER);
                   } else if (shouldList) {
-                    updateProfit(sellPrice * 0.95 - player._auction.currentBid);
+                    const profit =
+                      sellPrice * 0.95 - player._auction.currentBid;
+                    updateProfit(profit);
                     await sellWonItems(
                       player,
                       sellPrice,
                       buyerSetting["idAbWaitTime"],
-                      buyerSetting["idFutBinDuration"]
+                      buyerSetting["idFutBinDuration"],
+                      profit
                     );
                   } else {
                     services.Item.move(player, ItemPile.CLUB);
@@ -199,11 +202,7 @@ const tryBidItems = async (player, bidPrice, sellPrice, buyerSetting) => {
     ? getBuyBidPrice(currentBid)
     : currentBid;
 
-  if (
-    isAutoBuyerActive &&
-    currentBid <= priceToBid
-    // checkPrice <= window.futStatistics.coinsNumber
-  ) {
+  if (isAutoBuyerActive && currentBid <= priceToBid) {
     writeToLog(
       "Bidding on outbidded item -> Bidding Price :" + checkPrice,
       idAutoBuyerFoundLog
@@ -213,7 +212,13 @@ const tryBidItems = async (player, bidPrice, sellPrice, buyerSetting) => {
   }
 };
 
-const sellWonItems = async (player, sellPrice, waitRange, sellDuration) => {
+const sellWonItems = async (
+  player,
+  sellPrice,
+  waitRange,
+  sellDuration,
+  profit
+) => {
   let auction = player._auction;
   let playerName = formatString(player._staticData.name, 15);
   sellBids.add(auction.tradeId);
@@ -223,7 +228,9 @@ const sellWonItems = async (player, sellPrice, waitRange, sellDuration) => {
       "[" +
       player._auction.tradeId +
       "] -- Selling for: " +
-      sellPrice,
+      sellPrice +
+      ", Profit: " +
+      profit,
     idProgressAutobuyer
   );
   player.clearAuction();

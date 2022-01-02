@@ -1,5 +1,10 @@
 import {
-  idAbResumeAfterErrorOccured, idAbStopErrorCode, idAbStopErrorCodeCount, idAutoClearExpired, idAutoClearLog, idBypassSoftBan
+  idAbResumeAfterErrorOccured,
+  idAbStopErrorCode,
+  idAbStopErrorCodeCount,
+  idAutoClearExpired,
+  idAutoClearLog,
+  idBypassSoftBan,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -47,11 +52,14 @@ export const commonSettingsView = function () {
     "(Automatically clear expired items <br/> from transfer targets)",
     "CommonSettings"
   )}
-  ${generateToggleInput(
-    "Bypass softban",
-    { idBypassSoftBan },
-    "(Automatically bypass softban)",
-    "CommonSettings"
-  )}
+  ${
+    false &&
+    generateToggleInput(
+      "Bypass softban",
+      { idBypassSoftBan },
+      "(Automatically bypass softban)",
+      "CommonSettings"
+    )
+  }
   </div>`;
 };

@@ -109,6 +109,7 @@ export const buySettingsView = function () {
         <div class="displayCenterFlx">
         <select style="width:95%;height: 3rem;font-size: 1.5rem;" class="select-sortBy filter-header-settings" id="${idAbSortBy}">
           <option disabled selected>--Select Sort Attribute--</option>
+          <option value="expires">Expires on</option>
           <option value="buy">Buy now price</option>
           <option value="bid">Bid now price</option>
           <option value="rating">Player rating</option>

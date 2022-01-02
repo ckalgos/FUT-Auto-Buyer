@@ -114,3 +114,8 @@ export const updateStats = (key, value) => {
   currentStats[key] = value;
   setValue("sessionStats", currentStats);
 };
+
+export const getStatsValue = (key) => {
+  const currentStats = getValue("sessionStats");
+  return currentStats[key] || 0;
+};

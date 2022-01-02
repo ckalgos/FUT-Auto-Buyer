@@ -5,7 +5,7 @@ import {
   getBuyerSettings,
   getValue,
   increAndGetStoreValue,
-  setValue
+  setValue,
 } from "../services/repository";
 import {
   convertRangeToSeconds,
@@ -13,7 +13,7 @@ import {
   formatString,
   getRandWaitTime,
   playAudio,
-  wait
+  wait,
 } from "./commonUtil";
 import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToAbLog, writeToLog } from "./logUtil";
@@ -72,7 +72,7 @@ export const buyPlayer = (
           }
 
           const shouldList = sellPrice && !isNaN(sellPrice) && isValidRating;
-
+          const profit = sellPrice * 0.95 - price;
           if (isBin) {
             let winCount = increAndGetStoreValue("winCount");
             let sym = " W:" + formatString(winCount.toString(), 4);
@@ -88,7 +88,7 @@ export const buyPlayer = (
               sellPrice < 0
                 ? "move to transferlist"
                 : shouldList
-                ? "selling for: " + sellPrice
+                ? "selling for: " + sellPrice + ", Profit: " + profit
                 : buyerSetting["idAbDontMoveWon"]
                 ? ""
                 : "move to club"
@@ -99,7 +99,7 @@ export const buyPlayer = (
                 if (sellPrice < 0) {
                   services.Item.move(player, ItemPile.TRANSFER);
                 } else if (shouldList) {
-                  updateProfit(sellPrice * 0.95 - price);
+                  updateProfit(profit);
                   services.Item.list(
                     player,
                     getSellBidPrice(sellPrice),
@@ -170,7 +170,7 @@ export const buyPlayer = (
           }
 
           if (buyerSetting["idBypassSoftBan"] && status == 429) {
-            setValue("softbanDetected", true)
+            setValue("softbanDetected", false);
           }
 
           if (buyerSetting["idAbStopErrorCode"]) {

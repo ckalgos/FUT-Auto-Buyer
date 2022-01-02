@@ -15,3 +15,11 @@ export const getUserPlatform = () => {
     return "pc";
   }
 };
+
+export const updateUserCredits = () => {
+  return new Promise((resolve) => {
+    services.User.requestCurrencies().observe(this, function (sender, data) {
+      resolve();
+    });
+  });
+};

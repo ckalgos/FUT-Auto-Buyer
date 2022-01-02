@@ -2,7 +2,7 @@ import {
   idAutoBuyerFoundLog,
   idProgressAutobuyer
 } from "../elementIds.constants";
-import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
+import {autoRestartAutoBuyer, startAutoBuyer, stopAutoBuyer} from "../handlers/autobuyerProcessor";
 import { updateStats } from "../handlers/statsProcessor";
 import {
   getValue,
@@ -10,7 +10,7 @@ import {
   setValue
 } from "../services/repository";
 import {
-  convertRangeToSeconds,
+  convertRangeToSeconds, convertSecondsToTime,
   getRandNum,
   getRandNumberInRange,
   hideLoader,
@@ -38,27 +38,41 @@ export const stopBotIfRequired = (buyerSetting) => {
   const isSelling = false;
   // buyerSetting["idSellCheckBuyPrice"] || buyerSetting["idSellFutBinPrice"];
   const isTransferListFull =
-    isSelling &&
-    repositories.Item &&
-    repositories.Item.transfer.length >=
+      isSelling &&
+      repositories.Item &&
+      repositories.Item.transfer.length >=
       repositories.Item.pileSizes._collection[5];
 
-  if (
-    isTransferListFull ||
-    timeElapsed ||
-    (cardsToBuy && purchasedCardCount >= cardsToBuy)
-  ) {
-    const message = timeElapsed
+  const message = timeElapsed
       ? "Time elapsed"
       : isTransferListFull
-      ? "Transfer list is full"
-      : "Max purchases count reached";
+          ? "Transfer list is full"
+          : "Max purchases count reached";
 
-    if (sendDetailedNotification)
-      sendNotificationToUser(`Autobuyer stopped | ${message}`);
-    writeToLog(`Autobuyer stopped | ${message}`, idProgressAutobuyer);
+  if (timeElapsed){
+    if (buyerSetting["idAbRestartAfter"]) {
+      const autoRestart = convertRangeToSeconds(
+          buyerSetting["idAbRestartAfter"]
+      );
+      writeToLog(
+          `Autobuyer stopped (Time elapsed) | Automatic restart in ${convertSecondsToTime(autoRestart)}`,
+          idProgressAutobuyer
+      );
+
+    }
     stopAfter = null;
-    stopAutoBuyer();
+
+    stopAutoBuyer(false);
+    autoRestartAutoBuyer();
+  } else {
+    if (isTransferListFull || (cardsToBuy && purchasedCardCount >= cardsToBuy)) {
+
+      if (sendDetailedNotification)
+        sendNotificationToUser(`Autobuyer stopped | ${message}`);
+      writeToLog(`Autobuyer stopped | ${message}`, idProgressAutobuyer);
+      stopAfter = null;
+      stopAutoBuyer();
+    }
   }
 };
 
@@ -67,7 +81,7 @@ export const pauseBotIfRequired = async function (buyerSetting) {
   if (!isBuyerActive) return;
   const pauseFor = convertRangeToSeconds(buyerSetting["idAbPauseFor"]) * 1000;
   const cycleAmount =
-    pauseCycle || getRandNumberInRange(buyerSetting["idAbCycleAmount"]);
+      pauseCycle || getRandNumberInRange(buyerSetting["idAbCycleAmount"]);
   if (!pauseCycle) {
     pauseCycle = cycleAmount;
   }
@@ -103,9 +117,9 @@ export const switchFilterIfRequired = async function () {
   const fiterSearchCount = getValue("fiterSearchCount");
   const currentFilterCount = getValue("currentFilterCount");
   if (
-    !availableFilters ||
-    !availableFilters.length ||
-    fiterSearchCount > currentFilterCount
+      !availableFilters ||
+      !availableFilters.length ||
+      fiterSearchCount > currentFilterCount
   ) {
     increAndGetStoreValue("currentFilterCount");
     return false;
@@ -114,14 +128,14 @@ export const switchFilterIfRequired = async function () {
   setValue("currentPage", 1);
   const currentFilterIndex = getValue("currentFilterIndex") || 0;
   let filterIndex = getValue("runSequentially")
-    ? currentFilterIndex % availableFilters.length
-    : getRandNum(0, availableFilters.length - 1);
+      ? currentFilterIndex % availableFilters.length
+      : getRandNum(0, availableFilters.length - 1);
 
   setValue("currentFilterIndex", filterIndex + 1);
   let filterName = availableFilters[filterIndex];
   await loadFilter.call(this, filterName);
   writeToLog(
-    `---------------------------  Running for filter ${filterName}  ---------------------------------------------`,
-    idAutoBuyerFoundLog
+      `---------------------------  Running for filter ${filterName}  ---------------------------------------------`,
+      idAutoBuyerFoundLog
   );
 };

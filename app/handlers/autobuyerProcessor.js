@@ -47,6 +47,8 @@ const sortPlayers = (playerList, sortBy, sortOrder) => {
     sortFunc = (a) => a._auction.currentBid || a._auction.startingBid;
   } else if (sortBy === "rating") {
     sortFunc = (a) => parseInt(a.rating);
+  } else if (sortBy === "expires") {
+    sortFunc = (a) => parseInt(a._auction.expires);
   }
   playerList.sort((a, b) => {
     const sortAValue = sortFunc(a);

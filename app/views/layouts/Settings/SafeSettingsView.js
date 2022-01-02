@@ -6,6 +6,7 @@ import {
   idAbWaitTime,
   idAbAddBuyDelay,
   idAbDelayToAdd,
+  idAbRestartAfter,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -73,6 +74,15 @@ export const safeSettingsView = function () {
     "CommonSettings",
     "text",
     "\\d+-\\d+[H|M|S|h|m|s]$"
+  )} 
+  ${generateTextInput(
+      "Restart After",
+      "1-2H",
+      { idAbRestartAfter },
+      "(S for seconds, M for Minutes, H for hours eg. 30-40M)",
+      "CommonSettings",
+      "text",
+      "\\d+-\\d+[H|M|S|h|m|s]$"
   )} 
   </div>`;
 };

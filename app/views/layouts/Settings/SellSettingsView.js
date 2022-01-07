@@ -41,10 +41,12 @@ export const sellSettingsView = function () {
     )}
     ${generateTextInput(
       "Sell Price Percent",
-      100,
+      "100-100",
       { idSellFutBinPercent },
       `(Sale Price percent of FUTBIN Price)`,
-      "BuyerSettings"
+      "BuyerSettings",
+      "text",
+      "\\d+-\\d+$"
     )}
     ${generateToggleInput(
       "Check buy price before listing",

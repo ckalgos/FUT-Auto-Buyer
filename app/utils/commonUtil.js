@@ -80,6 +80,24 @@ export const convertRangeToSeconds = (val) => {
   return 0;
 };
 
+export const convertSecondsToTime = (val) => {
+  let totalSeconds = val;
+  let hours = Math.floor(totalSeconds / 3600);
+  totalSeconds %= 3600;
+  let minutes = Math.floor(totalSeconds / 60);
+  let seconds = totalSeconds % 60;
+
+  if (hours > 0){
+    return hours + " (h)";
+  }else{
+    if (minutes > 0){
+      return minutes + " (m) ";
+    }else {
+      return seconds + " (s)";
+    }
+  }
+};
+
 export const getRandNumberInRange = (range) => {
   const rangeVal = getRangeValue(range);
   if (rangeVal.length >= 2) {

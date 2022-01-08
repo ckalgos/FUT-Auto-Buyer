@@ -16,6 +16,7 @@ export const idAbMaxPurchases = "elem_" + generateId(15);
 export const idAbCycleAmount = "elem_" + generateId(15);
 export const idAbPauseFor = "elem_" + generateId(15);
 export const idAbStopAfter = "elem_" + generateId(15);
+export const idAbRestartAfter = "elem_" + generateId(15);
 export const idAbMinRating = "elem_" + generateId(15);
 export const idAbMaxRating = "elem_" + generateId(15);
 export const idAbRandMinBidInput = "elem_" + generateId(15);

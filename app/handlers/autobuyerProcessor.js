@@ -16,6 +16,7 @@ import {
   switchFilterIfRequired,
 } from "../utils/autoActionsUtil";
 import {
+  convertRangeToSeconds,
   convertToSeconds,
   formatString,
   getRandNum,
@@ -57,6 +58,8 @@ const sortPlayers = (playerList, sortBy, sortOrder) => {
   });
   return playerList;
 };
+
+
 
 export const startAutoBuyer = async function (isResume) {
   $("#" + idAbStatus)
@@ -115,7 +118,26 @@ export const startAutoBuyer = async function (isResume) {
   }
 };
 
+export const autoRestartAutoBuyer = () => {
+  let buyerSetting = getBuyerSettings();
+  if (buyerSetting["idAbRestartAfter"]){
+    const autoRestart = convertRangeToSeconds(
+        buyerSetting["idAbRestartAfter"]
+    );
+    setTimeout(() => {
+      const isActive = getValue("autoBuyerActive");
+      if (isActive) return;
+      startAutoBuyer.call(getValue("AutoBuyerInstance")); //Dieses True evtl wieder entfernen HIER HIER HIER
+      writeToLog(
+          `Autobuyer automatically restarted.`,
+          idProgressAutobuyer
+      );
+    }, autoRestart * 1000);
+  }
+};
+
 export const stopAutoBuyer = (isPaused) => {
+
   interval && interval.clear();
   if (!isPaused && passInterval) {
     clearTimeout(passInterval);

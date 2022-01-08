@@ -13,6 +13,7 @@ import {
   idAddIgnorePlayersList,
   idRemoveIgnorePlayers,
   idAbIgnoreAllowToggle,
+  idAbStartSearchPage, idAbOnlyOnePage, idAbRangeSearchPage, idAbOnlyRangePage,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { checkAndAppendOption } from "../../../utils/filterUtil";
@@ -138,11 +139,39 @@ export const searchSettingsView = function () {
       "BuyerSettings"
     )}    
     ${generateTextInput(
-      "Search result page limit",
-      5,
-      { idAbMaxSearchPage },
-      "No of. pages bot should move <br /> forward before going back to page 1",
-      "BuyerSettings"
+        "Search result page limit",
+        5,
+        { idAbMaxSearchPage },
+        "No of. pages bot should move <br /> forward before going back to page 1",
+        "BuyerSettings"
+    )}
+    ${generateTextInput(
+        "Page to search on",
+        20,
+        { idAbStartSearchPage },
+        "No of page the bot should start on",
+        "BuyerSettings"
+    )}
+    ${generateToggleInput(
+        "Specified Page",
+        { idAbOnlyOnePage },
+        "(Only Search on a <br/> specified Page)",
+        "BuyerSettings"
+    )}
+    ${generateTextInput(
+        "Range of Pages",
+        "20-25",
+        { idAbRangeSearchPage },
+        "Range of Pages to search on",
+        "BuyerSettings",
+        "text",
+        "\\d+-\\d+$"
+    )}
+    ${generateToggleInput(
+        "Page Range",
+        { idAbOnlyRangePage },
+        "(Only Search in a <br/> specified range of Pages)",
+        "BuyerSettings"
     )}
     ${generateTextInput(
       "Max value of random min bid",

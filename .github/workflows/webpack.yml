@@ -30,6 +30,5 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.3.1
       with:
-        # Artifact name
-        name: fut-auto-buyer.js # optional, default is artifact
-        # A file, directory or wildcard pattern that describes what to upload
+        name: fut-auto-buyer-build
+        path: ./

@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [14.x]
     
     steps:
     - uses: actions/checkout@v2
@@ -26,3 +26,10 @@ jobs:
       run: |
         npm install
         npm run build:prod
+        
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        # Artifact name
+        name: fut-auto-buyer.js # optional, default is artifact
+        # A file, directory or wildcard pattern that describes what to upload

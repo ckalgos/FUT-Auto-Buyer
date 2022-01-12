@@ -19,7 +19,7 @@ import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToAbLog, writeToLog } from "./logUtil";
 import { sendNotificationToUser } from "./notificationUtil";
 import { getSellBidPrice } from "./priceUtils";
-import { appendTransactions, updateProfit } from "./statsUtil";
+import {appendTransactions, updateProfit} from "./statsUtil";
 
 export const checkRating = (
   cardRating,

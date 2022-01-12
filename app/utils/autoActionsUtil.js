@@ -28,13 +28,18 @@ export const stopBotIfRequired = (buyerSetting) => {
   const cardsToBuy = buyerSetting["idAbCardCount"];
 
   const botStartTime = getValue("botStartTime").getTime();
+  const BotTimeATM = getValue("botTimeATM").getTime();
   let time = stopAfter || convertRangeToSeconds(buyerSetting["idAbStopAfter"]);
   if (!stopAfter) {
     stopAfter = time;
   }
   let sendDetailedNotification = buyerSetting["idDetailedNotification"];
   let currentTime = new Date().getTime();
-  let timeElapsed = (currentTime - botStartTime) / 1000 >= time;
+  let restartTime = 0;
+  if (getValue("RestartTime")) {
+    restartTime = getValue("RestartTime");
+  }
+  let timeElapsed = (currentTime - (BotTimeATM + restartTime)) / 1000 >= time;
   const isSelling = false;
   // buyerSetting["idSellCheckBuyPrice"] || buyerSetting["idSellFutBinPrice"];
   const isTransferListFull =
@@ -50,20 +55,27 @@ export const stopBotIfRequired = (buyerSetting) => {
           : "Max purchases count reached";
 
   if (timeElapsed){
+    stopAfter = null;
     if (buyerSetting["idAbRestartAfter"]) {
-      const autoRestart = convertRangeToSeconds(
-          buyerSetting["idAbRestartAfter"]
-      );
+      setValue("RestartTime", convertRangeToSeconds(buyerSetting["idAbRestartAfter"]));
+      const autoRestart = getValue("RestartTime");
+      if (!getValue("TotalRestartSeconds")) setValue("TotalRestartSeconds", 0)
+      setValue("TotalRestartSeconds", getValue("TotalRestartSeconds") + autoRestart);
+      stopAutoBuyer(false);
+
       writeToLog(
           `Autobuyer stopped (Time elapsed) | Automatic restart in ${convertSecondsToTime(autoRestart)}`,
           idProgressAutobuyer
       );
-
+      autoRestartAutoBuyer();
+    }else {
+      writeToLog(
+          `Autobuyer stopped (Time elapsed) | No automatic restart`,
+          idProgressAutobuyer
+      );
+      stopAutoBuyer(false);
     }
-    stopAfter = null;
 
-    stopAutoBuyer(false);
-    autoRestartAutoBuyer();
   } else {
     if (isTransferListFull || (cardsToBuy && purchasedCardCount >= cardsToBuy)) {
 

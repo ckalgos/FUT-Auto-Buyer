@@ -31,4 +31,4 @@ jobs:
       uses: actions/upload-artifact@v2.3.1
       with:
         name: fut-auto-buyer-build
-        path: ./
+        path: ./dist

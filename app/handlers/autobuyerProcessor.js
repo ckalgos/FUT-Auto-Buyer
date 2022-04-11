@@ -1,3 +1,4 @@
+import { STATE_ACTIVE, STATE_PAUSED, STATE_STOPPED } from "../app.constants";
 import {
   idAbStatus,
   idAutoBuyerFoundLog,
@@ -61,12 +62,11 @@ export const startAutoBuyer = async function (isResume) {
   $("#" + idAbStatus)
     .css("color", "#2cbe2d")
     .html("RUNNING");
-
   const isActive = getValue("autoBuyerActive");
   if (isActive) return;
   sendUINotification(isResume ? "Autobuyer Resumed" : "Autobuyer Started");
   setValue("autoBuyerActive", true);
-  setValue("autoBuyerState", "Active");
+  setValue("autoBuyerState", STATE_ACTIVE);
   if (!isResume) {
     setValue("botStartTime", new Date());
     setValue("purchasedCardCount", 0);
@@ -92,7 +92,7 @@ export const startAutoBuyer = async function (isResume) {
   let operationInProgress = false;
   if (getValue("autoBuyerActive")) {
     interval = setRandomInterval(async () => {
-      passInterval = pauseBotWithContext(buyerSetting);
+      passInterval = await pauseBotWithContext(buyerSetting);
       stopBotIfRequired(buyerSetting);
       const isBuyerActive = getValue("autoBuyerActive");
       if (isBuyerActive && !operationInProgress) {
@@ -119,8 +119,14 @@ export const stopAutoBuyer = (isPaused) => {
   if (!isPaused && passInterval) {
     clearTimeout(passInterval);
   }
-  const isActive = getValue("autoBuyerActive");
-  if (!isActive) return;
+
+  const state = getValue("autoBuyerState");
+  if (
+    (isPaused && state === STATE_PAUSED) ||
+    (!isPaused && state === STATE_STOPPED)
+  ) {
+    return;
+  }
   setValue("autoBuyerActive", false);
   setValue("searchInterval", {
     ...getValue("searchInterval"),
@@ -129,7 +135,7 @@ export const stopAutoBuyer = (isPaused) => {
   if (!isPaused) {
     playAudio("finish");
   }
-  setValue("autoBuyerState", isPaused ? "Paused" : "Stopped");
+  setValue("autoBuyerState", isPaused ? STATE_PAUSED : STATE_STOPPED);
   sendUINotification(isPaused ? "Autobuyer Paused" : "Autobuyer Stopped");
   $("#" + idAbStatus)
     .css("color", "red")

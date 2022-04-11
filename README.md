@@ -16,7 +16,7 @@
     <a href="https://github.com/chithakumar13/FUT-Auto-Buyer/issues">Report Bug</a>
     ·
     <a href="https://github.com/chithakumar13/FUT-Auto-Buyer/issues">Request Feature</a>
-  .
+    ·
   <a href="https://www.youtube.com/channel/UC5eLkjmLU2TcE4oiJM9PsyA?sub_confirmation=1">Subscribe</a>
   
   # Must Read :no_entry_sign:
@@ -49,7 +49,7 @@
 
 - Add Tamper Monkey Extenstion to your Browser - [Link](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en-GB).
 - Click on fut-auto-buyer.user.js from - [Latest Release](https://github.com/chithakumar13/FUT-Auto-Buyer/releases/).
-- Then click on Install/Update
+- Then click on Install/Update.
 - Installation And Demo - [Video Guide](https://www.youtube.com/watch?v=WATch4hxhtk).
 
 Now in Ultimate Team Web App, new menu will be added as AutoBuyer.

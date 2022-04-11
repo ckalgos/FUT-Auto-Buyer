@@ -1,20 +1,20 @@
 import {
   idAutoBuyerFoundLog,
-  idProgressAutobuyer
+  idProgressAutobuyer,
 } from "../elementIds.constants";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import { updateStats } from "../handlers/statsProcessor";
 import {
   getValue,
   increAndGetStoreValue,
-  setValue
+  setValue,
 } from "../services/repository";
 import {
   convertRangeToSeconds,
   getRandNum,
   getRandNumberInRange,
   hideLoader,
-  showLoader
+  showLoader,
 } from "./commonUtil";
 import { writeToLog } from "./logUtil";
 import { sendNotificationToUser, sendUINotification } from "./notificationUtil";
@@ -73,20 +73,16 @@ export const pauseBotIfRequired = async function (buyerSetting) {
   }
   const { searchCount, previousPause } = getValue("sessionStats");
 
-  if (getValue("softbanDetected") === true && buyerSetting["idBypassSoftBan"])
-  {
-    setValue("softbanDetected", false)
-    showLoader()
+  if (getValue("softbanDetected") === true && buyerSetting["idBypassSoftBan"]) {
+    setValue("softbanDetected", false);
+    showLoader();
     stopAutoBuyer(true);
-    const isBypassed = await bypassSoftban()
-    hideLoader()
-    if (isBypassed)
-    {
+    const isBypassed = await bypassSoftban();
+    hideLoader();
+    if (isBypassed) {
       sendUINotification("Softban successfully bypassed");
       startAutoBuyer.call(this, true);
-    }
-    else
-      sendUINotification("Softban cant be bypassed");
+    } else sendUINotification("Softban cant be bypassed");
   }
   if (searchCount && !((searchCount - previousPause) % cycleAmount)) {
     updateStats("previousPause", searchCount);

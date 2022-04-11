@@ -1,6 +1,6 @@
 import { idAutoBuyerFoundLog } from "../elementIds.constants";
 import { getValue, setValue } from "../services/repository";
-import { networkCallWithRetry } from "./commonUtil";
+import { networkCallWithRetry, getRandNumberInRange } from "./commonUtil";
 import { writeToLog } from "./logUtil";
 import { getBuyBidPrice, roundOffPrice } from "./priceUtils";
 import { getUserPlatform } from "./userUtil";
@@ -36,7 +36,7 @@ export const getSellPriceFromFutBin = async (
     const existingValue = getValue(definitionId);
     if (existingValue && existingValue.price) {
       sellPrice = existingValue.price;
-      const futBinPercent = buyerSetting["idSellFutBinPercent"] || 100;
+      const futBinPercent = getRandNumberInRange(buyerSetting["idSellFutBinPercent"]) || 100;
       let calculatedPrice = (sellPrice * futBinPercent) / 100;
       await getPriceLimits(player);
       if (player.hasPriceLimits()) {

@@ -1,0 +1,45 @@
+name: 🚫 Ban Report
+description: If you got banned for using the script, let us know with the settings you used in the bot
+title: "ban: "
+labels: ["ban"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Prerequisites
+      description: Please ensure you have completed all of the following.
+      options:
+        - label: I havent used any other script which could have caused the ban.
+          required: true
+  - type: input
+    attributes:
+      label: Script Version
+      description: Please select which version of the script.
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Platform
+      description: Please select the platforms.
+      multiple: true
+      options:
+        - Webapp
+        - Android
+        - ios
+    validations:
+        required: true
+  - type: textarea
+    attributes:
+      label: Safety Settings
+      description: Please share the Safety settings used when running the bot.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Filter Used
+      description: Please download the filter used when running the bot and share it here.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Additional Information
+      description: List any other information that is relevant to your issue. Browser version, related issues, suggestions on how to fix, console error screenshot, etc.

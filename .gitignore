@@ -1,0 +1,4 @@
+.idea
+node_modules
+dist
+app/aws-exports.js

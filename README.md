@@ -271,11 +271,11 @@ Project Link: [https://github.com/ckalgos/FUT-Auto-Buyer](https://github.com/cka
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/ckalgos/Fifa21-AutoBuyer.svg?style=flat-square
+[contributors-shield]: https://img.shields.io/github/contributors/ckalgos/FUT-Auto-Buyer.svg?style=flat-square
 [contributors-url]: https://github.com/ckalgos/FUT-Auto-Buyer/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/ckalgos/Fifa21-AutoBuyer.svg?style=flat-square
+[forks-shield]: https://img.shields.io/github/forks/ckalgos/FUT-Auto-Buyer.svg?style=flat-square
 [forks-url]: https://github.com/ckalgos/FUT-Auto-Buyer/network/members
-[stars-shield]: https://img.shields.io/github/stars/ckalgos/Fifa21-AutoBuyer.svg?style=flat-square
+[stars-shield]: https://img.shields.io/github/stars/ckalgos/FUT-Auto-Buyer.svg?style=flat-square
 [stars-url]: https://github.com/ckalgos/FUT-Auto-Buyer/stargazers
-[issues-shield]: https://img.shields.io/github/issues/ckalgos/Fifa21-AutoBuyer.svg?style=flat-square
+[issues-shield]: https://img.shields.io/github/issues/ckalgos/FUT-Auto-Buyer.svg?style=flat-square
 [issues-url]: https://github.com/ckalgos/FUT-Auto-Buyer/issues

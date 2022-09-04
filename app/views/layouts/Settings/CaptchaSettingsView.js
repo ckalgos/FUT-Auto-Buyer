@@ -17,7 +17,7 @@ export const captchaSettingsView = function () {
       <h1 class="secondary">Captcha Settings:</h1>
     </div>
     ${generateToggleInput(
-      "Close Web App on <br/> Captcha Trigger",
+      "Close Web App on Captcha Trigger",
       { idAbCloseTabToggle },
       "",
       "CommonSettings"

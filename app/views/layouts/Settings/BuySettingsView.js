@@ -6,24 +6,11 @@ import {
   idAbItemExpiring,
   idAbMaxBid,
   idAbSearchResult,
-  idAbShouldSort,
-  idAbSortBy,
-  idAbSortOrder,
   idBuyFutBinPercent,
   idBuyFutBinPrice,
 } from "../../../elementIds.constants";
-import { getValue, setValue } from "../../../services/repository";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
-
-const updateAbSortBy = () => {
-  const sortBy = $(`#${idAbSortBy}`).val() || "buy";
-  const buyerSetting = getValue("BuyerSettings") || {};
-  buyerSetting["idAbSortBy"] = sortBy;
-  setValue("BuyerSettings", buyerSetting);
-};
-
-$(document).on({ change: updateAbSortBy }, `#${idAbSortBy}`);
 
 export const buySettingsView = function () {
   return `<div class='buyer-settings-wrapper buy-settings-view'>
@@ -47,7 +34,7 @@ export const buySettingsView = function () {
       ${generateToggleInput(
         "Bid For FUTBIN Price",
         { idAbBidFutBin },
-        "(Bid if the current bid <br /> is lesser than FUTBIN Price)",
+        "(Bid if the current bid is lesser than FUTBIN Price)",
         "BuyerSettings"
       )}
       ${generateToggleInput(
@@ -98,30 +85,7 @@ export const buySettingsView = function () {
         { idAbBidExact },
         "",
         "BuyerSettings"
-      )}
-      ${generateToggleInput(
-        "Sort players",
-        { idAbShouldSort },
-        "",
-        "BuyerSettings"
-      )}
-      <div class="price-filter buyer-settings-field">
-        <div class="displayCenterFlx">
-        <select style="width:95%;height: 3rem;font-size: 1.5rem;" class="select-sortBy filter-header-settings" id="${idAbSortBy}">
-          <option disabled selected>--Select Sort Attribute--</option>
-          <option value="expires">Expires on</option>
-          <option value="buy">Buy now price</option>
-          <option value="bid">Bid now price</option>
-          <option value="rating">Player rating</option>
-        </select>
-        </div>
-      </div>
-     ${generateToggleInput(
-       "Order",
-       { idAbSortOrder },
-       "(Enabled = descending, <br />Disabled = ascending)",
-       "BuyerSettings"
-     )}
+      )}      
      </div>
     `;
 };

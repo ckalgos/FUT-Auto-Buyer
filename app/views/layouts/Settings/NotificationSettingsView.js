@@ -23,14 +23,16 @@ export const notificationSettingsView = function () {
   <div class="search-price-header">
     <h1 class="secondary">Notification Settings:</h1>
   </div>
-  ${generateTextInput(
-    "Telegram Bot Token",
-    "",
-    { idTelegramBotToken },
-    "Token of your own bot",
-    "CommonSettings",
-    "text"
-  )}
+ ${
+   !isPhone()
+     ? `${generateTextInput(
+         "Telegram Bot Token",
+         "",
+         { idTelegramBotToken },
+         "Token of your own bot",
+         "CommonSettings",
+         "text"
+       )}
   ${generateTextInput(
     "Telegram Chat ID",
     "",
@@ -54,7 +56,9 @@ export const notificationSettingsView = function () {
     "Your Discord Channel ID",
     "CommonSettings",
     "text"
-  )}
+  )}`
+     : ""
+ }
   ${generateTextInput(
     "Notification Type",
     "",
@@ -64,17 +68,9 @@ export const notificationSettingsView = function () {
     "text",
     "[A|B|L]$"
   )}
-  <div class="price-filter buyer-settings-field">
-  </div>
   ${generateToggleInput(
     "Send Notification",
     { idAbMessageNotificationToggle },
-    "",
-    "CommonSettings"
-  )}
-  ${generateToggleInput(
-    "Sound Notification",
-    { idAbSoundToggle },
     "",
     "CommonSettings"
   )}
@@ -84,13 +80,14 @@ export const notificationSettingsView = function () {
     "Send detailed notification message",
     "CommonSettings"
   )}
-  <div class="btn-test-notification buyer-settings-field">
-  ${generateButton(
-    idTestNotification,
-    "Test Notification",
-    () => sendNotificationToUser("Test Notification Message", true),
-    "call-to-action"
-  )}
+   ${
+     !isPhone()
+       ? `${generateToggleInput(
+           "Sound Notification",
+           { idAbSoundToggle },
+           "",
+           "CommonSettings"
+         )}
   <audio id='${idWinMp3}' hidden>
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-869-coins.ogg" type="audio/ogg">
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-869-coins.mp3" type="audio/mpeg">
@@ -105,7 +102,16 @@ export const notificationSettingsView = function () {
     <source src="https://freesound.org/data/previews/220/220763_4104696-lq.ogg" type="audio/ogg">
     <source src="https://freesound.org/data/previews/220/220763_4104696-lq.mp3" type="audio/mpeg">
       "Your browser does not support the audio element"
-  </audio>
-  </div>
+  </audio> `
+       : ""
+   }
+   <div class="btn-test-notification buyer-settings-field">  
+   ${generateButton(
+     idTestNotification,
+     "Test Notification",
+     () => sendNotificationToUser("Test Notification Message", true),
+     "call-to-action"
+   )} 
+   </div>
   `;
 };

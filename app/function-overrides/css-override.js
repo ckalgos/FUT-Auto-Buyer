@@ -52,7 +52,7 @@ export const cssOverride = () => {
   .autoBuyerLog {
     font-size: 15px; 
     width: 100%;
-    height: 58%;
+    height: 95%;
     background-color:#141414;
     color:#e2dde2;
   }
@@ -169,6 +169,25 @@ export const cssOverride = () => {
   }
   .ut-toggle-cell-view--label{
     overflow: unset;
+  }
+  .logWrapper {
+    position: relative;
+    height: 58%
+  }
+  .joinServer {
+    position: absolute;
+    right: 15px;
+    bottom: 30px;
+    color: wheat
+  }
+  textarea {
+    resize: none;
+  }
+  small{
+    white-space: break-spaces;
+  }
+  .top-nav {
+    display:flex; 
   }
   `;
   if (!isPhone()) {

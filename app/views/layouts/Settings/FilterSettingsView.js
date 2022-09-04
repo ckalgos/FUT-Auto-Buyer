@@ -3,17 +3,12 @@ import {
   idSelectedFilter,
   idSelectFilterCount,
   idAbNumberFilterSearch,
-  idAbServerLogin,
   idAbDownloadFilter,
   idAbUploadFilter,
   idRunFilterSequential,
-  idAbReportProblem,
 } from "../../../elementIds.constants";
 import { getValue, setValue } from "../../../services/repository";
-import {
-  getUserAccessToken,
-  handleSignInSignOut,
-} from "../../../utils/authUtil";
+
 import { getUserFilters } from "../../../utils/dbUtil";
 import {
   uploadFiltersLocal,
@@ -118,40 +113,6 @@ export const filterSettingsView = async function () {
     `;
 };
 
-const handleReportProblem = () => {
-  showPopUp(
-    [
-      { labelEnum: atob("RGlzY29yZCAoQ29tbXVuaXR5KQ==") },
-      { labelEnum: atob("VHdpdHRlciAoRmFzdCBSZXNwb25zZSk=") },
-      { labelEnum: atob("R2l0aHVi") },
-    ],
-    atob("UmVwb3J0IGEgcHJvYmxlbQ=="),
-    atob(
-      "QmVsb3cgYXJlIHRoZSBsaXN0IG9mIHdheXMgdG8gcmVwb3J0IGEgcHJvYmxlbSA8YnIgLz5NYWtlIHN1cmUgdG8gZ28gdGhyb3VnaCB0aGUgPGEgaHJlZj0naHR0cHM6Ly95b3V0dWJlLmNvbS9wbGF5bGlzdD9saXN0PVBMR21LTWczYVJrWGpQUjVna2x4TXlxeHRoWW9vV0k1SUMnIHRhcmdldD0nX2JsYW5rJz55b3V0dWJlIHBsYXlsaXN0PC9hPiBpZiBhbnkgc2V0dGluZ3MgYXJlIHVuY2xlYXIgPGJyIC8+"
-    ),
-    (t) => {
-      if (t === atob("R2l0aHVi")) {
-        window.open(
-          atob(
-            "aHR0cHM6Ly9naXRodWIuY29tL2NoaXRoYWt1bWFyMTMvRlVULUF1dG8tQnV5ZXIvaXNzdWVz"
-          ),
-          atob("X2JsYW5r")
-        );
-      } else if (t === atob("RGlzY29yZCAoQ29tbXVuaXR5KQ==")) {
-        window.open(
-          atob("aHR0cHM6Ly9kaXNjb3JkLmNvbS9pbnZpdGUvY2t0SFltcA=="),
-          atob("X2JsYW5r")
-        );
-      } else if (t === atob("VHdpdHRlciAoRmFzdCBSZXNwb25zZSk=")) {
-        window.open(
-          atob("aHR0cHM6Ly90d2l0dGVyLmNvbS9BbGdvc0Nr"),
-          atob("X2JsYW5r")
-        );
-      }
-    }
-  );
-};
-
 export const filterHeaderSettingsView = async function () {
   const context = this;
   $(document).on(
@@ -166,28 +127,8 @@ export const filterHeaderSettingsView = async function () {
     `#${idFilterDropdown}`
   );
 
-  const isLoggedIn = await getUserAccessToken(true);
-
   const rootHeader =
     $(`<div style="width:100%;display: flex;flex-wrap: inherit;">
-              <div class="buyer-settings" style="display:flex;justify-content:center">
-              ${generateButton(
-                idAbReportProblem,
-                "Report a problem",
-                () => {
-                  handleReportProblem();
-                },
-                "call-to-action mrgRgt10"
-              )}
-                ${generateButton(
-                  idAbServerLogin,
-                  isLoggedIn ? "Logout" : "Login to AB Server",
-                  () => {
-                    handleSignInSignOut();
-                  },
-                  "call-to-action"
-                )}
-              </div>
                <div style="width:100%;" class="button-container">                   
                    <select class="filter-header-settings" id=${idFilterDropdown}>
                       <option selected="true" disabled>Choose filter to load</option>

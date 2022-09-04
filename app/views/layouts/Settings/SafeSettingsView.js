@@ -53,7 +53,7 @@ export const safeSettingsView = function () {
   ${generateToggleInput(
     "Add Delay After Buy",
     { idAbAddBuyDelay },
-    "(Adds Delay after trying <br/> to buy / bid a card)",
+    "(Adds Delay after trying to buy / bid a card)",
     "CommonSettings"
   )}
   ${generateTextInput(

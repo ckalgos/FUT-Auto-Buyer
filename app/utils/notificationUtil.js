@@ -22,9 +22,17 @@ export const sendNotificationToUser = (message, isTestMessage) => {
     sendUINotification(message);
   }
   if (buyerSetting["idAbMessageNotificationToggle"] || isTestMessage) {
-    sendNotificationToExternal(buyerSetting, message);
+    isPhone()
+      ? sendNotificationToExternalPhone(message)
+      : sendNotificationToExternal(buyerSetting, message);
     isTestMessage && sendUINotification("Test Notification Sent");
   }
+};
+
+const sendNotificationToExternalPhone = (message) => {
+  window.ReactNativeWebView.postMessage(
+    JSON.stringify({ type: "Notification", message })
+  );
 };
 
 const sendNotificationToExternal = (buyerSetting, message) => {

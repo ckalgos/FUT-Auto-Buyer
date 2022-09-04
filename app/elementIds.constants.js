@@ -79,7 +79,6 @@ export const idSellRatingThreshold = "elem_" + generateId(15);
 export const idSellFutBinPrice = "elem_" + generateId(15);
 export const idSellFutBinPercent = "elem_" + generateId(15);
 export const idAbCompactView = "elem_" + generateId(15);
-export const idAbServerLogin = "elem_" + generateId(15);
 export const idAbUserExternalName = "elem_" + generateId(15);
 export const idAbUserExternalPassword = "elem_" + generateId(15);
 export const idAbUploadFilter = "elem_" + generateId(15);
@@ -97,7 +96,6 @@ export const idFutBinDuration = "elem_" + generateId(15);
 export const idAbSortBy = "elem_" + generateId(15);
 export const idAbSortOrder = "elem_" + generateId(15);
 export const idAbShouldSort = "elem_" + generateId(15);
-export const idBypassSoftBan = "elem_" + generateId(15);
 
 export const idAbIgnoreAllowToggle = "elem_" + generateId(15);
 export const idBuyFutBinPrice = "elem_" + generateId(15);
@@ -106,6 +104,5 @@ export const idAbBidFutBin = "elem_" + generateId(15);
 export const idAbDontMoveWon = "elem_" + generateId(15);
 export const idAbResumeAfterErrorOccured = "elem_" + generateId(15);
 
-export const idAbReportProblem = "elem_" + generateId(15);
 export const idAbCountDown = "elem_" + generateId(15);
 export const idAbDownloadStats = "elem_" + generateId(15);

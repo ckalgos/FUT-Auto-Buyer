@@ -169,10 +169,6 @@ export const buyPlayer = (
               );
           }
 
-          if (buyerSetting["idBypassSoftBan"] && status == 429) {
-            setValue("softbanDetected", false);
-          }
-
           if (buyerSetting["idAbStopErrorCode"]) {
             const errorCodes = new Set(
               buyerSetting["idAbStopErrorCode"].split(",")

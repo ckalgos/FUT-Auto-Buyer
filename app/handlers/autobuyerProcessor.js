@@ -4,6 +4,7 @@ import {
   idAutoBuyerFoundLog,
   idProgressAutobuyer,
 } from "../elementIds.constants";
+import { fetchPrices } from "../services/futbin";
 import {
   getBuyerSettings,
   getValue,
@@ -22,7 +23,6 @@ import {
   getRangeValue,
   playAudio,
 } from "../utils/commonUtil";
-import { addFutbinCachePrice } from "../utils/futbinUtil";
 import { writeToDebugLog, writeToLog } from "../utils/logUtil";
 import { sendPinEvents, sendUINotification } from "../utils/notificationUtil";
 import {
@@ -197,7 +197,7 @@ const searchTransferMarket = function (buyerSetting) {
             currentPage === 1 &&
               sendPinEvents("Transfer Market Results - List View");
             if (useFutBinPrice && response.data.items[0].type === "player") {
-              await addFutbinCachePrice(response.data.items);
+              await fetchPrices(response.data.items);
             }
           }
 

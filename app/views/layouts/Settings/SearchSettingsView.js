@@ -13,6 +13,9 @@ import {
   idAddIgnorePlayersList,
   idRemoveIgnorePlayers,
   idAbIgnoreAllowToggle,
+  idAbSortOrder,
+  idAbShouldSort,
+  idAbSortBy,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { checkAndAppendOption } from "../../../utils/filterUtil";
@@ -110,6 +113,15 @@ const playerIgnoreList = function () {
 };
 
 export const searchSettingsView = function () {
+  const updateAbSortBy = () => {
+    const sortBy = $(`#${idAbSortBy}`).val() || "buy";
+    const buyerSetting = getValue("BuyerSettings") || {};
+    buyerSetting["idAbSortBy"] = sortBy;
+    setValue("BuyerSettings", buyerSetting);
+  };
+
+  $(document).on({ change: updateAbSortBy }, `#${idAbSortBy}`);
+
   const element =
     $(`<div style='display : none' class='buyer-settings-wrapper results-filter-view'>  
     <hr class="search-price-header header-hr">
@@ -119,7 +131,7 @@ export const searchSettingsView = function () {
     ${generateToggleInput(
       "Ignore/Buy Players List",
       { idAbIgnoreAllowToggle },
-      "(If toggled bot will only buy/bid <br/> the above players <br/> else bot will ignore the <br/> players when bidding/buying )",
+      "(If toggled bot will only buy/bid the above players else bot will ignore the players when bidding/buying )",
       "BuyerSettings"
     )}
   
@@ -173,9 +185,32 @@ export const searchSettingsView = function () {
     ${generateToggleInput(
       "SKIP GK",
       { idAbAddFilterGK },
-      "(Skip all goalkeepers <br/> to buy / bid a card)",
+      "(Skip all goalkeepers to buy / bid a card)",
       "BuyerSettings"
     )}
+    ${generateToggleInput(
+      "Sort players",
+      { idAbShouldSort },
+      "",
+      "BuyerSettings"
+    )}
+    <div class="price-filter buyer-settings-field">
+      <div class="displayCenterFlx">
+      <select style="width:95%;height: 3rem;font-size: 1.5rem;" class="select-sortBy filter-header-settings" id="${idAbSortBy}">
+        <option disabled selected>--Select Sort Attribute--</option>
+        <option value="expires">Expires on</option>
+        <option value="buy">Buy now price</option>
+        <option value="bid">Bid now price</option>
+        <option value="rating">Player rating</option>
+      </select>
+      </div>
+    </div>
+   ${generateToggleInput(
+     "Order",
+     { idAbSortOrder },
+     "(Enabled = descending, Disabled = ascending)",
+     "BuyerSettings"
+   )}
   </div>`);
 
   const parentEl = element.find(".place-holder");

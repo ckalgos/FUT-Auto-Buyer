@@ -4,7 +4,6 @@ import {
   idAbStopErrorCodeCount,
   idAutoClearExpired,
   idAutoClearLog,
-  idBypassSoftBan,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -43,23 +42,14 @@ export const commonSettingsView = function () {
   ${generateToggleInput(
     "Auto Clear Log",
     { idAutoClearLog },
-    "(Automatically clear logs <br/> every 2 minutes)",
+    "(Automatically clear logs every 2 minutes)",
     "CommonSettings"
   )}
   ${generateToggleInput(
     "Auto Clear Expired Items",
     { idAutoClearExpired },
-    "(Automatically clear expired items <br/> from transfer targets)",
+    "(Automatically clear expired items from transfer targets)",
     "CommonSettings"
   )}
-  ${
-    false &&
-    generateToggleInput(
-      "Bypass softban",
-      { idBypassSoftBan },
-      "(Automatically bypass softban)",
-      "CommonSettings"
-    )
-  }
   </div>`;
 };

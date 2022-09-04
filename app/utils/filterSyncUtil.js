@@ -1,17 +1,14 @@
 import {
   idAbFiltersFileToUpload,
   idAbFiltersToUpload,
-  idAbServerLogin,
 } from "../elementIds.constants";
 import { getValue } from "../services/repository";
-import { getUserAccessToken } from "./authUtil";
 import { downloadJson, hideLoader, showLoader } from "./commonUtil";
 import { sendUINotification } from "./notificationUtil";
 import { showPopUp } from "./popupUtil";
 import { saveFilterInDB } from "./userExternalUtil";
 
 export const uploadFiltersToServer = () => {
-  if (!checkIfLoggedIn()) return;
   const userFilters = getValue("filters");
 
   let filterMessage = `Choose filters to Download <br /> <br />
@@ -53,8 +50,6 @@ export const downloadLocal = (userFilters) => {
 };
 
 export const uploadFiltersLocal = () => {
-  if (!checkIfLoggedIn()) return;
-
   let uploadMessage = `Upload Filter Json file <br /> <br />
   <input accept=".json" type="file" id="${idAbFiltersFileToUpload}">
    </input> <br /> <br /> <br />
@@ -96,8 +91,6 @@ const uploadLocalFilterConfirm = () => {
 };
 
 export const downloadFiltersFromServer = () => {
-  if (!checkIfLoggedIn()) return;
-
   showPopUp(
     [
       { labelEnum: enums.UIDialogOptions.OK },
@@ -191,13 +184,4 @@ const sendRequest = async (url, payload) => {
     method: "POST",
     body: JSON.stringify(payload),
   });
-};
-
-const checkIfLoggedIn = () => {
-  const isLoggedIn = $(`#${idAbServerLogin}`).text() === "Logout";
-  if (!isLoggedIn) {
-    sendUINotification("User not logged in", UINotificationType.NEGATIVE);
-  }
-
-  return isLoggedIn;
 };

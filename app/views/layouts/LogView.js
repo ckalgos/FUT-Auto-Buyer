@@ -5,7 +5,10 @@ import {
 
 export const logView = () => {
   return `<div ${!isPhone() ? "style=width:48%" : ""}>
+            <div class="logWrapper">
             <textarea readonly id=${idProgressAutobuyer} class="autoBuyerLog"></textarea>
+            <a class="joinServer" target="_blank" rel="noopener noreferrer" href="https://discord.com/invite/cktHYmp">Join Our Discord Server</a>
+            </div>
             <label>Search Results:</label>
             <br/>
             <textarea readonly id=${idAutoBuyerFoundLog} class="autoBuyerLog searchLog"></textarea>

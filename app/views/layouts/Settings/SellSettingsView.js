@@ -51,7 +51,7 @@ export const sellSettingsView = function () {
     ${generateToggleInput(
       "Check buy price before listing",
       { idSellCheckBuyPrice },
-      "(List only if Buy Price <br /> is lesser than Sale Price)",
+      "(List only if Buy Price is lesser than Sale Price)",
       "BuyerSettings"
     )}
     ${generateToggleInput(
@@ -63,7 +63,7 @@ export const sellSettingsView = function () {
     ${generateToggleInput(
       "Dont move won items",
       { idAbDontMoveWon },
-      "(Keep won items <br /> in Unassigned or Transfer Targets)",
+      "(Keep won items in Unassigned or Transfer Targets)",
       "BuyerSettings"
     )}
     ${generateTextInput(

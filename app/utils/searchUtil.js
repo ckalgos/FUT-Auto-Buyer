@@ -14,6 +14,8 @@ import { getBuyBidPrice, getSellBidPrice, roundOffPrice } from "./priceUtils";
 import { buyPlayer } from "./purchaseUtil";
 import { updateRequestCount } from "./statsUtil";
 import { sortPlayers } from "./playerUtil";
+import { getUserPlatform } from "./userUtil";
+import { trackMarketPrices } from "../services/analytics";
 
 const currentBids = new Set();
 
@@ -247,6 +249,7 @@ export const searchTransferMarket = function (buyerSetting) {
           );
         }
         sendPinEvents("Transfer Market Search");
+        formRequestPayLoad(response.data.items || []);
         resolve();
       }
     );
@@ -257,4 +260,41 @@ const writeToLogClosure = (playerName) => {
   return (actionTxt) => {
     writeToLog(playerName + " " + actionTxt, idProgressAutobuyer);
   };
+};
+
+const formRequestPayLoad = async (itemList) => {
+  const platform = getUserPlatform();
+  const trackPayLoad = [];
+  itemList.forEach((player) => {
+    const {
+      id,
+      definitionId,
+      _auction: {
+        buyNowPrice,
+        tradeId: auctionId,
+        expires: expiresOn,
+        _tradeState: tradeState,
+      },
+      resourceId,
+      type,
+    } = player;
+
+    const expireDate = new Date();
+    expireDate.setSeconds(expireDate.getSeconds() + expiresOn);
+    tradeState === "active" &&
+      type === "player" &&
+      trackPayLoad.push({
+        definitionId,
+        price: buyNowPrice,
+        expiresOn: expireDate,
+        id: id + "",
+        auctionId,
+        platform,
+        resourceId,
+      });
+  });
+
+  if (trackPayLoad.length && trackPayLoad.length < 22) {
+    trackMarketPrices(trackPayLoad);
+  }
 };

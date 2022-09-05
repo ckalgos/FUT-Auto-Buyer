@@ -1,4 +1,5 @@
 import * as ElementIds from "../elementIds.constants";
+import { getBuyerSettings } from "../services/repository";
 
 export const generateId = (length) => {
   let result = "";
@@ -29,6 +30,18 @@ export const hideLoader = () => {
 };
 
 export const downloadJson = (json, fileName) => {
+  isPhone()
+    ? downloadJsonPhone(json, fileName)
+    : downloadJsonWeb(json, fileName);
+};
+
+export const downloadCsv = (csvContent, fileName) => {
+  isPhone()
+    ? downloadCsvPhone(csvContent, fileName)
+    : downloadCsvWeb(csvContent, fileName);
+};
+
+const downloadJsonPhone = (json, fileName) => {
   window.ReactNativeWebView.postMessage(
     JSON.stringify({
       type: "downloadFile",
@@ -37,13 +50,36 @@ export const downloadJson = (json, fileName) => {
   );
 };
 
-export const downloadCsv = (csvContent, fileName) => {
+const downloadCsvPhone = (csvContent, fileName) => {
   window.ReactNativeWebView.postMessage(
     JSON.stringify({
       type: "downloadFile",
       payload: { data: csvContent, fileName },
     })
   );
+};
+
+const downloadJsonWeb = (json, fileName) => {
+  const dataStr =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(json, null, 4));
+  const link = document.createElement("a");
+  link.setAttribute("href", dataStr);
+  link.setAttribute("download", `${fileName}.json`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const downloadCsvWeb = (csvContent, fileName) => {
+  const encodedUri =
+    "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURIComponent(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `${fileName}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 export const convertRangeToSeconds = (val) => {
@@ -113,6 +149,24 @@ export const promisifyTimeOut = (cb, wait) => {
       resolve();
     }, 1000);
   });
+};
+
+export const playAudio = function (eventType) {
+  const buyerSetting = getBuyerSettings();
+  if (!isPhone() && buyerSetting["idAbSoundToggle"]) {
+    let elem = document.getElementById(ElementIds.idWinMp3);
+
+    if (eventType == "capatcha") {
+      elem = document.getElementById(ElementIds.idCapatchaMp3);
+    }
+
+    if (eventType == "finish") {
+      elem = document.getElementById(ElementIds.idFinishMp3);
+    }
+
+    elem.currentTime = 0;
+    elem.play();
+  }
 };
 
 export const networkCallWithRetry = (execution, delay, retries) =>

@@ -54,7 +54,7 @@ const downloadConfirm = (userFilters) => {
     const parsedFilter = JSON.parse(currentFilter);
     filterToDownload[filter] = parsedFilter;
   }
-  downloadJson({ filters: filterToDownload }, "filters.json");
+  downloadJson({ filters: filterToDownload }, "filters");
   sendUINotification("Filters downloaded successfully");
 };
 

@@ -6,12 +6,12 @@ window.fetch = function (request, options) {
     (options.method === "POST" || options.method === "DELETE")
   ) {
     return new Promise((resolve, reject) => {
+      const headers = Object.assign({}, options.headers, {
+        "User-Agent": "From Node",
+      });
       GM_xmlhttpRequest({
         method: options.method,
-        headers: {
-          ...options.headers,
-          "User-Agent": "From Node",
-        },
+        headers,
         url: request,
         data: options.body,
         onload: (res) => {

@@ -11,6 +11,7 @@ import {
   convertRangeToSeconds,
   convertToSeconds,
   formatString,
+  playAudio,
   wait,
 } from "./commonUtil";
 import { getSellPriceFromFutBin } from "./futbinUtil";
@@ -39,6 +40,7 @@ export const buyPlayer = (
         if (data.success) {
           if (isBin) {
             increAndGetStoreValue("purchasedCardCount");
+            playAudio("cardWon");
           }
           const ratingThreshold = buyerSetting["idSellRatingThreshold"];
           let playerRating = parseInt(player.rating);

@@ -2,7 +2,7 @@ import { idAbStatus } from "../elementIds.constants";
 import { STATE_PAUSED, STATE_STOPPED } from "../app.constants";
 import { getBuyerSettings, getValue, setValue } from "../services/repository";
 import { stopBotIfRequired } from "../utils/autoActionsUtil";
-import { getRangeValue } from "../utils/commonUtil";
+import { getRangeValue, playAudio } from "../utils/commonUtil";
 import { sendPinEvents, sendUINotification } from "../utils/notificationUtil";
 
 import { setRandomInterval } from "../utils/timeOutUtil";
@@ -87,6 +87,9 @@ export const stopAutoBuyer = (isPaused) => {
     start: searchSavedInterval.start,
     end: Date.now(),
   });
+  if (!isPaused) {
+    playAudio("finish");
+  }
   $(".ut-tab-bar-item").removeAttr("disabled");
   setValue("autoBuyerState", isPaused ? STATE_PAUSED : STATE_STOPPED);
   sendUINotification(isPaused ? "Autobuyer Paused" : "Autobuyer Stopped");

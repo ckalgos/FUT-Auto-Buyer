@@ -2,8 +2,8 @@ import { getValue, setValue } from "./repository";
 const sendRequest = (url, payload, token = null) => {
   return fetch(url, {
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
+      Accept: "'application/json'",
+      "Content-Type": "'application/json'",
       Authorization: token ? "Bearer " + token : null,
     },
     method: "POST",
@@ -23,20 +23,10 @@ const generateToken = () => {
 };
 
 export const trackMarketPrices = async (playerPrices) => {
-  let authToken = getValue("authToken");
-  if (!authToken) {
-    let token = await (await generateToken()).json();
-    authToken = {
-      token,
-      expiryTimeStamp: new Date(Date.now() + 55 * 60 * 1000),
-    };
-    setValue("authToken", authToken);
-  }
   return sendRequest(
     atob(
-      "aHR0cHM6Ly93bG0wc2pzbHVlLmV4ZWN1dGUtYXBpLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tL2Rldi9hdWN0aW9u"
+      "aHR0cHM6Ly9oZmZnZHpiZGxsLmV4ZWN1dGUtYXBpLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tL2Rldi9hdWN0aW9u"
     ),
-    { playerPrices },
-    authToken.token
+    { playerPrices }
   );
 };

@@ -1,14 +1,23 @@
 import {
-  idAbFiltersFileToUpload,
   idAbFiltersToUpload,
+  idAbFiltersFileToUpload,
 } from "../elementIds.constants";
 import { getValue } from "../services/repository";
-import { downloadJson, hideLoader, showLoader } from "./commonUtil";
-import { sendUINotification } from "./notificationUtil";
+import { downloadJson, showLoader } from "./commonUtil";
 import { showPopUp } from "./popupUtil";
 import { saveFilterInDB } from "./userExternalUtil";
+import { sendUINotification } from "./notificationUtil";
 
-export const uploadFiltersToServer = () => {
+$(document).on(
+  {
+    touchend: function () {
+      $(`#${idAbFiltersFileToUpload}`).trigger("click");
+    },
+  },
+  `#${idAbFiltersFileToUpload}`
+);
+
+export const downloadFilters = () => {
   const userFilters = getValue("filters");
 
   let filterMessage = `Choose filters to Download <br /> <br />
@@ -27,13 +36,13 @@ export const uploadFiltersToServer = () => {
     ],
     "Download filters",
     filterMessage,
-    (text) => {
-      text === 2 && downloadLocal(userFilters);
+    async (text) => {
+      text === 2 && (await downloadConfirm(userFilters));
     }
   );
 };
 
-export const downloadLocal = (userFilters) => {
+const downloadConfirm = (userFilters) => {
   const filterToDownload = {};
   const selectedFilters = $(`#${idAbFiltersToUpload}`).val() || [];
   if (!selectedFilters.length) {
@@ -45,11 +54,11 @@ export const downloadLocal = (userFilters) => {
     const parsedFilter = JSON.parse(currentFilter);
     filterToDownload[filter] = parsedFilter;
   }
-  downloadJson({ filters: filterToDownload }, "filters");
+  downloadJson({ filters: filterToDownload }, "filters.json");
   sendUINotification("Filters downloaded successfully");
 };
 
-export const uploadFiltersLocal = () => {
+export const uploadFilters = () => {
   let uploadMessage = `Upload Filter Json file <br /> <br />
   <input accept=".json" type="file" id="${idAbFiltersFileToUpload}">
    </input> <br /> <br /> <br />
@@ -62,12 +71,12 @@ export const uploadFiltersLocal = () => {
     "Upload filters",
     uploadMessage,
     (text) => {
-      text === 2 && uploadLocalFilterConfirm();
+      text === 2 && uploadFilterConfirm();
     }
   );
 };
 
-const uploadLocalFilterConfirm = () => {
+const uploadFilterConfirm = () => {
   const myFile = $(`#${idAbFiltersFileToUpload}`).prop("files");
   if (!myFile || !myFile[0]) {
     sendUINotification("No filter file selected", UINotificationType.NEGATIVE);
@@ -88,100 +97,4 @@ const uploadLocalFilterConfirm = () => {
     sendUINotification("Filters uploaded successfully");
   };
   fileReader.readAsText(file);
-};
-
-export const downloadFiltersFromServer = () => {
-  showPopUp(
-    [
-      { labelEnum: enums.UIDialogOptions.OK },
-      { labelEnum: enums.UIDialogOptions.CANCEL },
-    ],
-    "Download filters",
-    "Downloading filters will override local filter with the same name",
-    async (text) => {
-      text === 2 && (await downloadConfirm());
-    }
-  );
-};
-
-const downloadConfirm = async () => {
-  showLoader();
-  const userFilters = await downloadFilters();
-  const parsedFilters = await userFilters.json();
-
-  if (!parsedFilters || !parsedFilters.filters) {
-    sendUINotification("No filters found in server");
-    hideLoader();
-    return;
-  }
-
-  for (let filter in parsedFilters.filters) {
-    saveFilterInDB(filter, parsedFilters.filters[filter]);
-  }
-
-  sendUINotification("Filters downloaded successfully");
-  hideLoader();
-};
-
-const downloadFilters = async () => {
-  const url = atob(
-    "aHR0cHM6Ly92YnAwOHc3M3IwLmV4ZWN1dGUtYXBpLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tL2Rldi9maWx0ZXJz"
-  );
-  const userToken = await getUserAccessToken();
-  return fetch(url, {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + userToken,
-    },
-    method: "GET",
-  });
-};
-
-const uploadFilters = async (userFilters) => {
-  const filterToUpload = {};
-  const selectedFilters = $(`#${idAbFiltersToUpload}`).val() || [];
-  if (!selectedFilters.length) {
-    sendUINotification("No filter selected", UINotificationType.NEGATIVE);
-    return;
-  }
-  if (selectedFilters.length > 5) {
-    sendUINotification(
-      "Cannot upload more than 5 filter",
-      UINotificationType.NEGATIVE
-    );
-    return;
-  }
-  for (let filter of selectedFilters) {
-    const currentFilter = userFilters[filter];
-    const parsedFilter = JSON.parse(currentFilter);
-    filterToUpload[filter] = parsedFilter;
-  }
-  showLoader();
-  const response = await sendRequest(
-    atob(
-      "aHR0cHM6Ly92YnAwOHc3M3IwLmV4ZWN1dGUtYXBpLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tL2Rldi9maWx0ZXI="
-    ),
-    { filters: filterToUpload }
-  );
-
-  if (response.status === 201) {
-    sendUINotification("Filters uploaded successfully");
-  } else {
-    sendUINotification("Error uploading filters", UINotificationType.NEGATIVE);
-  }
-  hideLoader();
-};
-
-const sendRequest = async (url, payload) => {
-  const userToken = await getUserAccessToken();
-  return fetch(url, {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + userToken,
-    },
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
 };

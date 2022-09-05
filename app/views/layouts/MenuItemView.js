@@ -8,12 +8,10 @@ import {
   destoryPlayerInput,
   searchSettingsView,
 } from "./Settings/SearchSettingsView";
-import { filterSettingsView } from "./Settings/FilterSettingsView";
 import { getValue, setValue } from "../../services/repository";
-import { updateMultiFilterSettings } from "../../utils/filterUtil";
+import { filterSettingsView } from "./Settings/FilterSettingsView";
 import { getUserFilters } from "../../utils/dbUtil";
 import { idAbSortBy } from "../../elementIds.constants";
-import { initializeDiscordClient } from "../../utils/notificationUtil";
 
 const settingsLookup = new Map();
 settingsLookup.set(0, {
@@ -70,7 +68,14 @@ export const generateMenuItems = function () {
   return menuItems;
 };
 
-export const clearSettingMenus = async () => {
+export const setDefaultActiveTab = () => {
+  menuItems.setActiveTab(0);
+  $(".menu-container").animate({
+    scrollLeft: 0,
+  });
+};
+
+export const clearSettingMenus = async function () {
   deleteAllMenu();
   await appendMenuItems();
   const autoBuyerInstance = getValue("AutoBuyerInstance");
@@ -79,26 +84,16 @@ export const clearSettingMenus = async () => {
   );
 };
 
-export const setDefaultActiveTab = () => {
-  menuItems.setActiveTab(0);
-  $(".menu-container").animate({
-    scrollLeft: 0,
-  });
-};
-
 export const updateCommonSettings = async (isInit) => {
   let commonSettings = await getUserFilters("CommonSettings");
   commonSettings = JSON.parse(commonSettings["CommonSettings"] || "{}");
   if (!$.isEmptyObject(commonSettings)) {
     const currentValue = isInit ? getValue("CommonSettings") : {};
-    setValue("CommonSettings", { ...(currentValue || {}), ...commonSettings });
-  }
-  if (isInit) {
-    initializeDiscordClient();
+    setValue("CommonSettings", Object.assign({}, currentValue, commonSettings));
   }
 };
 
-const appendMenuItems = async (isInit) => {
+const appendMenuItems = async function (isInit) {
   menuItems.setActiveTab(0);
   menuRoot.append(buySettingsView.call(this));
   menuRoot.append(sellSettingsView.call(this));
@@ -114,16 +109,6 @@ const appendMenuItems = async (isInit) => {
     scrollLeft: 0,
   });
 
-  const legacyView = getValue("LegacyView");
-  if (legacyView) {
-    $(".menu-container").css("display", "none");
-    $(".buyer-settings-wrapper").css("display", "");
-    $(".buyer-settings-wrapper .search-price-header").attr(
-      "style",
-      "display: flex !important"
-    );
-  }
-
   setTimeout(async () => {
     const selectedFilters = getValue("selectedFilters") || [];
     const { idAbSortBy: sortBy } = getValue("BuyerSettings") || {};
@@ -137,10 +122,7 @@ const appendMenuItems = async (isInit) => {
       );
     });
     if (isInit) {
-      await updateCommonSettings(isInit);
-    }
-    if (selectedFilters.length) {
-      updateMultiFilterSettings();
+      await updateCommonSettings();
     }
   });
 };

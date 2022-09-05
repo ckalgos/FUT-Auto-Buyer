@@ -1,19 +1,11 @@
 let eventMappers = new Set();
 
-export const generateButton = (
-  id,
-  label,
-  callback,
-  additionalClasses,
-  toolTip
-) => {
+export const generateButton = (id, label, callback, additionalClasses) => {
   if (!eventMappers.has(id)) {
     initializeListensers(id, callback);
     eventMappers.add(id);
   }
-  return `<button title=${
-    toolTip || label
-  } class="btn-standard ${additionalClasses}" id="${id}">${label}</button>`;
+  return `<button class="btn-standard ${additionalClasses}" id="${id}">${label}</button>`;
 };
 
 const initializeListensers = (id, callback) => {
@@ -26,6 +18,15 @@ const initializeListensers = (id, callback) => {
         $(this).removeClass("hover");
       },
       click: function () {
+        callback();
+      },
+      touchenter: function () {
+        $(this).addClass("hover");
+      },
+      touchleave: function () {
+        $(this).removeClass("hover");
+      },
+      touchend: function () {
         callback();
       },
     },

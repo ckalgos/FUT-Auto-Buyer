@@ -1,18 +1,13 @@
-import { idAbCompactView, idFilterDropdown } from "../elementIds.constants";
+import { idFilterDropdown } from "../elementIds.constants";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import { statsProcessor } from "../handlers/statsProcessor";
 import { getValue, setValue } from "../services/repository";
-import { createElementFromHTML, updateSettingsView } from "../utils/commonUtil";
+import { updateSettingsView } from "../utils/commonUtil";
 import { clearLogs } from "../utils/logUtil";
-import { generateToggleInput } from "../utils/uiUtils/generateToggleInput";
 import { createButton } from "./layouts/ButtonView";
 import { BuyerStatus, HeaderView } from "./layouts/HeaderView";
 import { initializeLog, logView } from "./layouts/LogView";
-import {
-  clearSettingMenus,
-  generateMenuItems,
-  setDefaultActiveTab,
-} from "./layouts/MenuItemView";
+import { clearSettingMenus, generateMenuItems } from "./layouts/MenuItemView";
 import { filterHeaderSettingsView } from "./layouts/Settings/FilterSettingsView";
 
 export const AutoBuyerViewController = function (t) {
@@ -35,17 +30,28 @@ AutoBuyerViewController.prototype.init = function () {
 
   const menuItems = generateMenuItems.call(this);
   let root = $(view.__root);
-  //   root.find(".ut-pinned-list-container").append($(menuItems.__root));
   const createButtonWithContext = createButton.bind(this);
   const stopBtn = createButtonWithContext("Stop", () =>
     stopAutoBuyer.call(this)
   );
-  const clearLogBtn = createButtonWithContext("Clear Log", () =>
-    clearLogs.call(this)
+  const clearLogBtn = createButtonWithContext(
+    "Clear Log",
+    () => clearLogs.call(this),
+    "btn-other"
   );
   const searchBtn = createButtonWithContext(
     "Start",
-    () => startAutoBuyer.call(this),
+    () => {
+      startAutoBuyer.call(this);
+      $(`.ut-navigation-container-view--content`).animate(
+        {
+          scrollTop: $(`.ut-navigation-container-view--content`).prop(
+            "scrollHeight"
+          ),
+        },
+        400
+      );
+    },
     "call-to-action"
   );
 
@@ -56,52 +62,14 @@ AutoBuyerViewController.prototype.init = function () {
   btnContainer.addClass("buyer-actions");
   btnContainer.find(".call-to-action").remove();
   const btnReset = btnContainer.find('button:contains("Reset")');
-  btnReset.on("click", async function () {
+  btnReset.on("click touchend", async function () {
     $(`#${idFilterDropdown}`).prop("selectedIndex", 0);
     await clearSettingMenus();
   });
-
+  btnReset.addClass("btn-other");
   btnContainer.append($(searchBtn.__root));
   btnContainer.append($(stopBtn.__root));
   btnContainer.append($(clearLogBtn.__root));
-  root.find(".search-prices").append(
-    createElementFromHTML(
-      generateToggleInput(
-        "Legacy View",
-        { idAbCompactView },
-        "",
-        "",
-        "mrgTop10",
-        (evt) => {
-          let legacyView = getValue("LegacyView");
-          if (legacyView) {
-            legacyView = false;
-            $(evt.currentTarget).removeClass("toggled");
-          } else {
-            legacyView = true;
-            $(evt.currentTarget).addClass("toggled");
-          }
-          setValue("LegacyView", legacyView);
-          if (legacyView) {
-            $(".settings-menu").css("display", "none");
-            $(".buyer-settings-wrapper").css("display", "");
-            $(".buyer-settings-wrapper .search-price-header").attr(
-              "style",
-              "display: flex !important"
-            );
-          } else {
-            $(".buyer-settings-wrapper").css("display", "none");
-            $(".buyer-settings-wrapper .search-price-header").removeAttr(
-              "style"
-            );
-            $(".settings-menu").css("display", "block");
-            $(".buy-settings-view").css("display", "");
-            setDefaultActiveTab();
-          }
-        }
-      )
-    )
-  );
   $(menuItems.__root).find(".menu-container").addClass("settings-menu");
   root.find(".search-prices").append(menuItems.__root);
   filterHeaderSettingsView.call(this).then((res) => {

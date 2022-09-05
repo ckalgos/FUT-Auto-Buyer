@@ -1,4 +1,4 @@
-import { idAutoBuyerFoundLog } from "../elementIds.constants";
+import { idProgressAutobuyer } from "../elementIds.constants";
 import { fetchPrices } from "../services/futbin";
 import { getValue } from "../services/repository";
 import { getRandNumberInRange } from "./commonUtil";
@@ -39,14 +39,14 @@ export const getSellPriceFromFutBin = async (
       calculatedPrice = roundOffPrice(calculatedPrice);
       writeToLog(
         `= Futbin price for ${playerName}: ${sellPrice}: ${futBinPercent}% of sale price: ${calculatedPrice}`,
-        idAutoBuyerFoundLog
+        idProgressAutobuyer
       );
       sellPrice = calculatedPrice;
     } else {
       sellPrice = null;
       writeToLog(
         `= Unable to get Futbin price for ${playerName}`,
-        idAutoBuyerFoundLog
+        idProgressAutobuyer
       );
     }
   } catch (err) {
@@ -56,7 +56,7 @@ export const getSellPriceFromFutBin = async (
       `= Unable to get Futbin price for ${playerName}, err: ${
         err || "error occured"
       }`,
-      idAutoBuyerFoundLog
+      idProgressAutobuyer
     );
   }
   return sellPrice;

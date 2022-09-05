@@ -1,5 +1,3 @@
-import { idCapatchaMp3, idWinMp3, idFinishMp3 } from "../elementIds.constants";
-import { getBuyerSettings } from "../services/repository";
 import * as ElementIds from "../elementIds.constants";
 
 export const generateId = (length) => {
@@ -31,39 +29,21 @@ export const hideLoader = () => {
 };
 
 export const downloadJson = (json, fileName) => {
-  const dataStr =
-    "data:text/json;charset=utf-8," +
-    encodeURIComponent(JSON.stringify(json, null, 4));
-  const link = document.createElement("a");
-  link.setAttribute("href", dataStr);
-  link.setAttribute("download", `${fileName}.json`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  window.ReactNativeWebView.postMessage(
+    JSON.stringify({
+      type: "downloadFile",
+      payload: { data: JSON.stringify(json, null, 4), fileName },
+    })
+  );
 };
 
 export const downloadCsv = (csvContent, fileName) => {
-  const encodedUri =
-    "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURIComponent(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", `${fileName}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-
-export const convertToSeconds = (val) => {
-  if (val) {
-    let valInterval = val[val.length - 1].toUpperCase();
-    let valInTime = parseInt(val.substring(0, val.length - 1));
-    let multipler = valInterval === "M" ? 60 : valInterval === "H" ? 3600 : 1;
-    if (valInTime) {
-      valInTime = valInTime * multipler;
-    }
-    return valInTime;
-  }
-  return 0;
+  window.ReactNativeWebView.postMessage(
+    JSON.stringify({
+      type: "downloadFile",
+      payload: { data: csvContent, fileName },
+    })
+  );
 };
 
 export const convertRangeToSeconds = (val) => {
@@ -88,6 +68,27 @@ export const getRandNumberInRange = (range) => {
   return rangeVal[0] || 0;
 };
 
+export const getRandWaitTime = (range) => {
+  if (range) {
+    const [start, end] = range.split("-").map((a) => parseInt(a));
+    return Math.round(Math.random() * (end - start) + start) * 1000;
+  }
+  return 0;
+};
+
+export const convertToSeconds = (val) => {
+  if (val) {
+    let valInterval = val[val.length - 1].toUpperCase();
+    let valInTime = parseInt(val.substring(0, val.length - 1));
+    let multipler = valInterval === "M" ? 60 : valInterval === "H" ? 3600 : 1;
+    if (valInTime) {
+      valInTime = valInTime * multipler;
+    }
+    return valInTime;
+  }
+  return 0;
+};
+
 export const getRandNum = (min, max) =>
   Math.round(Math.random() * (max - min) + min);
 
@@ -96,14 +97,6 @@ export const getRangeValue = (range) => {
     return (range + "").split("-").map((a) => parseInt(a));
   }
   return [];
-};
-
-export const getRandWaitTime = (range) => {
-  if (range) {
-    const [start, end] = range.split("-").map((a) => parseInt(a));
-    return Math.round(Math.random() * (end - start) + start) * 1000;
-  }
-  return 0;
 };
 
 export const formatString = (str, len) => {
@@ -138,24 +131,6 @@ export const networkCallWithRetry = (execution, delay, retries) =>
         return reject(reason);
       });
   });
-
-export const playAudio = function (eventType) {
-  const buyerSetting = getBuyerSettings();
-  if (buyerSetting["idAbSoundToggle"]) {
-    let elem = document.getElementById(idWinMp3);
-
-    if (eventType == "capatcha") {
-      elem = document.getElementById(idCapatchaMp3);
-    }
-
-    if (eventType == "finish") {
-      elem = document.getElementById(idFinishMp3);
-    }
-
-    elem.currentTime = 0;
-    elem.play();
-  }
-};
 
 export const createElementFromHTML = (htmlString) => {
   var div = document.createElement("div");

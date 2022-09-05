@@ -1,13 +1,6 @@
 import { idProgressAutobuyer } from "../elementIds.constants";
-import {
-  getBuyerSettings,
-  getValue,
-  increAndGetStoreValue,
-  setValue,
-} from "../services/repository";
-import { playAudio } from "../utils/commonUtil";
+import { increAndGetStoreValue } from "../services/repository";
 import { showCaptchaLogs, writeToLog } from "../utils/logUtil";
-import { sendNotificationToUser } from "../utils/notificationUtil";
 import { stopAutoBuyer } from "./autobuyerProcessor";
 import { solveCaptcha } from "./captchaSolver";
 
@@ -30,23 +23,15 @@ export const searchErrorHandler = (
       solveCaptcha();
     } else {
       showCaptchaLogs(captchaCloseTab);
-      setValue("lastErrorMessage", "Captcha Triggerred");
     }
   } else {
-    const buyerSetting = getBuyerSettings();
-    let sendDetailedNotification = buyerSetting["idDetailedNotification"];
     const searchFailedCount = increAndGetStoreValue("searchFailedCount");
     if (searchFailedCount >= 3) {
       shouldStopBot = true;
-      let message = writeToLog(
+      writeToLog(
         `[!!!] Autostopping bot as search failed for ${searchFailedCount} consecutive times, please check if you can access transfer market in Web App ${response.status}`,
         idProgressAutobuyer
       );
-      setValue(
-        "lastErrorMessage",
-        `Search failed ${searchFailedCount} consecutive times`
-      );
-      if (sendDetailedNotification) sendNotificationToUser(message);
     } else {
       writeToLog(
         `[!!!] Search failed - ${response.status}`,
@@ -55,7 +40,6 @@ export const searchErrorHandler = (
     }
   }
   if (shouldStopBot) {
-    playAudio("capatcha");
     stopAutoBuyer();
   }
 };

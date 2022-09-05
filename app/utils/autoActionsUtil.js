@@ -1,7 +1,4 @@
-import {
-  idAutoBuyerFoundLog,
-  idProgressAutobuyer,
-} from "../elementIds.constants";
+import { idProgressAutobuyer } from "../elementIds.constants";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import { updateStats } from "../handlers/statsProcessor";
 import {
@@ -10,12 +7,11 @@ import {
   setValue,
 } from "../services/repository";
 import {
-  convertRangeToSeconds,
   getRandNum,
   getRandNumberInRange,
+  convertRangeToSeconds,
 } from "./commonUtil";
 import { writeToLog } from "./logUtil";
-import { sendNotificationToUser } from "./notificationUtil";
 import { loadFilter } from "./userExternalUtil";
 
 let stopAfter, pauseCycle;
@@ -29,7 +25,6 @@ export const stopBotIfRequired = (buyerSetting) => {
   if (!stopAfter) {
     stopAfter = time;
   }
-  let sendDetailedNotification = buyerSetting["idDetailedNotification"];
   let currentTime = new Date().getTime();
   let timeElapsed = (currentTime - botStartTime) / 1000 >= time;
   const isSelling = false;
@@ -51,26 +46,23 @@ export const stopBotIfRequired = (buyerSetting) => {
       ? "Transfer list is full"
       : "Max purchases count reached";
 
-    if (sendDetailedNotification)
-      sendNotificationToUser(`Autobuyer stopped | ${message}`);
     writeToLog(`Autobuyer stopped | ${message}`, idProgressAutobuyer);
     stopAfter = null;
+    pauseCycle = null;
     stopAutoBuyer();
   }
 };
 
-export const pauseBotIfRequired = async function (buyerSetting) {
+export const pauseBotIfRequired = function (buyerSetting) {
   const isBuyerActive = getValue("autoBuyerActive");
   if (!isBuyerActive) return;
   const pauseFor = convertRangeToSeconds(buyerSetting["idAbPauseFor"]) * 1000;
-  const cycleAmount =
+  pauseCycle =
     pauseCycle || getRandNumberInRange(buyerSetting["idAbCycleAmount"]);
-  if (!pauseCycle) {
-    pauseCycle = cycleAmount;
-  }
+
   const { searchCount, previousPause } = getValue("sessionStats");
 
-  if (searchCount && !((searchCount - previousPause) % cycleAmount)) {
+  if (searchCount && !((searchCount - previousPause) % pauseCycle)) {
     updateStats("previousPause", searchCount);
     stopAutoBuyer(true);
     return setTimeout(() => {
@@ -102,8 +94,6 @@ export const switchFilterIfRequired = async function () {
   setValue("currentFilterIndex", filterIndex + 1);
   let filterName = availableFilters[filterIndex];
   await loadFilter.call(this, filterName);
-  writeToLog(
-    `---------------------------  Running for filter ${filterName}  ---------------------------------------------`,
-    idAutoBuyerFoundLog
-  );
+  writeToLog(`Running for filter ${filterName}`, idProgressAutobuyer);
+  return true;
 };

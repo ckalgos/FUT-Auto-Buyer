@@ -1,4 +1,4 @@
-import { idSelectedFilter, idSelectFilterCount } from "../elementIds.constants";
+import { idSelectedFilter } from "../elementIds.constants";
 import { setValue } from "../services/repository";
 
 export const checkAndAppendOption = function (dropdownSelector, optionName) {
@@ -18,15 +18,11 @@ export const checkAndAppendOption = function (dropdownSelector, optionName) {
   return exist;
 };
 
-export const updateMultiFilterSettings = function (e) {
+export const updateMultiFilterSettings = function () {
   const selectedFilters = $(`#${idSelectedFilter}`).val() || [];
   if (selectedFilters.length) {
     setValue("selectedFilters", selectedFilters);
-    $(`#${idSelectFilterCount}`).text(
-      "(" + selectedFilters.length + ") Filter Selected"
-    );
   } else {
     setValue("selectedFilters", []);
-    $(`#${idSelectFilterCount}`).text("No Filter Selected");
   }
 };

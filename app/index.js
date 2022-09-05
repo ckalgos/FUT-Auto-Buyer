@@ -1,8 +1,12 @@
 import { initOverrides } from "./function-overrides";
 import { cssOverride } from "./function-overrides/css-override";
+import { initListeners } from "./services/listeners";
 
 const initAutobuyer = function () {
   let isHomePageLoaded = false;
+  isPhone() && $("body").removeClass("landscape").addClass("phone");
+  $(".ui-orientation-warning").attr("style", "display: none !important");
+  $(".ut-fifa-header-view").attr("style", "display: none !important");
   if (
     services.Localization &&
     $("h1.title").html() === services.Localization.localize("navbar.label.home")
@@ -17,29 +21,17 @@ const initAutobuyer = function () {
   }
 };
 
-const headerVal = () => {
-  const vals = [
-    atob("UGF5cGFs"),
-    atob("WW91dHViZSBTdWJzY3JpcHRpb24="),
-    atob("UGF0cmVvbg=="),
-  ];
-
-  return vals.every(
-    (val) => utils.PopupManager.getLocalizedDialogOption(val) === val
-  );
-};
-
 const initFunctionOverrides = function () {
   let isPageLoaded = false;
-  if (services.Localization && headerVal()) {
+  if (services.Localization) {
     isPageLoaded = true;
   }
   if (isPageLoaded) {
     initOverrides();
     initAutobuyer();
+    isPhone() && initListeners();
   } else {
     setTimeout(initFunctionOverrides, 1000);
   }
 };
-
 initFunctionOverrides();

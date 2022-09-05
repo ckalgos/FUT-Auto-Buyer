@@ -1,21 +1,11 @@
-import {
-  idAutoBuyerFoundLog,
-  idProgressAutobuyer,
-} from "../elementIds.constants";
+import { idProgressAutobuyer } from "../elementIds.constants";
 import { getValue, setValue } from "../services/repository";
-import {
-  convertToSeconds,
-  formatString,
-  getRandWaitTime,
-  promisifyTimeOut,
-  wait,
-} from "./commonUtil";
+import { formatString, wait } from "./commonUtil";
 import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToLog } from "./logUtil";
 import { sendPinEvents } from "./notificationUtil";
 import { getBuyBidPrice, getSellBidPrice } from "./priceUtils";
 import { buyPlayer } from "./purchaseUtil";
-import { updateProfit } from "./statsUtil";
 
 const sellBids = new Set();
 
@@ -44,12 +34,13 @@ export const watchListUtil = function (buyerSetting) {
             this,
             async function (t, watchResponse) {
               const isAutoBuyerActive = getValue("autoBuyerActive");
-              const filterName = getValue("currentFilter");
+              const filterName = getValue("currentFilter") || "default";
               const bidItemsByFilter = getValue("filterBidItems") || new Map();
               const filterWatchList =
                 bidItemsByFilter.get(filterName) || new Set();
 
               const userWatchItems = getValue("userWatchItems");
+
               if (isAutoBuyerActive && bidPrice) {
                 let outBidItems = watchResponse.data.items.filter(function (
                   item
@@ -95,7 +86,6 @@ export const watchListUtil = function (buyerSetting) {
 
                 for (var i = 0; i < boughtItems.length; i++) {
                   const player = boughtItems[i];
-                  const price = player._auction.currentBid;
                   const ratingThreshold = buyerSetting["idSellRatingThreshold"];
                   let playerRating = parseInt(player.rating);
                   const isValidRating =
@@ -118,21 +108,21 @@ export const watchListUtil = function (buyerSetting) {
                   const shouldList =
                     sellPrice && !isNaN(sellPrice) && isValidRating;
 
-                  if (sellPrice < 0) {
-                    services.Item.move(player, ItemPile.TRANSFER);
-                  } else if (shouldList) {
+                  if (shouldList) {
+                    sellBids.add(player._auction.tradeId);
+                  }
+                  if (!buyerSetting["idAbDontMoveWon"]) {
+                    const sellQueue = getValue("sellQueue") || [];
                     const profit =
                       sellPrice * 0.95 - player._auction.currentBid;
-                    updateProfit(profit);
-                    await sellWonItems(
+                    sellQueue.push({
                       player,
                       sellPrice,
-                      buyerSetting["idAbWaitTime"],
-                      buyerSetting["idFutBinDuration"],
-                      profit
-                    );
-                  } else {
-                    services.Item.move(player, ItemPile.CLUB);
+                      playerName,
+                      shouldList,
+                      profit,
+                    });
+                    setValue("sellQueue", sellQueue);
                   }
                 }
               }
@@ -146,7 +136,7 @@ export const watchListUtil = function (buyerSetting) {
                 services.Item.untarget(expiredItems);
                 writeToLog(
                   `Found ${expiredItems.length} expired items and removed from watchlist`,
-                  idAutoBuyerFoundLog
+                  idProgressAutobuyer
                 );
               }
 
@@ -174,7 +164,7 @@ export const addUserWatchItems = () => {
         if (userWatchItems.length) {
           writeToLog(
             `Found ${userWatchItems.length} items in users watch list and ignored from selling`,
-            idAutoBuyerFoundLog
+            idProgressAutobuyer
           );
         }
       }
@@ -205,42 +195,9 @@ const tryBidItems = async (player, bidPrice, sellPrice, buyerSetting) => {
   if (isAutoBuyerActive && currentBid <= priceToBid) {
     writeToLog(
       "Bidding on outbidded item -> Bidding Price :" + checkPrice,
-      idAutoBuyerFoundLog
+      idProgressAutobuyer
     );
     await buyPlayer(player, playerName, checkPrice, sellPrice);
     buyerSetting["idAbAddBuyDelay"] && (await wait(1));
   }
-};
-
-const sellWonItems = async (
-  player,
-  sellPrice,
-  waitRange,
-  sellDuration,
-  profit
-) => {
-  let auction = player._auction;
-  let playerName = formatString(player._staticData.name, 15);
-  sellBids.add(auction.tradeId);
-  writeToLog(
-    " ($$$) " +
-      playerName +
-      "[" +
-      player._auction.tradeId +
-      "] -- Selling for: " +
-      sellPrice +
-      ", Profit: " +
-      profit,
-    idProgressAutobuyer
-  );
-  player.clearAuction();
-
-  await promisifyTimeOut(function () {
-    services.Item.list(
-      player,
-      getSellBidPrice(sellPrice),
-      sellPrice,
-      convertToSeconds(sellDuration || "1H") || 3600
-    );
-  }, getRandWaitTime(waitRange));
 };

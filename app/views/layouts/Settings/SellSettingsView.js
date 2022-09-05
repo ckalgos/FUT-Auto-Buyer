@@ -28,73 +28,69 @@ const updateAfterTax = (salePrice) => {
 };
 
 export const sellSettingsView = function () {
-  return `<div style='display : none' class='buyer-settings-wrapper sell-settings-view'>    
-    <hr class="search-price-header header-hr">
-    <div class="search-price-header">
-      <h1 class="secondary">Sell Settings:</h1>
-    </div>
-    ${generateToggleInput(
-      "Find Sale Price",
-      { idSellFutBinPrice },
-      "(Uses Futbin price for listing)",
-      "BuyerSettings"
-    )}
-    ${generateTextInput(
-      "Sell Price Percent",
-      "100-100",
-      { idSellFutBinPercent },
-      `(Sale Price percent of FUTBIN Price)`,
-      "BuyerSettings",
-      "text",
-      "\\d+-\\d+$"
-    )}
-    ${generateToggleInput(
-      "Check buy price before listing",
-      { idSellCheckBuyPrice },
-      "(List only if Buy Price is lesser than Sale Price)",
-      "BuyerSettings"
-    )}
-    ${generateToggleInput(
-      "Relist Unsold Items",
-      { idAbSellToggle },
-      "",
-      "BuyerSettings"
-    )}
-    ${generateToggleInput(
-      "Dont move won items",
-      { idAbDontMoveWon },
-      "(Keep won items in Unassigned or Transfer Targets)",
-      "BuyerSettings"
-    )}
-    ${generateTextInput(
-      "Sell Price",
-      "",
-      { idAbSellPrice },
-      `(-1 to send to transferlist)<br />Receive After Tax: <span id=${idSellAfterTax}>0</span>`,
-      "BuyerSettings"
-    )}
-    ${generateTextInput(
-      "List Duration",
-      "1H",
-      { idFutBinDuration },
-      "List Duration when listing",
-      "BuyerSettings",
-      "text",
-      "\\d+[H|M|S|h|m|s]$"
-    )}
-    ${generateTextInput(
-      "Clear sold count",
-      10,
-      { idAbMinDeleteCount },
-      "(Clear sold items when reach a specified count)<br />",
-      "BuyerSettings"
-    )}
-    ${generateTextInput(
-      "Rating Threshold",
-      100,
-      { idSellRatingThreshold },
-      "(Rating threshold to list the sniped player)",
-      "BuyerSettings"
-    )}
-    </div>`;
+  return `<div style='display : none' class='buyer-settings-wrapper sell-settings-view'>
+  ${generateToggleInput(
+    "Find Sale Price",
+    { idSellFutBinPrice },
+    "(Uses Futbin price for listing)",
+    "BuyerSettings"
+  )}
+  ${generateTextInput(
+    "Sell Price Percent",
+    "100-100",
+    { idSellFutBinPercent },
+    `(Sale Price percent of FUTBIN Price)`,
+    "BuyerSettings",
+    "text",
+    "\\d+-\\d+$"
+  )}
+  ${generateToggleInput(
+    "Check buy price before listing",
+    { idSellCheckBuyPrice },
+    "(List only if Buy Price is lesser than Sale Price)",
+    "BuyerSettings"
+  )}
+  ${generateTextInput(
+    "Sell Price",
+    "",
+    { idAbSellPrice },
+    `(-1 to send to transferlist)<br />Receive After Tax: <span id=${idSellAfterTax}>0</span>`,
+    "BuyerSettings"
+  )} 
+   ${generateTextInput(
+     "List Duration",
+     "1H",
+     { idFutBinDuration },
+     "List Duration when listing",
+     "BuyerSettings",
+     "text",
+     "\\d+[H|M|S|h|m|s]$"
+   )}
+  ${generateTextInput(
+    "Clear sold count",
+    10,
+    { idAbMinDeleteCount },
+    "(Clear sold items when reach a specified count)",
+    "BuyerSettings"
+  )}
+  ${generateTextInput(
+    "Rating Threshold",
+    100,
+    { idSellRatingThreshold },
+    "(Rating threshold to list the sniped player)",
+    "BuyerSettings"
+  )}
+  ${generateToggleInput(
+    "Relist Unsold Items",
+    { idAbSellToggle },
+    "",
+    "BuyerSettings"
+  )}
+  ${generateToggleInput(
+    "Dont move won items",
+    { idAbDontMoveWon },
+    "(Keep won items in Unassigned or Transfer Targets)",
+    "BuyerSettings"
+  )}
+  </div>`;
 };

@@ -1,16 +1,15 @@
 import {
-  idAbActiveTransfers,
-  idAbAvailableItems,
   idAbCoins,
-  idAbCountDown,
   idAbProfit,
   idAbRequestCount,
+  idAbCountDown,
   idAbSearchProgress,
-  idAbSoldItems,
   idAbStatisticsProgress,
+  idAbSoldItems,
   idAbUnsoldItems,
+  idAbAvailableItems,
+  idAbActiveTransfers,
 } from "../elementIds.constants";
-import { sendMessageToDiscord } from "../services/discordService";
 import { getValue, setValue } from "../services/repository";
 import { getTimerProgress } from "../utils/commonUtil";
 
@@ -21,43 +20,55 @@ setValue("sessionStats", {
   availableItems: "-",
   coins: "-",
   coinsNumber: 0,
-  searchCount: 0,
   previousPause: 0,
+  searchCount: 0,
   profit: 0,
-  sessionId: Date.now().toString(36) + Math.random().toString(36).substr(2),
   transactions: [],
 });
 
 export const statsProcessor = () => {
-  exportStatsExternal();
   setInterval(() => {
-    const nextRefresh = getTimerProgress(getValue("searchInterval"));
-    const currentStats = getValue("sessionStats");
-    $("#" + idAbSearchProgress).css("width", nextRefresh);
-    $("#" + idAbStatisticsProgress).css("width", nextRefresh);
-
-    $("#" + idAbCoins).html(currentStats.coins);
-    $("#" + idAbRequestCount).html(currentStats.searchCount);
-    $("#" + idAbSoldItems).html(currentStats.soldItems);
-    $("#" + idAbUnsoldItems).html(currentStats.unsoldItems);
-    $("#" + idAbAvailableItems).html(currentStats.availableItems);
-    $("#" + idAbActiveTransfers).html(currentStats.activeTransfers);
-    $("#" + idAbProfit).html(currentStats.profit);
-
-    updateTimer();
-
-    if (currentStats.unsoldItems) {
-      $("#" + idAbUnsoldItems).css("color", "red");
-    } else {
-      $("#" + idAbUnsoldItems).css("color", "");
-    }
-
-    if (currentStats.availableItems) {
-      $("#" + idAbAvailableItems).css("color", "orange");
-    } else {
-      $("#" + idAbAvailableItems).css("color", "");
-    }
+    isPhone() ? phoneStatsProcessor() : webStatsProcessor();
   }, 1000);
+};
+
+const phoneStatsProcessor = () => {
+  const nextRefresh = getTimerProgress(getValue("searchInterval"));
+  const currentStats = getValue("sessionStats");
+  $("#" + idAbRequestCount).html(currentStats.searchCount);
+  $("#" + idAbProfit).html(currentStats.profit);
+  $("#" + idAbCoins).html(currentStats.coins);
+  $("#" + idAbSearchProgress).css("width", nextRefresh);
+  updateTimer();
+};
+
+const webStatsProcessor = () => {
+  const nextRefresh = getTimerProgress(getValue("searchInterval"));
+  const currentStats = getValue("sessionStats");
+  $("#" + idAbSearchProgress).css("width", nextRefresh);
+  $("#" + idAbStatisticsProgress).css("width", nextRefresh);
+
+  $("#" + idAbCoins).html(currentStats.coins);
+  $("#" + idAbRequestCount).html(currentStats.searchCount);
+  $("#" + idAbSoldItems).html(currentStats.soldItems);
+  $("#" + idAbUnsoldItems).html(currentStats.unsoldItems);
+  $("#" + idAbAvailableItems).html(currentStats.availableItems);
+  $("#" + idAbActiveTransfers).html(currentStats.activeTransfers);
+  $("#" + idAbProfit).html(currentStats.profit);
+
+  updateTimer();
+
+  if (currentStats.unsoldItems) {
+    $("#" + idAbUnsoldItems).css("color", "red");
+  } else {
+    $("#" + idAbUnsoldItems).css("color", "");
+  }
+
+  if (currentStats.availableItems) {
+    $("#" + idAbAvailableItems).css("color", "orange");
+  } else {
+    $("#" + idAbAvailableItems).css("color", "");
+  }
 };
 
 const updateTimer = () => {
@@ -79,34 +90,6 @@ const updateTimer = () => {
     $("#" + idAbCountDown).html(timeString);
     updateStats("runningTime", timeString);
   }
-};
-
-export const exportStatsExternal = () => {
-  const persona = services.User.getUser().getSelectedPersona();
-  const club = persona.getCurrentClub();
-  setInterval(async () => {
-    const currentStats = getValue("sessionStats");
-    const autoBuyerState = getValue("autoBuyerState");
-    const availableFilters = getValue("filters") || {};
-    const currentFilter = getValue("currentFilter");
-    const lastErrorMessage = getValue("lastErrorMessage");
-    const selectedFilters = getValue("selectedFilters");
-    const payload = {
-      autoBuyerState,
-      persona: persona.name,
-      clublogo: club.assetId,
-      availableFilters: Object.keys(availableFilters),
-      selectedFilters,
-      currentFilter,
-      lastErrorMessage,
-      sessionId: currentStats.sessionId,
-      searchCount: currentStats.searchCount,
-      coinsNumber: currentStats.coinsNumber,
-      profit: currentStats.profit,
-      type: "statsUpdate",
-    };
-    await sendMessageToDiscord(btoa(JSON.stringify(payload)));
-  }, 5000);
 };
 
 export const updateStats = (key, value) => {

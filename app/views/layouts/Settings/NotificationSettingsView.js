@@ -5,7 +5,6 @@ import {
   idDiscordChannelId,
   idDiscordToken,
   idNotificationType,
-  idDetailedNotification,
   idTelegramBotToken,
   idTelegramChatId,
   idTestNotification,
@@ -18,11 +17,7 @@ import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 
 export const notificationSettingsView = function () {
-  return `<div style='display : none' class='buyer-settings-wrapper notification-settings-view'>  
-  <hr class="search-price-header header-hr">
-  <div class="search-price-header">
-    <h1 class="secondary">Notification Settings:</h1>
-  </div>
+  return `<div style='display : none' class='buyer-settings-wrapper notification-settings-view'> 
  ${
    !isPhone()
      ? `${generateTextInput(
@@ -72,12 +67,6 @@ export const notificationSettingsView = function () {
     "Send Notification",
     { idAbMessageNotificationToggle },
     "",
-    "CommonSettings"
-  )}
-  ${generateToggleInput(
-    "Detailed Notifications",
-    { idDetailedNotification },
-    "Send detailed notification message",
     "CommonSettings"
   )}
    ${

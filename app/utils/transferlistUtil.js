@@ -4,9 +4,17 @@ import { writeToLog } from "./logUtil";
 import { sendPinEvents } from "./notificationUtil";
 import { updateUserCredits } from "./userUtil";
 
-export const transferListUtil = function (relistUnsold, minSoldCount) {
+export const transferListUtil = function (
+  relistUnsold,
+  minSoldCount,
+  isInitialRun
+) {
   sendPinEvents("Transfer List - List View");
   return new Promise((resolve) => {
+    if (!isInitialRun && !repositories.Item.isDirty(ItemPile["TRANSFER"])) {
+      resolve();
+      return;
+    }
     services.Item.requestTransferItems().observe(
       this,
       async function (t, response) {

@@ -1,5 +1,5 @@
 import * as ElementIds from "../elementIds.constants";
-import { getBuyerSettings, getValue, setValue } from "../services/repository";
+import { getValue, getBuyerSettings, setValue } from "../services/repository";
 import {
   clearSettingMenus,
   updateCommonSettings,
@@ -9,9 +9,6 @@ import { deleteFilters, insertFilters } from "./dbUtil";
 import { checkAndAppendOption, updateMultiFilterSettings } from "./filterUtil";
 import { sendUINotification } from "./notificationUtil";
 
-const filterDropdownId = `#${ElementIds.idFilterDropdown}`;
-const selectedFilterId = `#${ElementIds.idSelectedFilter}`;
-
 const validateSettings = () => {
   if (document.querySelectorAll(":invalid").length) {
     sendUINotification(
@@ -20,6 +17,9 @@ const validateSettings = () => {
     );
   }
 };
+
+const filterDropdownId = `#${ElementIds.idFilterDropdown}`;
+const selectedFilterId = `#${ElementIds.idSelectedFilter}`;
 
 export const saveFilterDetails = function (self) {
   const btnContext = this;
@@ -39,13 +39,11 @@ export const saveFilterDetails = function (self) {
       .filter(":selected")
       .val();
 
-    validateSettings();
-
     if (currentFilterName === "Choose filter to load") {
       currentFilterName = undefined;
     }
     let filterName = prompt("Enter a name for this filter", currentFilterName);
-
+    validateSettings();
     if (filterName) {
       saveFilterInDB(filterName, settingsJson);
       insertFilters(
@@ -67,15 +65,13 @@ export const saveFilterInDB = (filterName, settingsJson) => {
   filterName = filterName.toUpperCase();
   checkAndAppendOption(filterDropdownId, filterName);
   checkAndAppendOption(`#${ElementIds.idSelectedFilter}`, filterName);
-
   $(`${filterDropdownId} option[value="${filterName}"]`).attr("selected", true);
-
   getValue("filters")[filterName] = JSON.stringify(settingsJson);
   insertFilters(filterName, getValue("filters")[filterName]);
 };
 
 export const loadFilter = async function (currentFilterName) {
-  await clearSettingMenus();
+  if (!getValue("runnerToggle")) await clearSettingMenus();
   const filterSetting = getValue("filters")[currentFilterName];
   if (!filterSetting) return;
   let {
@@ -85,7 +81,7 @@ export const loadFilter = async function (currentFilterName) {
   const commonSettings = getValue("CommonSettings") || {};
   setValue("BuyerSettings", buyerSettings);
   setValue("currentFilter", currentFilterName);
-  buyerSettings = { ...buyerSettings, ...commonSettings };
+  buyerSettings = Object.assign({}, buyerSettings, commonSettings);
   this._viewmodel.playerData = {};
   Object.assign(this._viewmodel.searchCriteria, criteria);
   Object.assign(this._viewmodel.playerData, playerData);
@@ -109,7 +105,6 @@ export const loadFilter = async function (currentFilterName) {
       );
     }
   }
-
   validateSettings();
 };
 

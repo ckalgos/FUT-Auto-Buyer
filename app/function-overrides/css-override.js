@@ -1,8 +1,13 @@
 export const cssOverride = () => {
   const style = document.createElement("style");
+  $(".ui-orientation-warning").css("display", "none");
+  $(".ut-fifa-header-view").css("display", "none");
   style.innerText = `
   .buyer-header {
       font-size: 20px !important;
+  }
+  .with-fifa-header .ut-root-view {
+    height: 100%;
   }
   .buyer-settings {
       width: 100%;
@@ -50,15 +55,14 @@ export const cssOverride = () => {
     width: 100%;
   }
   .autoBuyerLog {
-    font-size: 15px; 
-    width: 100%;
-    height: 95%;
+    font-size: ${!isPhone() ? "15px" : "13px"}; 
+    height: 50%;
     background-color:#141414;
     color:#e2dde2;
   }
   .searchLog {
     font-size: 10px; 
-    height: 37%;
+    height: 50%;
   }
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
@@ -101,38 +105,28 @@ export const cssOverride = () => {
     justify-content: center;
     align-items: center;
   }
-  .ut-pinned-list-container.ut-content-container {
-    padding: 0 !important;
+  .logs-container {
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    align-items: center;
   }
-  .auto-buyer .enhancer-option-header,
-  .auto-buyer .enhancer-toggle {
-    display: none !important;
+  .button-clear button {
+    background-color: unset;
+    height: unset;
+    line-height: unset;
   }
-  .buyer-settings-wrapper .search-price-header{
-    display: none !important;
+  .top-nav{
+    display:flex; 
   }
-  .mrgTop10 {
-    margin-top: 10px;
+  .ut-navigation-button-control.menu-btn:before {
+    content: "≡";
+    transform: unset;
   }
-  .mrgRgt10 {
-    margin-right: 10px;
+  .menu-btn {
+    min-width: 0px;
+    margin-left: 5px;
   }
-  .header-hr {
-    padding: 0px !important;
-    width: 96% !important;
-  }
-  .stats-progress {
-    float: right; 
-    height: 10px; 
-    width: 100px; 
-    background: #888; 
-    margin: 5px 0px 5px 5px;
-  }
-  .stats-fill {
-    background: #000; 
-    height: 10px; 
-    width: 0%
-  } 
   .filterSync {
     background: transparent;
     color: #c4f750;
@@ -141,11 +135,22 @@ export const cssOverride = () => {
   .filterSync:hover {
     background: transparent !important;
   }
+  .stats-progress {
+    float: right; 
+    height: 10px; 
+    width: 100px; 
+    background: #888; 
+    margin: ${isPhone() ? "auto 5px" : "5px 0px 5px 5px"};
+  }
+  .stats-fill {
+    background: #000; 
+    height: 10px; 
+    width: 0%
+  }
   .numericInput:invalid {
     color: red;
     border: 1px solid;
-  }
-  .ignore-players{
+  }.ignore-players{
     width: 100%;
     display: flex;
     background: transparent;
@@ -160,6 +165,7 @@ export const cssOverride = () => {
     font-size: 15px;
   }  
   .action-icons {
+    display: unset !important;
     width: 10%
   }
   .displayCenterFlx {
@@ -167,32 +173,49 @@ export const cssOverride = () => {
     align-items: center;
     justify-content: center;
   }
+  .displayNone {
+    height: 275px;
+  }
+  .displayNone .inline-list-select,
+  .displayNone .search-prices,
+  .displayNone .btn-actions,
+  .displayNone .btn-filters,
+  .displayNone .btn-report,
+  .displayNone .buyer-actions .btn-other {
+    display: none !important;
+  }
+  .mrg10 {
+    margin: 10px;
+  }
   .ut-toggle-cell-view--label{
     overflow: unset;
   }
-  .logWrapper {
-    position: relative;
-    height: 58%
+  .download-stats {
+    line-height: 1;
+    display: flex;
   }
+  .btn-report {
+    display: flex;
+    justify-content: center;
+  }
+  small{
+    white-space: break-spaces;
+  }  
   .joinServer {
     position: absolute;
-    right: 15px;
-    bottom: 30px;
+    right: 25px;
+    top: 50%;
     color: wheat
   }
   textarea {
     resize: none;
-  }
-  small{
-    white-space: break-spaces;
-  }
-  .top-nav {
-    display:flex; 
+  }  
+  .logWrapper {
+    position: relative;
+    height: 100%
   }
   `;
-  if (!isPhone()) {
-    style.innerText += getScrollBarStyle();
-  }
+  style.innerText += getScrollBarStyle();
   document.head.appendChild(style);
 };
 

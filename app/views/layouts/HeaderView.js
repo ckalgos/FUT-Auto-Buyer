@@ -1,17 +1,16 @@
 import {
   idAbStatus,
   idAbRequestCount,
-  idInfoWrapper,
-  idAbSearchProgress,
-  idAbStatisticsProgress,
   idAbCoins,
+  idAbSearchProgress,
+  idAbProfit,
+  idAbCountDown,
+  idAbDownloadStats,
+  idAbStatisticsProgress,
   idAbSoldItems,
   idAbUnsoldItems,
   idAbAvailableItems,
   idAbActiveTransfers,
-  idAbProfit,
-  idAbCountDown,
-  idAbDownloadStats,
 } from "../../elementIds.constants";
 import { downloadStats } from "../../utils/statsUtil";
 import { generateButton } from "../../utils/uiUtils/generateButton";
@@ -21,7 +20,32 @@ export const BuyerStatus = () => {
   `;
 };
 
-export const HeaderView = () => {
+export const HeaderView = () =>
+  isPhone() ? HeaderViewMobile() : HeaderViewWeb();
+
+const HeaderViewMobile = () => {
+  return `<div class="view-navbar-currency">
+            <span id=${idAbCountDown} style="font-weight: bold;
+            margin: auto 2px;">00:00:00</span>
+            <div style="margin: auto 2px;">Search:</div> 
+            <div class="stats-progress">
+              <div id=${idAbSearchProgress} class="stats-fill"></div>
+            </div>
+            <div class="view-navbar-currency-coins">Coins: <span id=${idAbCoins}></span></div>
+            <div class="view-navbar-currency-coins">Profit: <span  id=${idAbProfit}></span></div>
+            ${generateButton(
+              idAbDownloadStats,
+              "⇩",
+              () => {
+                downloadStats();
+              },
+              "filterSync download-stats",
+              "Download Stats"
+            )} 
+          </div>`;
+};
+
+const HeaderViewWeb = () => {
   return `
   <div class="view-navbar-clubinfo-data">
     <div class="view-navbar-clubinfo-name">

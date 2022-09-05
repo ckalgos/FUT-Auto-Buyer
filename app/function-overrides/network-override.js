@@ -36,5 +36,3 @@ window.fetch = function (request, options) {
   const response = defaultFetch.call(this, request, options);
   return response;
 };
-
-export const networkLogs = () => {};

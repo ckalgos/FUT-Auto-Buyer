@@ -24,3 +24,9 @@ export const getCardName = (card) => {
   }
   return card._staticData.name;
 };
+
+export const checkRating = (
+  cardRating,
+  permittedRatingMin,
+  permittedRatingMax
+) => cardRating >= permittedRatingMin && cardRating <= permittedRatingMax;

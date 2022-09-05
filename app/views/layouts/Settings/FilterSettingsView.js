@@ -1,21 +1,18 @@
 import {
-  idFilterDropdown,
-  idSelectedFilter,
-  idSelectFilterCount,
-  idAbNumberFilterSearch,
   idAbDownloadFilter,
   idAbUploadFilter,
+  idFilterDropdown,
+  idAbNumberFilterSearch,
   idRunFilterSequential,
+  idSelectedFilter,
+  idAbToggleRunner,
+  idBtnReport,
+  idBtnActions,
 } from "../../../elementIds.constants";
 import { getValue, setValue } from "../../../services/repository";
-
 import { getUserFilters } from "../../../utils/dbUtil";
-import {
-  uploadFiltersLocal,
-  uploadFiltersToServer,
-} from "../../../utils/filterSyncUtil";
+import { uploadFilters, downloadFilters } from "../../../utils/filterSyncUtil";
 import { updateMultiFilterSettings } from "../../../utils/filterUtil";
-import { showPopUp } from "../../../utils/popupUtil";
 import { generateButton } from "../../../utils/uiUtils/generateButton";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -25,23 +22,11 @@ import {
   saveFilterDetails,
 } from "../../../utils/userExternalUtil";
 import { createButton } from "../ButtonView";
-
-$(document).on(
-  {
-    click: updateMultiFilterSettings,
-    touchend: updateMultiFilterSettings,
-  },
-  `#${idSelectedFilter}`
-);
-
-const getUserFilterAsync = async () => {
-  let filters = await getUserFilters();
-  return filters;
-};
+import { showPopUp } from "../../../utils/popupUtil";
 
 const filters = async () => {
   if (!getValue("filters")) {
-    setValue("filters", (await getUserFilterAsync()) || {});
+    setValue("filters", (await getUserFilters()) || {});
   }
 
   let filters = getValue("filters");
@@ -55,9 +40,17 @@ const filters = async () => {
 
   return filters;
 };
+$(document).on(
+  {
+    change: updateMultiFilterSettings,
+    click: updateMultiFilterSettings,
+    touchend: updateMultiFilterSettings,
+  },
+  `#${idSelectedFilter}`
+);
 
-const handleSequenceToggle = (evt) => {
-  let runSequentially = getValue("runSequentially");
+const handleToggle = (evt, key) => {
+  let runSequentially = getValue(key);
   if (runSequentially) {
     runSequentially = false;
     $(evt.currentTarget).removeClass("toggled");
@@ -65,7 +58,7 @@ const handleSequenceToggle = (evt) => {
     runSequentially = true;
     $(evt.currentTarget).addClass("toggled");
   }
-  setValue("runSequentially", runSequentially);
+  setValue(key, runSequentially);
   return runSequentially;
 };
 
@@ -76,25 +69,20 @@ export const filterSettingsView = async function () {
       $(`#${idRunFilterSequential}`).click();
     });
   }
-  return `<div style='display : none' class='buyer-settings-wrapper filter-settings-view'>  
-                <hr class="search-price-header header-hr">
-                <div class="search-price-header">
-                  <h1 class="secondary">Filter Settings:</h1>
-                </div>
-                <div class="price-filter buyer-settings-field multiple-filter">
+  return `<div style='display : none' class='buyer-settings-wrapper filter-settings-view'>
+                <div class="price-filter buyer-settings-field multiple-filter teleporter">
                     <select  multiple="multiple" class="multiselect-filter filter-header-settings" id="${idSelectedFilter}"
-                     name="selectedFilters" style="overflow-y : scroll;width: 50%;">
+                     name="selectedFilters" style="overflow-y : scroll;">
                      ${Object.keys(await filters()).map(
                        (value) => `<option value='${value}'>${value}</option>`
                      )}
                     </select>
-                    <label style="white-space: nowrap;width: 50%;" id="${idSelectFilterCount}" >No Filter Selected</label>
                 </div>
                 ${generateTextInput(
                   "No. of search For each filter",
                   getValue("fiterSearchCount") || 3,
                   { idAbNumberFilterSearch },
-                  "(Count of searches performed before <br/> switching to another filter)",
+                  "(Count of searches performed before switching to another filter)",
                   "CommonSettings",
                   "number",
                   null,
@@ -107,10 +95,44 @@ export const filterSettingsView = async function () {
                   "",
                   "CommonSettings",
                   "buyer-settings-field",
-                  handleSequenceToggle
+                  (evt) => handleToggle(evt, "runSequentially")
                 )}
             </div>
     `;
+};
+
+const handleReportProblem = () => {
+  showPopUp(
+    [
+      { labelEnum: atob("RGlzY29yZA==") },
+      { labelEnum: atob("VHdpdHRlcg==") },
+      { labelEnum: atob("R2l0aHVi") },
+    ],
+    atob("UmVwb3J0IGEgcHJvYmxlbQ=="),
+    atob(
+      "QmVsb3cgYXJlIHRoZSBsaXN0IG9mIHdheXMgdG8gcmVwb3J0IGEgcHJvYmxlbSA8YnIgLz5NYWtlIHN1cmUgdG8gZ28gdGhyb3VnaCB0aGUgPGEgaHJlZj0naHR0cHM6Ly95b3V0dWJlLmNvbS9wbGF5bGlzdD9saXN0PVBMR21LTWczYVJrWGpQUjVna2x4TXlxeHRoWW9vV0k1SUMnIHRhcmdldD0nX2JsYW5rJz55b3V0dWJlIHBsYXlsaXN0PC9hPiBpZiBhbnkgc2V0dGluZ3MgYXJlIHVuY2xlYXIgPGJyIC8+"
+    ),
+    (t) => {
+      if (t === atob("R2l0aHVi")) {
+        window.open(
+          atob(
+            "aHR0cHM6Ly9naXRodWIuY29tL2NoaXRoYWt1bWFyMTMvRlVULUF1dG8tQnV5ZXIvaXNzdWVz"
+          ),
+          atob("X2JsYW5r")
+        );
+      } else if (t === atob("RGlzY29yZA==")) {
+        window.open(
+          atob("aHR0cHM6Ly9kaXNjb3JkLmNvbS9pbnZpdGUvY2t0SFltcA=="),
+          atob("X2JsYW5r")
+        );
+      } else if (t === atob("VHdpdHRlcg==")) {
+        window.open(
+          atob("aHR0cHM6Ly90d2l0dGVyLmNvbS9BbGdvc0Nr"),
+          atob("X2JsYW5r")
+        );
+      }
+    }
+  );
 };
 
 export const filterHeaderSettingsView = async function () {
@@ -128,44 +150,66 @@ export const filterHeaderSettingsView = async function () {
   );
 
   const rootHeader =
-    $(`<div style="width:100%;display: flex;flex-wrap: inherit;">
-               <div style="width:100%;" class="button-container">                   
-                   <select class="filter-header-settings" id=${idFilterDropdown}>
-                      <option selected="true" disabled>Choose filter to load</option>
-                      ${Object.keys(await filters()).map(
-                        (value) => `<option value='${value}'>${value}</option>`
-                      )}
-                   </select>
-                   
-                   ${generateButton(
-                     idAbDownloadFilter,
-                     "⇧",
-                     () => {
-                       uploadFiltersLocal();
-                     },
-                     "filterSync",
-                     "Upload filters"
-                   )} 
-                   ${generateButton(
-                     idAbUploadFilter,
-                     "⇩",
-                     () => {
-                       uploadFiltersToServer();
-                     },
-                     "filterSync",
-                     "Download filters"
-                   )} 
-               </div>
-               <div id="btn-actions" style="width:100%;margin-top: 1%;" class="button-container"> 
+    $(`<div style="width:100%;display: flex;flex-direction: column;">
+            ${
+              isPhone()
+                ? generateToggleInput(
+                    "Runner Mode",
+                    { idAbToggleRunner },
+                    "",
+                    "MisSettings",
+                    "runner",
+                    (evt) => {
+                      const isToggled = handleToggle(evt, "runnerToggle");
+                      $(".auto-buyer").toggleClass("displayNone");
+                      if (isToggled) {
+                        $(".filter-place").append($(`#${idSelectedFilter}`));
+                      } else {
+                        $(".teleporter").append($(`#${idSelectedFilter}`));
+                      }
+                    }
+                  )
+                : ""
+            }
+            <div id=${idBtnReport} class="btn-report"> 
+            </div>           
+            <div class="price-filter buyer-settings-field multiple-filter filter-place">
+            </div> 
+            <div class="button-container btn-filters">
+                 <select class="filter-header-settings" id=${idFilterDropdown}>
+                    <option selected="true" disabled>Choose filter to load</option>
+                    ${Object.keys(await filters()).map(
+                      (value) => `<option value="${value}">${value}</option>`
+                    )}                    
+                 </select>                 
+                 ${generateButton(
+                   idAbUploadFilter,
+                   "⇧",
+                   () => {
+                     uploadFilters();
+                   },
+                   "filterSync",
+                   "Upload filters"
+                 )} 
+               ${generateButton(
+                 idAbDownloadFilter,
+                 "⇩",
+                 () => {
+                   downloadFilters();
+                 },
+                 "filterSync",
+                 "Download filters"
+               )}
+             </div> 
+               <div id=${idBtnActions} style="margin-top: 1%;" class="button-container btn-filters"> 
                </div>
              </div>`);
-  const buttons = rootHeader.find("#btn-actions");
+  const buttons = rootHeader.find(`#${idBtnActions}`);
+  const btnReport = rootHeader.find(`#${idBtnReport}`);
   buttons.append(
     createButton(
       "Delete Filter",
-      () => {
-        deleteFilter.call(context);
-      },
+      () => deleteFilter.call(context),
       "call-to-action btn-delete-filter"
     ).__root
   );
@@ -176,6 +220,13 @@ export const filterHeaderSettingsView = async function () {
         saveFilterDetails.call(this, context);
       },
       "call-to-action btn-save-filter"
+    ).__root
+  );
+  btnReport.append(
+    createButton(
+      "Report a problem",
+      () => handleReportProblem(),
+      "call-to-action"
     ).__root
   );
 

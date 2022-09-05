@@ -4,6 +4,9 @@ import { downloadCsv } from "./commonUtil";
 export const updateRequestCount = () => {
   const currentStats = getValue("sessionStats");
   currentStats["searchCount"]++;
+  if (currentStats.searchCount % 45 === 0) {
+    window.ReactNativeWebView.postMessage(JSON.stringify({ type: "showAd" }));
+  }
   setValue("sessionStats", currentStats);
 };
 
@@ -27,13 +30,11 @@ export const downloadStats = () => {
   const bidCount = getValue("bidCount");
   const lossCount = getValue("lossCount");
   let csvContent =
-    "Script Version,Available Coins,Search Count,Profit,Running Time,BIN Won Count,BID Won Count,Loss Count\r\n";
-  csvContent += `${GM_info.script.version},${coinsNumber || ""},${
-    searchCount || ""
-  },${profit || 0},${runningTime || ""},${winCount || 0},${bidCount || 0},${
-    lossCount || 0
-  }\r\n\r\n`;
-  csvContent += `Transactions\r\n`;
-  csvContent += transactions.map((transact) => `${transact}\r\n`).join("");
-  downloadCsv(csvContent, "Stats");
+    "Available Coins,Search Count,Profit,Running Time,BIN Won Count,BID Won Count,Loss Count\n";
+  csvContent += `${coinsNumber || ""},${searchCount || ""},${profit || 0},${
+    runningTime || ""
+  },${winCount || 0},${bidCount || 0},${lossCount || 0}\n\n`;
+  csvContent += `Transactions\n`;
+  csvContent += transactions.map((transact) => `${transact}\n`).join("");
+  downloadCsv(csvContent, "Stats.csv");
 };

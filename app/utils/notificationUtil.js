@@ -18,9 +18,6 @@ export const sendPinEvents = (pageId) => {
 
 export const sendNotificationToUser = (message, isTestMessage) => {
   const buyerSetting = getBuyerSettings();
-  if (!isTestMessage) {
-    sendUINotification(message);
-  }
   if (buyerSetting["idAbMessageNotificationToggle"] || isTestMessage) {
     isPhone()
       ? sendNotificationToExternalPhone(message)
@@ -87,10 +84,10 @@ export const initializeDiscordClient = (cb) => {
       if (/start/i.test(message.content)) {
         const instance = getValue("AutoBuyerInstance");
         startAutoBuyer.call(instance);
-        message.channel.sendMessage("Bot started successfully");
+        message.channel.send("Bot started successfully");
       } else if (/stop/i.test(message.content)) {
         stopAutoBuyer();
-        message.channel.sendMessage("Bot stopped successfully");
+        message.channel.send("Bot stopped successfully");
       } else if (/runfilter/i.test(message.content)) {
         let filterName = message.content.split("-")[1];
         if (filterName) {
@@ -100,13 +97,13 @@ export const initializeDiscordClient = (cb) => {
           const instance = getValue("AutoBuyerInstance");
           const isSuccess = loadFilter.call(instance, filterName);
           if (!isSuccess) {
-            message.channel.sendMessage(`unable to find filter${filterName}`);
+            message.channel.send(`unable to find filter${filterName}`);
             return;
           }
           startAutoBuyer.call(instance);
-          message.channel.sendMessage(`${filterName} started successfully`);
+          message.channel.send(`${filterName} started successfully`);
         } else {
-          message.channel.sendMessage("Unable to find filter name");
+          message.channel.send("Unable to find filter name");
         }
       }
     });

@@ -1,5 +1,4 @@
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
-import { generateButton } from "../../../utils/uiUtils/generateButton";
 import {
   idAbAddFilterGK,
   idAbMinRating,
@@ -13,19 +12,31 @@ import {
   idAddIgnorePlayersList,
   idRemoveIgnorePlayers,
   idAbIgnoreAllowToggle,
-  idAbSortOrder,
+  idTooltip,
   idAbShouldSort,
   idAbSortBy,
+  idAbSortOrder,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { checkAndAppendOption } from "../../../utils/filterUtil";
 import { getValue, setValue } from "../../../services/repository";
+import { generateButton } from "../../../utils/uiUtils/generateButton";
 let playerInput;
 
 export const destoryPlayerInput = () => {
   playerInput.destroy();
   playerInput = null;
 };
+
+const updateAbSortBy = () => {
+  const sortBy = $(`#${idAbSortBy}`).val() || "buy";
+  const buyerSetting = getValue("BuyerSettings") || {};
+  buyerSetting["idAbSortBy"] = sortBy;
+  setValue("BuyerSettings", buyerSetting);
+};
+
+$(document).on({ change: updateAbSortBy }, `#${idAbSortBy}`);
+
 const playerIgnoreList = function () {
   playerInput = new UTPlayerSearchControl();
   const playerListId = `#${idAddIgnorePlayersList}`;
@@ -33,7 +44,7 @@ const playerIgnoreList = function () {
             <div class="price-filter buyer-settings-field">
               <div class="info">
                <span class="secondary label">
-                  <button id='idAddIgnorePlayers_tooltip' style="font-size:16px" class="flat camel-case">Players List</button><br/>
+                  <button id=${idTooltip} style="font-size:16px" class="flat camel-case">Players List</button><br/>
                 </span>
               </div>
               <div class="ignore-players displayCenterFlx">
@@ -70,7 +81,7 @@ const playerIgnoreList = function () {
               <div class="price-filter buyer-settings-field">
                 <div class="info">
                 <span class="secondary label">
-                  <button id='idAddIgnorePlayers_tooltip' style="font-size:16px" class="flat camel-case">Remove from Players List</button><br/>
+                  <button id=${idTooltip} style="font-size:16px" class="flat camel-case">Remove from Players List</button><br/>
                 </span>
                 </div>
                 <div class="displayCenterFlx">
@@ -113,20 +124,9 @@ const playerIgnoreList = function () {
 };
 
 export const searchSettingsView = function () {
-  const updateAbSortBy = () => {
-    const sortBy = $(`#${idAbSortBy}`).val() || "buy";
-    const buyerSetting = getValue("BuyerSettings") || {};
-    buyerSetting["idAbSortBy"] = sortBy;
-    setValue("BuyerSettings", buyerSetting);
-  };
-
-  $(document).on({ change: updateAbSortBy }, `#${idAbSortBy}`);
-
   const element =
-    $(`<div style='display : none' class='buyer-settings-wrapper results-filter-view'>  
-    <hr class="search-price-header header-hr">
-    <div class="search-price-header place-holder">
-      <h1 class="secondary">Search Settings:</h1>
+    $(`<div style='display : none' class='buyer-settings-wrapper results-filter-view'>
+    <div class="place-holder">
     </div>
     ${generateToggleInput(
       "Ignore/Buy Players List",
@@ -134,7 +134,6 @@ export const searchSettingsView = function () {
       "(If toggled bot will only buy/bid the above players else bot will ignore the players when bidding/buying )",
       "BuyerSettings"
     )}
-  
     ${generateTextInput(
       "Min Rating",
       10,
@@ -146,14 +145,14 @@ export const searchSettingsView = function () {
       "Max Rating",
       100,
       { idAbMaxRating },
-      "Maximum Player Rating<br /><br />",
+      "Maximum Player Rating",
       "BuyerSettings"
     )}    
     ${generateTextInput(
       "Search result page limit",
       5,
       { idAbMaxSearchPage },
-      "No of. pages bot should move <br /> forward before going back to page 1",
+      "No of. pages bot should move forward before going back to page 1",
       "BuyerSettings"
     )}
     ${generateTextInput(
@@ -198,19 +197,19 @@ export const searchSettingsView = function () {
       <div class="displayCenterFlx">
       <select style="width:95%;height: 3rem;font-size: 1.5rem;" class="select-sortBy filter-header-settings" id="${idAbSortBy}">
         <option disabled selected>--Select Sort Attribute--</option>
-        <option value="expires">Expires on</option>
+        <option value="expires">Expires on</option>          
         <option value="buy">Buy now price</option>
         <option value="bid">Bid now price</option>
         <option value="rating">Player rating</option>
       </select>
       </div>
     </div>
-   ${generateToggleInput(
-     "Order",
-     { idAbSortOrder },
-     "(Enabled = descending, Disabled = ascending)",
-     "BuyerSettings"
-   )}
+    ${generateToggleInput(
+      "Order",
+      { idAbSortOrder },
+      "(Enabled = descending, Disabled = ascending)",
+      "BuyerSettings"
+    )}
   </div>`);
 
   const parentEl = element.find(".place-holder");

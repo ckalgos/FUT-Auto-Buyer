@@ -11,11 +11,7 @@ import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 
 export const safeSettingsView = function () {
-  return `<div style='display : none' class='buyer-settings-wrapper safety-settings-view'>  
-  <hr class="search-price-header header-hr">
-  <div class="search-price-header">
-    <h1 class="secondary">Safety Settings:</h1>
-  </div>
+  return `<div style='display : none' class='buyer-settings-wrapper safety-settings-view'>
   ${generateTextInput(
     "Wait Time",
     "7-15",
@@ -36,7 +32,7 @@ export const safeSettingsView = function () {
     "Pause Cycle",
     "10-15",
     { idAbCycleAmount },
-    "(No. of searches performed <br/> before triggering Pause eg. 10-15)",
+    "(No. of searches performed before triggering Pause eg. 10-15)",
     "CommonSettings",
     "text",
     "\\d+-\\d+$"
@@ -45,7 +41,7 @@ export const safeSettingsView = function () {
     "Pause For",
     "5-8S",
     { idAbPauseFor },
-    "(S for seconds, M for Minutes, H for hours eg. 0-0S)<br/><br/>",
+    "(S for seconds, M for Minutes, H for hours eg. 0-0S)",
     "CommonSettings",
     "text",
     "\\d+-\\d+[H|M|S|h|m|s]$"
@@ -69,7 +65,7 @@ export const safeSettingsView = function () {
     "Stop After",
     "3-4H",
     { idAbStopAfter },
-    "(S for seconds, M for Minutes, H for hours eg. 3-4H)",
+    "(S for seconds, M for Minutes, H for hours  eg. 3-4H)",
     "CommonSettings",
     "text",
     "\\d+-\\d+[H|M|S|h|m|s]$"

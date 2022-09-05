@@ -11,38 +11,21 @@ const sendRequest = (url, payload, token = null) => {
   });
 };
 
-const getToken = () => {
-  let authToken = getValue("authToken");
-  if (!authToken) {
-    authToken = localStorage.getItem("abAuthToken");
-    if (authToken) {
-      const payload = JSON.parse(atob(authToken.split(".")[1]));
-      const expiration = new Date(payload.exp * 1000);
-      if (expiration.getTime() > new Date().getTime()) {
-        return { token: authToken };
-      }
-      return null;
-    }
-  }
-  return authToken;
-};
-
 const generateToken = () => {
   const email = getValue("useremail");
   const { id: userId } = services.User.getUser();
   return sendRequest(
     atob(
-      "aHR0cHM6Ly9scHA5dThlY2VmLmV4ZWN1dGUtYXBpLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tL2Rldi90b2tlbg=="
+      "aHR0cHM6Ly8zcHFtaHc3NmE0LmV4ZWN1dGUtYXBpLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tL2Rldi90b2tlbg=="
     ),
     { email, userId }
   );
 };
 
 export const trackMarketPrices = async (playerPrices) => {
-  let authToken = getToken();
+  let authToken = getValue("authToken");
   if (!authToken) {
     let token = await (await generateToken()).json();
-    localStorage.setItem("abAuthToken", token);
     authToken = {
       token,
       expiryTimeStamp: new Date(Date.now() + 55 * 60 * 1000),
@@ -51,7 +34,7 @@ export const trackMarketPrices = async (playerPrices) => {
   }
   return sendRequest(
     atob(
-      "aHR0cHM6Ly8yNWllNXRoMnE0LmV4ZWN1dGUtYXBpLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tL2Rldi9hdWN0aW9u"
+      "aHR0cHM6Ly93bG0wc2pzbHVlLmV4ZWN1dGUtYXBpLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tL2Rldi9hdWN0aW9u"
     ),
     { playerPrices },
     authToken.token

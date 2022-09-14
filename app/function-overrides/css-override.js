@@ -207,6 +207,9 @@ export const cssOverride = () => {
     top: 50%;
     color: wheat
   }
+  .phone .joinServer{
+    display: none;
+  }
   textarea {
     resize: none;
   }  

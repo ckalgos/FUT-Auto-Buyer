@@ -23,10 +23,7 @@ const generateToken = () => {
 };
 
 export const trackMarketPrices = async (playerPrices) => {
-  return sendRequest(
-    atob(
-      "aHR0cHM6Ly9oZmZnZHpiZGxsLmV4ZWN1dGUtYXBpLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tL2Rldi9hdWN0aW9u"
-    ),
-    { playerPrices }
-  );
+  return sendRequest(atob("aHR0cHM6Ly9hcGkuZnV0aGVscGVycy5jb20vYXVjdGlvbg=="), {
+    playerPrices,
+  });
 };

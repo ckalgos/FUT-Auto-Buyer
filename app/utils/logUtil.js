@@ -43,12 +43,10 @@ export const showCaptchaLogs = function (captchaCloseTab) {
 };
 
 export const writeToLog = function (message, log) {
-  setTimeout(() => {
-    var $log = $("#" + log);
-    message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
-    $log.val($log.val() + message);
-    if ($log[0]) $log.scrollTop($log[0].scrollHeight);
-  }, 10);
+  var $log = $("#" + log);
+  message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
+  $log.val($log.val() + message);
+  if ($log[0]) $log.scrollTop($log[0].scrollHeight);
 };
 
 export const clearLogs = () => {

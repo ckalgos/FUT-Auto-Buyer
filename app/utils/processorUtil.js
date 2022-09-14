@@ -10,7 +10,7 @@ export const setInitialValues = (isResume) => {
   sendUINotification(isResume ? "Autobuyer Resumed" : "Autobuyer Started");
   setValue("autoBuyerActive", true);
   setValue("autoBuyerState", STATE_ACTIVE);
-  $(".ut-tab-bar-item").attr("disabled", true);
+  isPhone() && $(".ut-tab-bar-item").attr("disabled", true);
   if (!isResume) {
     setValue("botStartTime", new Date());
     setValue("purchasedCardCount", 0);

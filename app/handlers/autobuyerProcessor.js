@@ -90,7 +90,7 @@ export const stopAutoBuyer = (isPaused) => {
   if (!isPaused) {
     playAudio("finish");
   }
-  $(".ut-tab-bar-item").removeAttr("disabled");
+  isPhone() && $(".ut-tab-bar-item").removeAttr("disabled");
   setValue("autoBuyerState", isPaused ? STATE_PAUSED : STATE_STOPPED);
   sendUINotification(isPaused ? "Autobuyer Paused" : "Autobuyer Stopped");
   $("#" + idAbStatus)

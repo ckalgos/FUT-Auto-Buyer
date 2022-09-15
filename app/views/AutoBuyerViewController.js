@@ -21,6 +21,10 @@ const searchFiltersAppear =
   UTMarketSearchFiltersViewController.prototype.viewDidAppear;
 
 JSUtils.inherits(AutoBuyerViewController, UTMarketSearchFiltersViewController);
+JSUtils.inherits(
+  UTMarketSearchFiltersViewController,
+  UTMarketSearchFiltersViewController
+);
 
 AutoBuyerViewController.prototype.init = function () {
   searchFiltersViewInit.call(this);
@@ -72,14 +76,26 @@ AutoBuyerViewController.prototype.init = function () {
   btnContainer.append($(clearLogBtn.__root));
   $(menuItems.__root).find(".menu-container").addClass("settings-menu");
   root.find(".search-prices").append(menuItems.__root);
-  filterHeaderSettingsView.call(this).then((res) => {
-    root.find(".ut-item-search-view").first().prepend(res);
-  });
 };
 
 AutoBuyerViewController.prototype.viewDidAppear = function () {
   this.getNavigationController().setNavigationVisibility(true, true);
+  searchFiltersViewAppear.call(this, false);
+};
+
+UTMarketSearchFiltersViewController.prototype.viewDidAppear = function () {
+  searchFiltersViewAppear.call(this, true);
+};
+
+const searchFiltersViewAppear = function (isTransferSearch) {
   searchFiltersAppear.call(this);
+  let view = this.getView();
+  let root = $(view.__root);
+  if (!root.find(".filter-place").length) {
+    filterHeaderSettingsView.call(this, isTransferSearch).then((res) => {
+      root.find(".ut-item-search-view").first().prepend(res);
+    });
+  }
 };
 
 AutoBuyerViewController.prototype.getNavigationTitle = function () {

@@ -70,18 +70,17 @@ export const saveFilterInDB = (filterName, settingsJson) => {
   insertFilters(filterName, getValue("filters")[filterName]);
 };
 
-export const loadFilter = async function (currentFilterName) {
-  if (!getValue("runnerToggle")) await clearSettingMenus();
+export const loadFilter = async function (currentFilterName, isTransferSearch) {
+  if (!getValue("runnerToggle") && !isTransferSearch) await clearSettingMenus();
   const filterSetting = getValue("filters")[currentFilterName];
   if (!filterSetting) return;
   let {
     searchCriteria: { criteria, playerData, buyerSettings },
   } = JSON.parse(filterSetting);
-  await updateCommonSettings();
-  const commonSettings = getValue("CommonSettings") || {};
-  setValue("BuyerSettings", buyerSettings);
-  setValue("currentFilter", currentFilterName);
-  buyerSettings = Object.assign({}, buyerSettings, commonSettings);
+
+  this._viewmodel.resetSearch();
+  this.viewDidAppear();
+
   this._viewmodel.playerData = {};
   Object.assign(this._viewmodel.searchCriteria, criteria);
   Object.assign(this._viewmodel.playerData, playerData);
@@ -91,6 +90,16 @@ export const loadFilter = async function (currentFilterName) {
   }
 
   this.viewDidAppear();
+
+  if (isTransferSearch) {
+    return;
+  }
+
+  await updateCommonSettings();
+  const commonSettings = getValue("CommonSettings") || {};
+  setValue("BuyerSettings", buyerSettings);
+  setValue("currentFilter", currentFilterName);
+  buyerSettings = Object.assign({}, buyerSettings, commonSettings);
 
   updateSettingsView(buyerSettings);
 
@@ -121,7 +130,6 @@ export const deleteFilter = async function () {
     $(`${selectedFilterId}` + ` option[value="${filterName}"]`).remove();
     updateMultiFilterSettings();
     deleteFilters(filterName);
-    setValue("currentFilter", null);
     sendUINotification("Changes saved successfully");
   }
 };

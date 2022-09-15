@@ -12,19 +12,24 @@ export const xmlRequestOverride = () => {
       "readystatechange",
       function () {
         if (this.readyState === 4) {
-          if (this.responseURL.includes(personaUrl)) {
+          if (isPhone() && this.responseURL.includes(personaUrl)) {
             let parsedResponse = JSON.parse(this.responseText);
             if (parsedResponse) {
               const { personaId, personaName } = parsedResponse.userInfo;
               const userEmail = getValue("useremail");
               window.ReactNativeWebView.postMessage(
                 JSON.stringify({
-                  payload: { personaId, personaName, userEmail },
+                  payload: {
+                    personaId,
+                    personaName,
+                    userEmail,
+                    language: services.Localization.locale.language,
+                  },
                   type: "initUser",
                 })
               );
             }
-          } else if (this.responseURL.includes(squadMembersUrl)) {
+          } else if (isPhone() && this.responseURL.includes(squadMembersUrl)) {
             let parsedResponse = JSON.parse(this.responseText);
             if (parsedResponse) {
               const payload = parsedResponse.auctionInfo

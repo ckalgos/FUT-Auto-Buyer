@@ -77,6 +77,7 @@ export const setDefaultActiveTab = () => {
 
 export const clearSettingMenus = async function () {
   deleteAllMenu();
+  clearSettingsCache();
   await appendMenuItems();
   const autoBuyerInstance = getValue("AutoBuyerInstance");
   UTMarketSearchFiltersViewController.prototype._eResetSelected.call(
@@ -144,4 +145,10 @@ const hideAllSection = () => {
   settingsLookup.forEach((value, key) => {
     $(value.selector).css("display", "none");
   });
+};
+
+const clearSettingsCache = () => {
+  setValue("currentFilter", null);
+  setValue("BuyerSettings", {});
+  setValue("currentFilter", {});
 };

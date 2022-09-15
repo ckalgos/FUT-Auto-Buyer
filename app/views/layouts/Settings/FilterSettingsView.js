@@ -135,24 +135,26 @@ const handleReportProblem = () => {
   );
 };
 
-export const filterHeaderSettingsView = async function () {
+export const filterHeaderSettingsView = async function (isTransferSearch) {
   const context = this;
+  const filterId = isTransferSearch ? "transfer" : "";
+  $(document).off("change", `#${idFilterDropdown}${filterId}`);
   $(document).on(
     {
       change: function () {
-        const filterName = $(`#${idFilterDropdown} option`)
+        const filterName = $(`#${idFilterDropdown}${filterId} option`)
           .filter(":selected")
           .val();
-        loadFilter.call(context, filterName);
+        loadFilter.call(context, filterName, isTransferSearch);
       },
     },
-    `#${idFilterDropdown}`
+    `#${idFilterDropdown}${filterId}`
   );
 
   const rootHeader =
     $(`<div style="width:100%;display: flex;flex-direction: column;">
             ${
-              isPhone()
+              isPhone() && !isTransferSearch
                 ? generateToggleInput(
                     "Runner Mode",
                     { idAbToggleRunner },
@@ -171,39 +173,59 @@ export const filterHeaderSettingsView = async function () {
                   )
                 : ""
             }
-            <div id=${idBtnReport} class="btn-report"> 
-            </div>           
+            ${
+              !isTransferSearch
+                ? `<div id=${idBtnReport} class="btn-report"></div>`
+                : ""
+            }         
             <div class="price-filter buyer-settings-field multiple-filter filter-place">
             </div> 
             <div class="button-container btn-filters">
-                 <select class="filter-header-settings" id=${idFilterDropdown}>
+                 <select class="filter-header-settings" id='${idFilterDropdown}${filterId}'>
                     <option selected="true" disabled>Choose filter to load</option>
                     ${Object.keys(await filters()).map(
                       (value) => `<option value="${value}">${value}</option>`
                     )}                    
                  </select>                 
-                 ${generateButton(
-                   idAbUploadFilter,
-                   "⇧",
-                   () => {
-                     uploadFilters();
-                   },
-                   "filterSync",
-                   "Upload filters"
-                 )} 
-               ${generateButton(
-                 idAbDownloadFilter,
-                 "⇩",
-                 () => {
-                   downloadFilters();
-                 },
-                 "filterSync",
-                 "Download filters"
-               )}
+                ${
+                  !isTransferSearch
+                    ? generateButton(
+                        idAbUploadFilter,
+                        "⇧",
+                        () => {
+                          uploadFilters();
+                        },
+                        "filterSync",
+                        "Upload filters"
+                      )
+                    : ""
+                }
+               ${
+                 !isTransferSearch
+                   ? generateButton(
+                       idAbDownloadFilter,
+                       "⇩",
+                       () => {
+                         downloadFilters();
+                       },
+                       "filterSync",
+                       "Download filters"
+                     )
+                   : ""
+               }
              </div> 
-               <div id=${idBtnActions} style="margin-top: 1%;" class="button-container btn-filters"> 
-               </div>
+               ${
+                 !isTransferSearch
+                   ? `<div id=${idBtnActions} style="margin-top: 1%;" class="button-container btn-filters"></div>`
+                   : ""
+               }
              </div>`);
+
+  !isTransferSearch && appendButtons.call(this, rootHeader, context);
+  return rootHeader;
+};
+
+const appendButtons = function (rootHeader, context) {
   const buttons = rootHeader.find(`#${idBtnActions}`);
   const btnReport = rootHeader.find(`#${idBtnReport}`);
   buttons.append(
@@ -229,6 +251,4 @@ export const filterHeaderSettingsView = async function () {
       "call-to-action"
     ).__root
   );
-
-  return rootHeader;
 };

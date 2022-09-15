@@ -1,16 +1,7 @@
 export const topNavOverride = () => {
-  UTNavigationBarView.prototype.layoutSubviews = function () {
-    let t = this,
-      e = this.getRootElement();
-    this.primaryButton &&
-      DOMKit.insertBefore(this.primaryButton.getRootElement(), e.firstChild);
-    this.secondaryButton &&
-      e.appendChild(this.secondaryButton.getRootElement());
-    this._subviews.forEach(function (e) {
-      e.view !== t.primaryButton &&
-        e.view !== t.secondaryButton &&
-        e.container.appendChild(e.view.getRootElement());
-    }, this);
+  const layoutSubViews = UTNavigationBarView.prototype.layoutSubviews;
+  UTNavigationBarView.prototype.layoutSubviews = function (...args) {
+    const result = layoutSubViews.call(this, ...args);
     if (this.primaryButton && this.__clubInfo) {
       this._menuBtn && this._menuBtn.removeFromSuperview();
       this._menuBtn = generateNavButton.call(this);
@@ -20,6 +11,7 @@ export const topNavOverride = () => {
       settingBtn.wrap(`<div class="top-nav"></div>`);
       menuBtn.insertBefore(settingBtn);
     }
+    return result;
   };
 
   function generateNavButton() {

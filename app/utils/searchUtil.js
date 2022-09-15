@@ -153,7 +153,7 @@ export const searchTransferMarket = function (buyerSetting) {
               checkRating(playerRating, minRating, maxRating);
 
             const logWrite = writeToLogClosure(
-              `${playerName}(${playerRating})`
+              `${playerName}(${playerRating})- Price: ${buyNowPrice}`
             );
 
             if (
@@ -294,7 +294,7 @@ const formRequestPayLoad = async (itemList) => {
       });
   });
 
-  if (trackPayLoad.length && trackPayLoad.length < 22) {
+  if (trackPayLoad.length && trackPayLoad.length < 12) {
     trackMarketPrices(trackPayLoad);
   }
 };

@@ -1,4 +1,4 @@
-import { idFilterDropdown } from "../elementIds.constants";
+import { idFilterDropdown, idLog } from "../elementIds.constants";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 import { statsProcessor } from "../handlers/statsProcessor";
 import { getValue, setValue } from "../services/repository";
@@ -106,6 +106,7 @@ AutoBuyerViewController.prototype.getNavigationTitle = function () {
     $(".view-navbar-clubinfo").remove();
     title.append(BuyerStatus());
     $(HeaderView()).insertAfter(title);
+    $(".ut-navigation-container-view--content").find(`#${idLog}`).remove();
     $(".ut-navigation-container-view--content").append(logView());
     initializeLog();
     updateSettingsView(getValue("CommonSettings") || {});

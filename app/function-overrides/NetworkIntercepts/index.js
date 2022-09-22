@@ -1,7 +1,7 @@
 import { getValue, setValue } from "../../services/repository";
 
-const personaUrl = "/ut/game/fifa22/usermassinfo";
-const squadMembersUrl = "/ut/game/fifa22/tradepile";
+const personaUrl = "/ut/game/fifa23/usermassinfo";
+const squadMembersUrl = "/ut/game/fifa23/tradepile";
 const profileUrl = "https://gateway.ea.com/proxy/identity/pids/me";
 
 export const xmlRequestOverride = () => {

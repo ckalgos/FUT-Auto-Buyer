@@ -1,4 +1,4 @@
-import { idProgressAutobuyer } from "../../elementIds.constants";
+import { idLog, idProgressAutobuyer } from "../../elementIds.constants";
 import { clearLogs } from "../../utils/logUtil";
 import { createButton } from "./ButtonView";
 
@@ -7,7 +7,7 @@ export const logView = () => {
     !isPhone()
       ? "width:48%"
       : "height: 90%;display: flex;flex-direction: column;padding: 7px;"
-  }>
+  } id=${idLog}>
             <div class="logs-container">
               <label>Logs:</label>
               <div data-title="Clear logs" class="button-clear">

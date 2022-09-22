@@ -18,7 +18,7 @@ export const transferListUtil = function (
     services.Item.requestTransferItems().observe(
       this,
       async function (t, response) {
-        let soldItems = response.data.items.filter(function (item) {
+        let soldItems = response.response.items.filter(function (item) {
           return item.getAuctionData().isSold();
         }).length;
         if (getStatsValue("soldItems") < soldItems) {
@@ -26,7 +26,7 @@ export const transferListUtil = function (
         }
         updateStats("soldItems", soldItems);
 
-        const unsoldItems = response.data.items.filter(function (item) {
+        const unsoldItems = response.response.items.filter(function (item) {
           return (
             !item.getAuctionData().isSold() && item.getAuctionData().isExpired()
           );
@@ -45,12 +45,12 @@ export const transferListUtil = function (
           );
         }
 
-        const activeTransfers = response.data.items.filter(function (item) {
+        const activeTransfers = response.response.items.filter(function (item) {
           return item.getAuctionData().isSelling();
         }).length;
         updateStats("activeTransfers", activeTransfers);
 
-        const availableItems = response.data.items.filter(function (item) {
+        const availableItems = response.response.items.filter(function (item) {
           return item.getAuctionData().isInactive();
         }).length;
 

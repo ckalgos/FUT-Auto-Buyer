@@ -19,7 +19,7 @@ export const watchListUtil = function (buyerSetting) {
       let bidPrice = buyerSetting["idAbMaxBid"];
       let sellPrice = buyerSetting["idAbSellPrice"];
 
-      let activeItems = response.data.items.filter(function (item) {
+      let activeItems = response.response.items.filter(function (item) {
         return item._auction && item._auction._tradeState === "active";
       });
 
@@ -42,7 +42,7 @@ export const watchListUtil = function (buyerSetting) {
               const userWatchItems = getValue("userWatchItems");
 
               if (isAutoBuyerActive && bidPrice) {
-                let outBidItems = watchResponse.data.items.filter(function (
+                let outBidItems = watchResponse.response.items.filter(function (
                   item
                 ) {
                   return (
@@ -72,7 +72,7 @@ export const watchListUtil = function (buyerSetting) {
                 !buyerSetting["idAbDontMoveWon"] &&
                 ((sellPrice && !isNaN(sellPrice)) || useFutBinPrice)
               ) {
-                let boughtItems = watchResponse.data.items.filter(function (
+                let boughtItems = watchResponse.response.items.filter(function (
                   item
                 ) {
                   return (
@@ -127,7 +127,7 @@ export const watchListUtil = function (buyerSetting) {
                 }
               }
 
-              let expiredItems = watchResponse.data.items.filter((item) => {
+              let expiredItems = watchResponse.response.items.filter((item) => {
                 var t = item.getAuctionData();
                 return t.isExpired() || (t.isClosedTrade() && !t.isWon());
               });
@@ -155,7 +155,7 @@ export const addUserWatchItems = () => {
     services.Item.requestWatchedItems().observe(this, function (t, response) {
       if (response.success) {
         const userWatchItems =
-          response.data.items
+          response.response.items
             .filter((item) => item._auction)
             .map((item) => item._auction.tradeId) || [];
 

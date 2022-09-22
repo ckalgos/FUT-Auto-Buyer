@@ -61,7 +61,7 @@ const fetchPlayerPrices = async (playerIds, result) => {
     const refIds = playersIdArray.join(",");
     try {
       const futBinResponse = await sendRequest(
-        `https://www.futbin.com/22/playerPrices?player=${primaryId}&rids=${refIds}`,
+        `https://www.futbin.com/23/playerPrices?player=${primaryId}&rids=${refIds}`,
         "GET",
         `${Math.floor(+new Date())}_fetchPlayerPrices`
       );

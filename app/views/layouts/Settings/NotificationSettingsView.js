@@ -2,8 +2,8 @@ import {
   idAbMessageNotificationToggle,
   idAbSoundToggle,
   idCapatchaMp3,
-  idDiscordChannelId,
-  idDiscordToken,
+  idWebHookUrl,
+  idFUTMarketAlertToken,
   idNotificationType,
   idTelegramBotToken,
   idTelegramChatId,
@@ -37,18 +37,18 @@ export const notificationSettingsView = function () {
     "text"
   )}
   ${generateTextInput(
-    "Discord Bot Token",
+    "Discord WebHook Url",
     "",
-    { idDiscordToken },
-    "Your Discord Bot Token",
+    { idWebHookUrl },
+    "Your Discord Channel Webhook Url",
     "CommonSettings",
     "text"
   )}
   ${generateTextInput(
-    "Discord Channel ID",
+    "Fut Market Alert Notification Token",
     "",
-    { idDiscordChannelId },
-    "Your Discord Channel ID",
+    { idFUTMarketAlertToken },
+    "Your FUT Market Alert App's Token",
     "CommonSettings",
     "text"
   )}`

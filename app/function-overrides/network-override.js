@@ -2,7 +2,7 @@ const defaultFetch = window.fetch;
 window.fetch = function (request, options) {
   if (
     request &&
-    /discordapp/.test(request) &&
+    (/discordapp/.test(request) || /exp.host/.test(request)) &&
     (options.method === "POST" || options.method === "DELETE")
   ) {
     return new Promise((resolve, reject) => {

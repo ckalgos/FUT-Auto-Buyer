@@ -4,16 +4,13 @@ export const getUserPlatform = () => {
   let platform = getValue("userPlatform");
   if (platform) return platform;
 
-  if (services.User.getUser().getSelectedPersona().isPlaystation) {
-    setValue("userPlatform", "ps");
-    return "ps";
-  } else if (services.User.getUser().getSelectedPersona().isXbox) {
-    setValue("userPlatform", "xbox");
-    return "xbox";
-  } else {
+  if (services.User.getUser().getSelectedPersona().isPC) {
     setValue("userPlatform", "pc");
     return "pc";
   }
+
+  setValue("userPlatform", "ps");
+  return "ps";
 };
 
 export const updateUserCredits = () => {

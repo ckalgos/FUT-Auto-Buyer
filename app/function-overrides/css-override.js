@@ -150,7 +150,8 @@ export const cssOverride = () => {
   .numericInput:invalid {
     color: red;
     border: 1px solid;
-  }.ignore-players{
+  }
+  .ignore-players{
     width: 100%;
     display: flex;
     background: transparent;

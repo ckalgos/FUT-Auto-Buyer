@@ -1,8 +1,4 @@
-import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
-import { getBuyerSettings, getValue, setValue } from "../services/repository";
-import { loadFilter } from "./userExternalUtil";
-
-let discordClient = null;
+import { getBuyerSettings } from "../services/repository";
 
 export const sendUINotification = function (message, notificationType) {
   notificationType = notificationType || UINotificationType.POSITIVE;
@@ -35,9 +31,11 @@ const sendNotificationToExternalPhone = (message) => {
 const sendNotificationToExternal = (buyerSetting, message) => {
   let telegramToken = buyerSetting["idTelegramBotToken"];
   let telegramChatId = buyerSetting["idTelegramChatId"];
-  let channelId = buyerSetting["idDiscordChannelId"];
+  let webHookUrl = buyerSetting["idWebHookUrl"];
+  let alertAppNotificationToken = buyerSetting["idFUTMarketAlertToken"];
   sendMessageToTelegram(telegramToken, telegramChatId, message);
-  sendMessageToDiscord(channelId, message);
+  sendMessageToDiscord(webHookUrl, message);
+  sendMessageToAlertApp(alertAppNotificationToken, message);
 };
 
 const sendMessageToTelegram = (telegramToken, telegramChatId, message) => {
@@ -49,64 +47,30 @@ const sendMessageToTelegram = (telegramToken, telegramChatId, message) => {
   }
 };
 
-const sendMessageToDiscord = (channelId, message) => {
-  if (channelId) {
-    if (discordClient) {
-      const channel = discordClient.channels.get(channelId);
-      channel && channel.send(message);
-    } else {
-      discordClient = initializeDiscordClient(() => {
-        setTimeout(() => {
-          if (discordClient) {
-            const channel = discordClient.channels.get(channelId);
-            channel && channel.send(message);
-          }
-        }, 200);
-      });
-    }
+const sendMessageToDiscord = (webHookUrl, message) => {
+  if (webHookUrl) {
+    fetch(webHookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: message,
+      }),
+    });
   }
 };
 
-export const initializeDiscordClient = (cb) => {
-  const buyerSetting = getBuyerSettings();
-  const client = new Discord.Client();
-  let discordToken = buyerSetting["idDiscordToken"];
-  if (!discordToken) return null;
-  try {
-    client.login(discordToken);
-    client.on("ready", function () {
-      if (cb) {
-        cb();
-      }
+const sendMessageToAlertApp = (notificationToken, message) => {
+  if (notificationToken) {
+    fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([
+        {
+          to: `ExponentPushToken[${notificationToken}]`,
+          title: message,
+          body: message,
+        },
+      ]),
     });
-    client.on("message", function (message) {
-      if (message.author.id == client.user.id) return;
-      if (/start/i.test(message.content)) {
-        const instance = getValue("AutoBuyerInstance");
-        startAutoBuyer.call(instance);
-        message.channel.send("Bot started successfully");
-      } else if (/stop/i.test(message.content)) {
-        stopAutoBuyer();
-        message.channel.send("Bot stopped successfully");
-      } else if (/runfilter/i.test(message.content)) {
-        let filterName = message.content.split("-")[1];
-        if (filterName) {
-          filterName = filterName.toUpperCase();
-          stopAutoBuyer();
-          setValue("selectedFilters", []);
-          const instance = getValue("AutoBuyerInstance");
-          const isSuccess = loadFilter.call(instance, filterName);
-          if (!isSuccess) {
-            message.channel.send(`unable to find filter${filterName}`);
-            return;
-          }
-          startAutoBuyer.call(instance);
-          message.channel.send(`${filterName} started successfully`);
-        } else {
-          message.channel.send("Unable to find filter name");
-        }
-      }
-    });
-  } catch (err) {}
-  return client;
+  }
 };

@@ -236,7 +236,11 @@ export const searchTransferMarket = function (buyerSetting) {
               (userBuyNowPrice && buyNowPrice > userBuyNowPrice) ||
               (bidPrice && currentBid > priceToBid)
             ) {
-              logWrite("(higher than specified buy/bid price");
+              logWrite(
+                `BuyPrice: ${
+                  userBuyNowPrice || priceToBid
+                } (higher than specified buy/bid price)`
+              );
               continue;
             }
             logWrite("(No Actions Required)");

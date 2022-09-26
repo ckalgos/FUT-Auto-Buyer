@@ -1,6 +1,5 @@
 import {
   idAbCycleAmount,
-  idAbMaxPurchases,
   idAbPauseFor,
   idAbStopAfter,
   idAbWaitTime,
@@ -20,13 +19,6 @@ export const safeSettingsView = function () {
     "CommonSettings",
     "text",
     "\\d+-\\d+$"
-  )}
-  ${generateTextInput(
-    "Max purchases per search request",
-    1,
-    { idAbMaxPurchases },
-    "<br/>",
-    "CommonSettings"
   )}
   ${generateTextInput(
     "Pause Cycle",

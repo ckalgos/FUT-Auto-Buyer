@@ -80,8 +80,6 @@ export const searchTransferMarket = function (buyerSetting) {
             validSearchCount = false;
           }
 
-          let maxPurchases = buyerSetting["idAbMaxPurchases"];
-
           if (
             currentPage < buyerSetting["idAbMaxSearchPage"] &&
             response.data.items.length === 21
@@ -170,11 +168,6 @@ export const searchTransferMarket = function (buyerSetting) {
               continue;
             }
 
-            if (maxPurchases < 1) {
-              logWrite("(Exceeded num of buys/bids per search)");
-              continue;
-            }
-
             if (!player.preferredPosition && buyerSetting["idAbAddFilterGK"]) {
               logWrite("(is a Goalkeeper)");
               continue;
@@ -192,7 +185,7 @@ export const searchTransferMarket = function (buyerSetting) {
 
             const userCoins = services.User.getUser().coins.amount;
             if (
-              userCoins < buyNowPrice ||
+              (!bidPrice && userCoins < buyNowPrice) ||
               (bidPrice && userCoins < checkPrice)
             ) {
               logWrite("(Insufficient coins to buy/bid)");
@@ -201,7 +194,6 @@ export const searchTransferMarket = function (buyerSetting) {
 
             if (buyNowPrice <= userBuyNowPrice) {
               logWrite("attempt buy: " + buyNowPrice);
-              maxPurchases--;
               currentBids.add(auction.tradeId);
               await buyPlayer(
                 player,
@@ -211,7 +203,7 @@ export const searchTransferMarket = function (buyerSetting) {
                 true,
                 auction.tradeId
               );
-              continue;
+              break;
             }
 
             if (bidPrice && currentBid <= priceToBid) {
@@ -221,7 +213,6 @@ export const searchTransferMarket = function (buyerSetting) {
               }
               logWrite("attempt bid: " + checkPrice);
               currentBids.add(auction.tradeId);
-              maxPurchases--;
               await buyPlayer(
                 player,
                 playerName,
@@ -230,7 +221,7 @@ export const searchTransferMarket = function (buyerSetting) {
                 checkPrice === buyNowPrice,
                 auction.tradeId
               );
-              continue;
+              break;
             }
 
             if (

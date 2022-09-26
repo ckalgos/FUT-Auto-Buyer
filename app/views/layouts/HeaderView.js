@@ -32,7 +32,7 @@ const HeaderViewMobile = () => {
               <div id=${idAbSearchProgress} class="stats-fill"></div>
             </div>
             <div class="view-navbar-currency-coins">Coins: <span id=${idAbCoins}></span></div>
-            <div class="view-navbar-currency-coins">Profit: <span  id=${idAbProfit}></span></div>
+            <div class="view-navbar-currency-coins">Profit: <span id=${idAbProfit}></span></div>
             ${generateButton(
               idAbDownloadStats,
               "⇩",

@@ -32,7 +32,8 @@ export const searchTransferMarket = function (buyerSetting) {
 
     let bidPrice = buyerSetting["idAbMaxBid"];
     let userBuyNowPrice = buyerSetting["idAbBuyPrice"];
-    let useFutBinPrice = buyerSetting["idBuyFutBinPrice"];
+    let useFutBinPrice =
+      buyerSetting["idBuyFutBinPrice"] || buyerSetting["idAbBidFutBin"];
 
     if (!userBuyNowPrice && !bidPrice && !useFutBinPrice) {
       writeToLog(

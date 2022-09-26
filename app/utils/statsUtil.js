@@ -4,9 +4,6 @@ import { downloadCsv } from "./commonUtil";
 export const updateRequestCount = () => {
   const currentStats = getValue("sessionStats");
   currentStats["searchCount"]++;
-  if (currentStats.searchCount % 45 === 0) {
-    window.ReactNativeWebView.postMessage(JSON.stringify({ type: "showAd" }));
-  }
   setValue("sessionStats", currentStats);
 };
 
@@ -36,5 +33,5 @@ export const downloadStats = () => {
   },${winCount || 0},${bidCount || 0},${lossCount || 0}\n\n`;
   csvContent += `Transactions\n`;
   csvContent += transactions.map((transact) => `${transact}\n`).join("");
-  downloadCsv(csvContent, "Stats.csv");
+  downloadCsv(csvContent, "Stats");
 };

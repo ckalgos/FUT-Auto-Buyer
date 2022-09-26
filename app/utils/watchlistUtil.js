@@ -20,7 +20,7 @@ export const watchListUtil = function (buyerSetting) {
       let sellPrice = buyerSetting["idAbSellPrice"];
 
       let activeItems = response.response.items.filter(function (item) {
-        return item._auction && item._auction._tradeState === "active";
+        return !!item._auction;
       });
 
       if (!activeItems.length) {
@@ -90,9 +90,10 @@ export const watchListUtil = function (buyerSetting) {
                   let playerRating = parseInt(player.rating);
                   const isValidRating =
                     !ratingThreshold || playerRating <= ratingThreshold;
+                  let playerName = formatString(player._staticData.name, 15);
+                  let price = player._auction.currentBid;
 
                   if (isValidRating && useFutBinPrice) {
-                    let playerName = formatString(player._staticData.name, 15);
                     sellPrice = await getSellPriceFromFutBin(
                       buyerSetting,
                       playerName,
@@ -113,8 +114,7 @@ export const watchListUtil = function (buyerSetting) {
                   }
                   if (!buyerSetting["idAbDontMoveWon"]) {
                     const sellQueue = getValue("sellQueue") || [];
-                    const profit =
-                      sellPrice * 0.95 - player._auction.currentBid;
+                    const profit = sellPrice * 0.95 - price;
                     sellQueue.push({
                       player,
                       sellPrice,

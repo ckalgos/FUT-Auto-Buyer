@@ -80,14 +80,6 @@ export const searchTransferMarket = function (buyerSetting) {
             validSearchCount = false;
           }
 
-          if (
-            currentPage < buyerSetting["idAbMaxSearchPage"] &&
-            response.data.items.length === 21
-          ) {
-            increAndGetStoreValue("currentPage");
-          } else {
-            setValue("currentPage", 1);
-          }
           if (buyerSetting["idAbShouldSort"])
             response.data.items = sortPlayers(
               response.data.items,
@@ -249,6 +241,15 @@ export const searchTransferMarket = function (buyerSetting) {
         }
         sendPinEvents("Transfer Market Search");
         formRequestPayLoad(response.data.items || []);
+
+        if (
+          currentPage < buyerSetting["idAbMaxSearchPage"] &&
+          response.data.items.length === 21
+        ) {
+          increAndGetStoreValue("currentPage");
+        } else {
+          setValue("currentPage", 1);
+        }
         resolve();
       }
     );

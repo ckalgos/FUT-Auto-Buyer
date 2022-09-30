@@ -1,5 +1,5 @@
 import { idFilterDropdown, idLog } from "../elementIds.constants";
-import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
+import * as processors from "../handlers/autobuyerProcessor";
 import { statsProcessor } from "../handlers/statsProcessor";
 import { getValue, setValue } from "../services/repository";
 import { updateSettingsView } from "../utils/commonUtil";
@@ -9,6 +9,8 @@ import { BuyerStatus, HeaderView } from "./layouts/HeaderView";
 import { initializeLog, logView } from "./layouts/LogView";
 import { clearSettingMenus, generateMenuItems } from "./layouts/MenuItemView";
 import { filterHeaderSettingsView } from "./layouts/Settings/FilterSettingsView";
+
+const { startAutoBuyer, stopAutoBuyer } = processors;
 
 export const AutoBuyerViewController = function (t) {
   UTMarketSearchFiltersViewController.call(this);

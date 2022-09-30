@@ -183,6 +183,11 @@ export const filterHeaderSettingsView = async function (isTransferSearch) {
             <div class="button-container btn-filters">
                  <select class="filter-header-settings" id='${idFilterDropdown}${filterId}'>
                     <option selected="true" disabled>Choose filter to load</option>
+                    ${
+                      !isTransferSearch
+                        ? `<option value="_default">_DEFAULT</option>`
+                        : ""
+                    }  
                     ${Object.keys(await filters()).map(
                       (value) => `<option value="${value}">${value}</option>`
                     )}                    

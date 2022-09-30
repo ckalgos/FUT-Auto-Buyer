@@ -1,3 +1,4 @@
+import { idSession } from "../elementIds.constants";
 import { setValue } from "../services/repository";
 
 export const sendExternalRequest = async (options) => {
@@ -21,5 +22,6 @@ const sendWebRequest = (options) => {
     method: options.method,
     url: options.url,
     onload: options.onload,
+    headers: { "User-Agent": idSession },
   });
 };

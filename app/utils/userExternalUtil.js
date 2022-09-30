@@ -1,3 +1,4 @@
+import { defaultBuyerSetting, defaultCommonSetting } from "../app.constants";
 import * as ElementIds from "../elementIds.constants";
 import { getValue, getBuyerSettings, setValue } from "../services/repository";
 import {
@@ -45,6 +46,12 @@ export const saveFilterDetails = function (self) {
     let filterName = prompt("Enter a name for this filter", currentFilterName);
     validateSettings();
     if (filterName) {
+      if (filterName.toLocaleUpperCase() === "_DEFAULT") {
+        return sendUINotification(
+          "Cannot override _DEFAULT filter",
+          UINotificationType.NEGATIVE
+        );
+      }
       saveFilterInDB(filterName, settingsJson);
       insertFilters(
         "CommonSettings",
@@ -70,10 +77,21 @@ export const saveFilterInDB = (filterName, settingsJson) => {
   insertFilters(filterName, getValue("filters")[filterName]);
 };
 
+const loadDefaultFilter = () => {
+  setValue("BuyerSettings", Object.assign({}, defaultBuyerSetting));
+  setValue("CommonSettings", Object.assign({}, defaultCommonSetting));
+  const buyerSettings = getBuyerSettings();
+  updateSettingsView(buyerSettings);
+};
+
 export const loadFilter = async function (currentFilterName, isTransferSearch) {
+  if (currentFilterName === "_default") {
+    loadDefaultFilter();
+    return false;
+  }
   if (!getValue("runnerToggle") && !isTransferSearch) await clearSettingMenus();
   const filterSetting = getValue("filters")[currentFilterName];
-  if (!filterSetting) return;
+  if (!filterSetting) return false;
   let {
     searchCriteria: { criteria, playerData, buyerSettings },
   } = JSON.parse(filterSetting);
@@ -115,10 +133,18 @@ export const loadFilter = async function (currentFilterName, isTransferSearch) {
     }
   }
   validateSettings();
+
+  return true;
 };
 
 export const deleteFilter = async function () {
   const filterName = $(`${filterDropdownId} option`).filter(":selected").val();
+  if (filterName.toLocaleUpperCase() === "_DEFAULT") {
+    return sendUINotification(
+      "Cannot delete _DEFAULT filter",
+      UINotificationType.NEGATIVE
+    );
+  }
   if (filterName != "Choose filter to load") {
     $(`${filterDropdownId}` + ` option[value="${filterName}"]`).remove();
     $(`${filterDropdownId}`).prop("selectedIndex", 0);

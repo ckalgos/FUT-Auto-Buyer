@@ -32,7 +32,8 @@ export const idAbSoundToggle = "elem_" + generateId(15);
 export const idTelegramBotToken = "elem_" + generateId(15);
 export const idTelegramChatId = "elem_" + generateId(15);
 export const idNotificationType = "elem_" + generateId(15);
-export const idWebHookUrl = "elem_" + generateId(15);
+export const idDiscordToken = "elem_" + generateId(15);
+export const idDiscordChannelId = "elem_" + generateId(15);
 export const idFUTMarketAlertToken = "elem_" + generateId(15);
 export const idProgressAutobuyer = "elem_" + generateId(15);
 export const idSearchCancelButton = "elem_" + generateId(15);
@@ -98,6 +99,7 @@ export const idAbShouldSort = "elem_" + generateId(15);
 export const idBtnActions = "elem_" + generateId(15);
 export const idBtnReport = "elem_" + generateId(15);
 export const idTooltip = "elem_" + generateId(15);
+export const idSession = generateId(15);
 
 export const idFinishMp3 = "elem_" + generateId(15);
 export const idLog = "elem_" + generateId(15);

@@ -112,6 +112,7 @@ export const cssOverride = () => {
     align-items: center;
   }
   .button-clear button {
+    color: #fff;
     background-color: unset;
     height: unset;
     line-height: unset;
@@ -218,6 +219,12 @@ export const cssOverride = () => {
     position: relative;
     height: 100%
   }
+  .ut-navigation-bar-view .view-navbar-currency-coins.ab:before {
+    content: unset !important;
+  }
+  .ut-navigation-bar-view .view-navbar-currency-coins.ab {
+    cursor: unset !important;
+  }  
   `;
   style.innerText += getScrollBarStyle();
   document.head.appendChild(style);

@@ -158,10 +158,10 @@ export const playAudio = function (eventType) {
 
     if (eventType == "capatcha") {
       elem = document.getElementById(ElementIds.idCapatchaMp3);
-    }
-
-    if (eventType == "finish") {
+    } else if (eventType == "finish") {
       elem = document.getElementById(ElementIds.idFinishMp3);
+    } else if (eventType == "cardWon") {
+      elem = document.getElementById(ElementIds.idWinMp3);
     }
 
     elem.currentTime = 0;

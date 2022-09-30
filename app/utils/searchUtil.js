@@ -63,7 +63,7 @@ export const searchTransferMarket = function (buyerSetting) {
           setValue("searchFailedCount", 0);
           let validSearchCount = true;
           writeToLog(
-            `Found ${response.data.items.length} items, page - ${currentPage}`,
+            `Found ${response.data.items.length} items, page - ${currentPage} => (minbid: ${searchCriteria.minBid} minbuy:${searchCriteria.minBuy})`,
             idProgressAutobuyer
           );
 
@@ -101,6 +101,9 @@ export const searchTransferMarket = function (buyerSetting) {
           ) {
             let player = response.data.items[i];
             let auction = player._auction;
+            let expires = services.Localization.localizeAuctionTimeRemaining(
+              auction.expires
+            );
             let type = player.type;
             let { id } = player._metaData || {};
             let playerRating = parseInt(player.rating);
@@ -152,19 +155,19 @@ export const searchTransferMarket = function (buyerSetting) {
               checkRating(playerRating, minRating, maxRating);
 
             const logWrite = writeToLogClosure(
-              `${playerName}(${playerRating})- Price: ${buyNowPrice}`
+              `${playerName}(${playerRating}) Price: ${buyNowPrice} time: ${expires}`
             );
 
             if (
               (!buyerSetting["idAbIgnoreAllowToggle"] && playersList.has(id)) ||
               (buyerSetting["idAbIgnoreAllowToggle"] && !playersList.has(id))
             ) {
-              logWrite("skip >>> (Ignored player)");
+              logWrite("(Ignored player)");
               continue;
             }
 
             if (!validSearchCount) {
-              logWrite("skip >>> (Exceeded search result threshold)");
+              logWrite("(Exceeded search result threshold)");
               continue;
             }
 

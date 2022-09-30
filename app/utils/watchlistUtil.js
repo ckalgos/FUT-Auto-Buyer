@@ -1,6 +1,6 @@
 import { idProgressAutobuyer } from "../elementIds.constants";
 import { getValue, setValue } from "../services/repository";
-import { formatString, wait } from "./commonUtil";
+import { formatString, getRandNum, wait } from "./commonUtil";
 import { getSellPriceFromFutBin } from "./futbinUtil";
 import { writeToLog } from "./logUtil";
 import { sendPinEvents } from "./notificationUtil";
@@ -54,8 +54,9 @@ export const watchListUtil = function (buyerSetting) {
                   );
                 });
 
-                for (var i = 0; i < outBidItems.length; i++) {
-                  const currentItem = outBidItems[i];
+                if (outBidItems.length) {
+                  const currentItem =
+                    outBidItems[getRandNum(0, outBidItems.length - 1)];
                   await tryBidItems(
                     currentItem,
                     bidPrice,

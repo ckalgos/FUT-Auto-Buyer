@@ -34,6 +34,7 @@ export const idTelegramChatId = "elem_" + generateId(15);
 export const idNotificationType = "elem_" + generateId(15);
 export const idDiscordToken = "elem_" + generateId(15);
 export const idDiscordChannelId = "elem_" + generateId(15);
+export const idWebHookUrl = "elem_" + generateId(15);
 export const idFUTMarketAlertToken = "elem_" + generateId(15);
 export const idProgressAutobuyer = "elem_" + generateId(15);
 export const idSearchCancelButton = "elem_" + generateId(15);

@@ -35,23 +35,25 @@ const sendNotificationToExternalPhone = (message) => {
 const sendNotificationToExternal = (buyerSetting, message) => {
   const telegramToken = buyerSetting["idTelegramBotToken"];
   const telegramChatId = buyerSetting["idTelegramChatId"];
+  let webHookUrl = buyerSetting["idWebHookUrl"];
   const channelId = buyerSetting["idDiscordChannelId"];
   const alertAppNotificationToken = buyerSetting["idFUTMarketAlertToken"];
   sendMessageToTelegram(telegramToken, telegramChatId, message);
-  sendMessageToDiscord(channelId, message);
+  sendMessageToDiscordWithBot(channelId, message);
+  sendMessageToDiscordWithWebhook(webHookUrl, message);
   sendMessageToAlertApp(alertAppNotificationToken, message);
 };
 
 const sendMessageToTelegram = (telegramToken, telegramChatId, message) => {
   if (telegramToken && telegramChatId) {
-    const url = `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${telegramChatId}&parse_mode=Markdown&text=${message}`;
-    const xhttp = new XMLHttpRequest();
+    let url = `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${telegramChatId}&parse_mode=Markdown&text=${message}`;
+    var xhttp = new XMLHttpRequest();
     xhttp.open("GET", url, true);
     xhttp.send();
   }
 };
 
-const sendMessageToDiscord = (channelId, message) => {
+const sendMessageToDiscordWithBot = (channelId, message) => {
   if (channelId) {
     if (discordClient) {
       const channel = discordClient.channels.get(channelId);
@@ -107,10 +109,22 @@ const initializeDiscordClient = (cb) => {
         } else {
           message.channel.send("Unable to find filter name");
         }
-      }
+      }});
+    } 
+    catch (err) {}
+    return client;
+};
+
+const sendMessageToDiscordWithWebhook = (webHookUrl, message) => {
+  if (webHookUrl) {
+    fetch(webHookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: message,
+      }),
     });
-  } catch (err) {}
-  return client;
+  }
 };
 
 const sendMessageToAlertApp = (notificationToken, message) => {

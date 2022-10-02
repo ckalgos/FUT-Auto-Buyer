@@ -1,5 +1,4 @@
 import { convertToSeconds, wait } from "./commonUtil";
-
 import { getSellBidPrice } from "./priceUtils";
 import { getValue } from "../services/repository";
 import { idProgressAutobuyer } from "../elementIds.constants";

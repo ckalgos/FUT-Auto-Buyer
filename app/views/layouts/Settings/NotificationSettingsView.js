@@ -11,6 +11,7 @@ import {
   idTestNotification,
   idWinMp3,
   idFinishMp3,
+  idWebHookUrl,
 } from "../../../elementIds.constants";
 import { sendNotificationToUser } from "../../../utils/notificationUtil";
 import { generateButton } from "../../../utils/uiUtils/generateButton";
@@ -50,6 +51,14 @@ export const notificationSettingsView = function () {
     "",
     { idDiscordChannelId },
     "Your Discord Channel ID",
+    "CommonSettings",
+    "text"
+  )}
+  ${generateTextInput(
+    "Discord WebHook Url",
+    "",
+    { idWebHookUrl },
+    "Your Discord Channel Webhook Url",
     "CommonSettings",
     "text"
   )}
@@ -107,7 +116,7 @@ export const notificationSettingsView = function () {
    ${generateButton(
      idTestNotification,
      "Test Notification",
-     () => sendNotificationToUser("Test Notification Message", true),
+     () => sendNotificationToUser("Test Notification Message", true, true),
      "call-to-action"
    )} 
    </div>

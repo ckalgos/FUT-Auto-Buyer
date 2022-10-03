@@ -1,6 +1,6 @@
 import { convertToSeconds, wait } from "./commonUtil";
 import { getSellBidPrice } from "./priceUtils";
-import { getValue } from "../services/repository";
+import { getBuyerSettings, getValue } from "../services/repository";
 import { idProgressAutobuyer } from "../elementIds.constants";
 import { sendNotificationToUser } from "./notificationUtil";
 import { updateProfit } from "./statsUtil";
@@ -8,8 +8,8 @@ import { writeToLog } from "./logUtil";
 
 export const processSellQueue = async () => {
   const sellQueue = getValue("sellQueue") || [];
-  const buyerSettings = getValue("BuyerSettings");
-  const notificationType = buyerSetting["idNotificationType"];
+  const buyerSettings = getBuyerSettings();
+  const notificationType = buyerSettings["idNotificationType"];
   const hasItemInQueue = sellQueue.length;
   hasItemInQueue && writeToLog("--------------------", idProgressAutobuyer);
   while (sellQueue.length) {
@@ -45,36 +45,20 @@ const updateLog = (
   message,
   notificationType
 ) => {
-  writeToLog(
-    `${playerName}, ${
-      message
-        ? message
-        : sellPrice < 0
-        ? "moved to transferlist"
-        : shouldList
-        ? "selling for: " + sellPrice + ", Profit: " + profit
-        : buyerSetting["idAbDontMoveWon"]
-        ? ""
-        : "moved to club"
-    } `,
-    idProgressAutobuyer
-  );
+  const formattedMessage = `${playerName}, ${
+    message
+      ? message
+      : sellPrice < 0
+      ? "moved to transferlist"
+      : shouldList
+      ? "selling for: " + sellPrice + ", Profit: " + profit
+      : buyerSetting["idAbDontMoveWon"]
+      ? ""
+      : "moved to club"
+  } `;
+  writeToLog(formattedMessage, idProgressAutobuyer);
   if (notificationType === "B" || notificationType === "A") {
-    sendNotificationToUser(
-      "| " +
-        playerName.trim() +
-        ` |  ${
-          message
-            ? message
-            : sellPrice < 0
-            ? "moved to transferlist"
-            : shouldList
-            ? "selling for: " + sellPrice + ", Profit: " + profit
-            : buyerSetting["idAbDontMoveWon"]
-            ? ""
-            : "moved to club"
-        } |`
-    );
+    sendNotificationToUser(formattedMessage, true);
   }
 };
 

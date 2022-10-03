@@ -224,7 +224,13 @@ export const cssOverride = () => {
   }
   .ut-navigation-bar-view .view-navbar-currency-coins.ab {
     cursor: unset !important;
-  }  
+  } 
+  .auto-buyer .autoBuyMin{
+    display: none;
+  }
+  .auto-buyer .search-prices .settings-field{
+    display: none;
+  }
   `;
   style.innerText += getScrollBarStyle();
   document.head.appendChild(style);

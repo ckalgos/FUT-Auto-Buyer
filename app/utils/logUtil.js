@@ -29,7 +29,8 @@ export const writeToAbLog = (
 
 export const showCaptchaLogs = function (captchaCloseTab) {
   sendNotificationToUser(
-    "Captcha, please solve the problem so that the bot can work again."
+    "Captcha, please solve the problem so that the bot can work again.",
+    false
   );
 
   if (captchaCloseTab) {

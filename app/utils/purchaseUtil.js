@@ -108,7 +108,8 @@ export const buyPlayer = (
 
           if (notificationType === "B" || notificationType === "A") {
             sendNotificationToUser(
-              "| " + playerName.trim() + " | " + priceTxt.trim() + " | buy |"
+              "| " + playerName.trim() + " | " + priceTxt.trim() + " | buy |",
+              true
             );
           }
         } else {
@@ -131,7 +132,8 @@ export const buyPlayer = (
                 playerName.trim() +
                 " | " +
                 priceTxt.trim() +
-                " | failure |"
+                " | failure |",
+              false
             );
           }
 

@@ -1,5 +1,6 @@
-import { getBuyerSettings, setValue, getValue } from "../services/repository";
-import { stopAutoBuyer, startAutoBuyer } from "../handlers/autobuyerProcessor";
+import { getBuyerSettings, getValue, setValue } from "../services/repository";
+import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
+
 import { loadFilter } from "./userExternalUtil";
 
 let discordClient = null;
@@ -33,7 +34,7 @@ const sendNotificationToExternalPhone = (message) => {
 };
 
 const formDiscordMessage = (message, isSuccess) => {
-  return {
+  embedMessage = {
     embeds: [
       {
         description: message,
@@ -49,6 +50,10 @@ const formDiscordMessage = (message, isSuccess) => {
       "https://cdn.discordapp.com/icons/768336764447621122/9de9ea0a7c6239e2f2fbfbd716189e79.webp",
     username: "Fut Market Alert",
   };
+  buyerSetting["idAbCustomDiscordNameNotificationToggle"]
+    ? delete embedMessage["username"]
+    : null;
+  return embedMessage;
 };
 
 const formDiscordRichEmbed = (discordMessage) => {

@@ -1,22 +1,24 @@
 import {
+  idAbCustomDiscordNameNotificationToggle,
   idAbMessageNotificationToggle,
   idAbSoundToggle,
   idCapatchaMp3,
   idDiscordChannelId,
   idDiscordToken,
   idFUTMarketAlertToken,
+  idFinishMp3,
   idNotificationType,
   idTelegramBotToken,
   idTelegramChatId,
   idTestNotification,
-  idWinMp3,
-  idFinishMp3,
   idWebHookUrl,
+  idWinMp3,
 } from "../../../elementIds.constants";
-import { sendNotificationToUser } from "../../../utils/notificationUtil";
+
 import { generateButton } from "../../../utils/uiUtils/generateButton";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
+import { sendNotificationToUser } from "../../../utils/notificationUtil";
 
 export const notificationSettingsView = function () {
   return `<div style='display : none' class='buyer-settings-wrapper notification-settings-view'> 
@@ -99,7 +101,7 @@ export const notificationSettingsView = function () {
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-869-coins.ogg" type="audio/ogg">
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-869-coins.mp3" type="audio/mpeg">
       "Your browser does not support the audio element"
-  </audio> 
+  </audio>
   <audio id='${idCapatchaMp3}' hidden>
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-897-alarm-frenzy.ogg" type="audio/ogg">
     <source src="https://notificationsounds.com/storage/sounds/file-sounds-897-alarm-frenzy.mp3" type="audio/mpeg">
@@ -112,13 +114,19 @@ export const notificationSettingsView = function () {
   </audio> `
        : ""
    }
-   <div class="btn-test-notification buyer-settings-field">  
+     ${generateToggleInput(
+       "Use Custom Discord Bot Name",
+       { idAbCustomDiscordNameNotificationToggle },
+       "",
+       "CommonSettings"
+     )}
+   <div class="btn-test-notification buyer-settings-field">
    ${generateButton(
      idTestNotification,
      "Test Notification",
      () => sendNotificationToUser("Test Notification Message", true, true),
      "call-to-action"
-   )} 
+   )}
    </div>
   `;
 };

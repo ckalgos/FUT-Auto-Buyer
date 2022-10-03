@@ -115,7 +115,7 @@ export const notificationSettingsView = function () {
        : ""
    }
      ${generateToggleInput(
-       "Use Custom Discord Bot Name",
+       "Use Custom Discord Webhook Name",
        { idAbCustomDiscordNameNotificationToggle },
        "",
        "CommonSettings"

@@ -33,8 +33,8 @@ const sendNotificationToExternalPhone = (message) => {
   );
 };
 
-const formDiscordMessage = (message, isSuccess) => {
-  embedMessage = {
+const formDiscordMessage = (message, isSuccess, isCustomDiscordName) => {
+  let embedMessage = {
     embeds: [
       {
         description: message,
@@ -50,9 +50,7 @@ const formDiscordMessage = (message, isSuccess) => {
       "https://cdn.discordapp.com/icons/768336764447621122/9de9ea0a7c6239e2f2fbfbd716189e79.webp",
     username: "Fut Market Alert",
   };
-  buyerSetting["idAbCustomDiscordNameNotificationToggle"]
-    ? delete embedMessage["username"]
-    : null;
+  isCustomDiscordName ? delete embedMessage["username"] : null;
   return embedMessage;
 };
 
@@ -72,9 +70,11 @@ const sendNotificationToExternal = (buyerSetting, isSuccess, message) => {
   const webHookUrl = buyerSetting["idWebHookUrl"];
   const channelId = buyerSetting["idDiscordChannelId"];
   const alertAppNotificationToken = buyerSetting["idFUTMarketAlertToken"];
+  const isCustomDiscordName =
+    buyerSetting["idAbCustomDiscordNameNotificationToggle"];
   sendMessageToTelegram(telegramToken, telegramChatId, message);
-  sendMessageToDiscord(channelId, isSuccess, message);
-  sendMessageToDiscordWH(webHookUrl, isSuccess, message);
+  sendMessageToDiscord(channelId, isSuccess, message, isCustomDiscordName);
+  sendMessageToDiscordWH(webHookUrl, isSuccess, message, isCustomDiscordName);
   sendMessageToAlertApp(alertAppNotificationToken, message);
 };
 
@@ -87,23 +87,37 @@ const sendMessageToTelegram = (telegramToken, telegramChatId, message) => {
   }
 };
 
-const sendMessageToDiscordWH = (webHookUrl, isSuccess, message) => {
+const sendMessageToDiscordWH = (
+  webHookUrl,
+  isSuccess,
+  message,
+  isCustomDiscordName
+) => {
   if (webHookUrl) {
     fetch(webHookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formDiscordMessage(message, isSuccess)),
+      body: JSON.stringify(
+        formDiscordMessage(message, isSuccess, isCustomDiscordName)
+      ),
     });
   }
 };
 
-const sendMessageToDiscord = (channelId, isSuccess, message) => {
+const sendMessageToDiscord = (
+  channelId,
+  isSuccess,
+  message,
+  isCustomDiscordName
+) => {
   if (channelId) {
     if (discordClient) {
       const channel = discordClient.channels.get(channelId);
       channel &&
         channel.send(
-          formDiscordRichEmbed(formDiscordMessage(message, isSuccess))
+          formDiscordRichEmbed(
+            formDiscordMessage(message, isSuccess, isCustomDiscordName)
+          )
         );
     } else {
       discordClient = initializeDiscordClient(() => {
@@ -112,7 +126,9 @@ const sendMessageToDiscord = (channelId, isSuccess, message) => {
             const channel = discordClient.channels.get(channelId);
             channel &&
               channel.send(
-                formDiscordRichEmbed(formDiscordMessage(message, isSuccess))
+                formDiscordRichEmbed(
+                  formDiscordMessage(message, isSuccess, isCustomDiscordName)
+                )
               );
           }
         }, 200);

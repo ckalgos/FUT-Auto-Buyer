@@ -1,6 +1,7 @@
 import {
   idAbCustomDiscordNameNotificationToggle,
   idAbMessageNotificationToggle,
+  idAbSendListingNotificationToggle,
   idAbSoundToggle,
   idCapatchaMp3,
   idDiscordChannelId,
@@ -120,6 +121,12 @@ export const notificationSettingsView = function () {
        "",
        "CommonSettings"
      )}
+      ${generateToggleInput(
+        "Send Listing Notification",
+        { idAbSendListingNotificationToggle },
+        "",
+        "CommonSettings"
+      )}
    <div class="btn-test-notification buyer-settings-field">
    ${generateButton(
      idTestNotification,

@@ -72,6 +72,12 @@ export const notificationSettingsView = function () {
     "Your FUT Market Alert App's Token",
     "CommonSettings",
     "text"
+  )}
+  ${generateToggleInput(
+    "Send Listing Notification",
+    { idAbSendListingNotificationToggle },
+    "",
+    "CommonSettings"
   )}`
      : ""
  }
@@ -121,12 +127,6 @@ export const notificationSettingsView = function () {
        "",
        "CommonSettings"
      )}
-      ${generateToggleInput(
-        "Send Listing Notification",
-        { idAbSendListingNotificationToggle },
-        "",
-        "CommonSettings"
-      )}
    <div class="btn-test-notification buyer-settings-field">
    ${generateButton(
      idTestNotification,

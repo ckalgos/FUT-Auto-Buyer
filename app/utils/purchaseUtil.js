@@ -1,12 +1,3 @@
-import { errorCodeLookUp } from "../app.constants";
-import { idProgressAutobuyer } from "../elementIds.constants";
-import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
-import {
-  getBuyerSettings,
-  getValue,
-  increAndGetStoreValue,
-  setValue,
-} from "../services/repository";
 import {
   convertRangeToSeconds,
   convertToSeconds,
@@ -14,10 +5,20 @@ import {
   playAudio,
   wait,
 } from "./commonUtil";
-import { getSellPriceFromFutBin } from "./futbinUtil";
-import { writeToLog } from "./logUtil";
-import { sendNotificationToUser } from "./notificationUtil";
+import {
+  getBuyerSettings,
+  getValue,
+  increAndGetStoreValue,
+  setValue,
+} from "../services/repository";
+import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
+
 import { appendTransactions } from "./statsUtil";
+import { errorCodeLookUp } from "../app.constants";
+import { getSellPriceFromFutBin } from "./futbinUtil";
+import { idProgressAutobuyer } from "../elementIds.constants";
+import { sendNotificationToUser } from "./notificationUtil";
+import { writeToLog } from "./logUtil";
 
 const errorCodeCountMap = new Map();
 
@@ -108,7 +109,11 @@ export const buyPlayer = (
 
           if (notificationType === "B" || notificationType === "A") {
             sendNotificationToUser(
-              "| " + playerName.trim() + " | " + priceTxt.trim() + " | buy |",
+              "| " +
+                playerName.trim() +
+                " | " +
+                priceTxt.trim() +
+                ` | ${isBin ? "buy" : "bid"} |`,
               true
             );
           }

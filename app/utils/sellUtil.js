@@ -1,6 +1,7 @@
 import { convertToSeconds, wait } from "./commonUtil";
-import { getSellBidPrice } from "./priceUtils";
 import { getBuyerSettings, getValue } from "../services/repository";
+
+import { getSellBidPrice } from "./priceUtils";
 import { idProgressAutobuyer } from "../elementIds.constants";
 import { sendNotificationToUser } from "./notificationUtil";
 import { updateProfit } from "./statsUtil";
@@ -9,7 +10,8 @@ import { writeToLog } from "./logUtil";
 export const processSellQueue = async () => {
   const sellQueue = getValue("sellQueue") || [];
   const buyerSettings = getBuyerSettings();
-  const notificationType = buyerSettings["idNotificationType"];
+  const sendListingNotification =
+    buyerSettings["idAbSendListingNotificationToggle"];
   const hasItemInQueue = sellQueue.length;
   hasItemInQueue && writeToLog("--------------------", idProgressAutobuyer);
   while (sellQueue.length) {
@@ -29,7 +31,7 @@ export const processSellQueue = async () => {
       buyerSettings,
       playerName,
       message,
-      notificationType
+      sendListingNotification
     );
     sellQueue.length && (await wait(2));
   }
@@ -43,21 +45,21 @@ const updateLog = (
   buyerSetting,
   playerName,
   message,
-  notificationType
+  sendListingNotification
 ) => {
-  const formattedMessage = `${playerName}, ${
+  const formattedMessage = `${playerName.trim()}, ${
     message
       ? message
       : sellPrice < 0
       ? "moved to transferlist"
       : shouldList
-      ? "selling for: " + sellPrice + ", Profit: " + profit
+      ? "listed for: " + sellPrice + ", Profit: " + profit
       : buyerSetting["idAbDontMoveWon"]
       ? ""
       : "moved to club"
   } `;
   writeToLog(formattedMessage, idProgressAutobuyer);
-  if (notificationType === "B" || notificationType === "A") {
+  if (sendListingNotification) {
     sendNotificationToUser(formattedMessage, true);
   }
 };

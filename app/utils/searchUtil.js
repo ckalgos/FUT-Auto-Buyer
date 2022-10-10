@@ -94,6 +94,18 @@ export const searchTransferMarket = function (buyerSetting) {
           }
 
           let maxPurchases = buyerSetting["idAbMaxPurchases"];
+          
+          if (useFutBinPrice && buyerSetting["idAbShouldSort"] && buyerSetting["idAbSortBy"] == "externalprice") {
+            for (let i = 0; i < response.data.items.length; i++) {
+              let player = response.data.items[i];
+              const existingValue = getValue(
+                `${player.definitionId}_${dataSource.toLowerCase()}_price`
+              );
+              if (existingValue && existingValue.price) {
+                player["externalPrice"] = existingValue.price;
+              }
+            }
+          }
 
           if (buyerSetting["idAbShouldSort"])
             response.data.items = sortPlayers(
@@ -166,6 +178,16 @@ export const searchTransferMarket = function (buyerSetting) {
             const logWrite = writeToLogClosure(
               `${playerName}(${playerRating}) Price: ${buyNowPrice} time: ${expires}`
             );
+            
+            if (player.externalPrice < buyerSetting["idAbExternalPriceMin"]) {
+              logWrite("(Does not match FutBin/FutWiz value criteria) ("+player.externalPrice+")");
+              continue;
+            }
+
+            if (player.externalPrice > buyerSetting["idAbExternalPriceMax"]) {
+              logWrite("(Does not match FutBin/FutWiz value criteria) ("+player.externalPrice+")");
+              continue;
+            }
 
             if (
               (!buyerSetting["idAbIgnoreAllowToggle"] && playersList.has(id)) ||

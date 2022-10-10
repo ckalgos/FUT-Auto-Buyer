@@ -16,7 +16,6 @@ export const logView = () => {
             <br/>
             <div class="logWrapper">
               <textarea wrap="off"  style="height: 100%;overflow-x: auto;resize: none; width: 100%;" readonly id=${idProgressAutobuyer} class="autoBuyerLog"></textarea>
-              <a class="joinServer" target="_blank" rel="noopener noreferrer" href="https://discord.com/invite/cktHYmp">Join Our Discord Server</a>
             <br/>
         </div>`);
   const buttons = logContainer.find(".button-clear");

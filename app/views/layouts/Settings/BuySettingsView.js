@@ -8,6 +8,8 @@ import {
   idBuyFutBinPrice,
   idAbBidFutBin,
   idBuyFutBinPercent,
+  idAbExternalPriceMin,
+  idAbExternalPriceMax,
 } from "../../../elementIds.constants";
 import { getDataSource } from "../../../services/repository";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
@@ -76,6 +78,20 @@ export const buySettingsView = function () {
         "Bid Exact Price",
         { idAbBidExact },
         "",
+        "BuyerSettings"
+      )}
+      ${generateTextInput(
+        "External price min",
+        200,
+        { idAbExternalPriceMin },
+        `(Minimum ${dataSource} Price)`,
+        "BuyerSettings"
+      )}
+      ${generateTextInput(
+        "External price max",
+        100000,
+        { idAbExternalPriceMax },
+        `(Maximum ${dataSource} Price)`,
         "BuyerSettings"
       )}      
      </div>

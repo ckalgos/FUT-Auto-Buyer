@@ -16,7 +16,7 @@
   "author": "Ck Algos",
   "license": "ISC",
   "dependencies": {
-    "webpack": "^5.47.1"
+    "webpack": "^5.74.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

@@ -1,7 +1,7 @@
 import { idProgressAutobuyer } from "../elementIds.constants";
 import { searchErrorHandler } from "../handlers/errorHandler";
-import { fetchPrices } from "../services/futbin";
 import {
+  getDataSource,
   getValue,
   increAndGetStoreValue,
   setValue,
@@ -14,6 +14,8 @@ import { getBuyBidPrice, getSellBidPrice, roundOffPrice } from "./priceUtils";
 import { buyPlayer } from "./purchaseUtil";
 import { updateRequestCount } from "./statsUtil";
 import { sortPlayers } from "./playerUtil";
+import { getStatsValue } from "../handlers/statsProcessor";
+import { fetchPrices } from "../services/datasource";
 
 const currentBids = new Set();
 
@@ -24,10 +26,23 @@ export const searchTransferMarket = function (buyerSetting) {
     const useRandMinBuy = buyerSetting["idAbRandMinBuyToggle"];
     const futBinBuyPercent = buyerSetting["idBuyFutBinPercent"] || 100;
     let currentPage = getValue("currentPage") || 1;
+    const currentSearchPerMin = getStatsValue("searchPerMinuteCount");
+    if (
+      currentSearchPerMin > 15 &&
+      (buyerSetting["idAbOverSearchWarning"] ||
+        buyerSetting["idAbOverSearchWarning"] === undefined)
+    ) {
+      writeToLog("--------------------", idProgressAutobuyer);
+      writeToLog(
+        "!!! More than 15 searches performed in last minute, increase your wait time",
+        idProgressAutobuyer
+      );
+      writeToLog("--------------------", idProgressAutobuyer);
+    }
     const playersList = new Set(
       (buyerSetting["idAddIgnorePlayersList"] || []).map(({ id }) => id)
     );
-
+    const dataSource = getDataSource();
     let bidPrice = buyerSetting["idAbMaxBid"];
     let userBuyNowPrice = buyerSetting["idAbBuyPrice"];
     let useFutBinPrice =
@@ -78,6 +93,8 @@ export const searchTransferMarket = function (buyerSetting) {
             validSearchCount = false;
           }
 
+          let maxPurchases = buyerSetting["idAbMaxPurchases"];
+
           if (buyerSetting["idAbShouldSort"])
             response.data.items = sortPlayers(
               response.data.items,
@@ -99,7 +116,9 @@ export const searchTransferMarket = function (buyerSetting) {
             let playerRating = parseInt(player.rating);
 
             if (useFutBinPrice && type === "player") {
-              const existingValue = getValue(player.definitionId);
+              const existingValue = getValue(
+                `${player.definitionId}_${dataSource.toLowerCase()}_price`
+              );
               if (existingValue && existingValue.price) {
                 const futBinBuyPrice = roundOffPrice(
                   (existingValue.price * futBinBuyPercent) / 100
@@ -161,6 +180,11 @@ export const searchTransferMarket = function (buyerSetting) {
               continue;
             }
 
+            if (maxPurchases < 1) {
+              logWrite("(Exceeded num of buys/bids per search)");
+              break;
+            }
+
             if (!player.preferredPosition && buyerSetting["idAbAddFilterGK"]) {
               logWrite("(is a Goalkeeper)");
               continue;
@@ -187,6 +211,7 @@ export const searchTransferMarket = function (buyerSetting) {
 
             if (buyNowPrice <= userBuyNowPrice) {
               logWrite("attempt buy: " + buyNowPrice);
+              maxPurchases--;
               currentBids.add(auction.tradeId);
               await buyPlayer(
                 player,
@@ -196,7 +221,7 @@ export const searchTransferMarket = function (buyerSetting) {
                 true,
                 auction.tradeId
               );
-              break;
+              continue;
             }
 
             if (bidPrice && currentBid <= priceToBid) {
@@ -206,6 +231,7 @@ export const searchTransferMarket = function (buyerSetting) {
               }
               logWrite("attempt bid: " + checkPrice);
               currentBids.add(auction.tradeId);
+              maxPurchases--;
               await buyPlayer(
                 player,
                 playerName,
@@ -214,7 +240,7 @@ export const searchTransferMarket = function (buyerSetting) {
                 checkPrice === buyNowPrice,
                 auction.tradeId
               );
-              break;
+              continue;
             }
 
             if (

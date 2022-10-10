@@ -105,3 +105,6 @@ export const idSession = generateId(15);
 export const idWebHookUrl = "elem_" + generateId(15);
 export const idFinishMp3 = "elem_" + generateId(15);
 export const idLog = "elem_" + generateId(15);
+export const idAbOverSearchWarning = "elem_" + generateId(15);
+export const idAbMaxPurchases = "elem_" + generateId(15);
+export const idAbUseFutWiz = "elem_" + generateId(15);

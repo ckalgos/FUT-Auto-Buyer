@@ -13,6 +13,7 @@ import {
 } from "./commonUtil";
 import { writeToLog } from "./logUtil";
 import { loadFilter } from "./userExternalUtil";
+import { updateUserCredits } from "./userUtil";
 
 let stopAfter, pauseCycle;
 
@@ -64,6 +65,7 @@ export const pauseBotIfRequired = function (buyerSetting) {
 
   if (searchCount && !((searchCount - previousPause) % pauseCycle)) {
     updateStats("previousPause", searchCount);
+    updateUserCredits();
     stopAutoBuyer(true);
     return setTimeout(() => {
       pauseCycle = getRandNumberInRange(buyerSetting["idAbCycleAmount"]);

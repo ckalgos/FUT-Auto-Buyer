@@ -9,28 +9,30 @@ import {
   idAbBidFutBin,
   idBuyFutBinPercent,
 } from "../../../elementIds.constants";
+import { getDataSource } from "../../../services/repository";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 
 export const buySettingsView = function () {
+  const dataSource = getDataSource();
   return `<div class='buyer-settings-wrapper buy-settings-view'>
       ${generateToggleInput(
         "Find Buy Price",
         { idBuyFutBinPrice },
-        "(Uses Futbin price for Buy)",
+        `(Uses ${dataSource} price for Buy)`,
         "BuyerSettings"
       )}
       ${generateTextInput(
         "Buy/Bid Price Percent",
         100,
         { idBuyFutBinPercent },
-        `(Buy/Bid Price percent of FUTBIN Price)`,
+        `(Buy/Bid Price percent of ${dataSource} Price)`,
         "BuyerSettings"
       )}
       ${generateToggleInput(
-        "Bid For FUTBIN Price",
+        `Bid For ${dataSource} Price`,
         { idAbBidFutBin },
-        "(Bid if the current bid is lesser than FUTBIN Price)",
+        `(Bid if the current bid is lesser than ${dataSource} Price)`,
         "BuyerSettings"
       )}
       ${generateTextInput(

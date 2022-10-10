@@ -1,6 +1,6 @@
 import { idProgressAutobuyer } from "../elementIds.constants";
-import { fetchPrices } from "../services/futbin";
-import { getValue } from "../services/repository";
+import { fetchPrices } from "../services/datasource";
+import { getDataSource, getValue } from "../services/repository";
 import { getRandNumberInRange } from "./commonUtil";
 import { writeToLog } from "./logUtil";
 import { getBuyBidPrice, roundOffPrice } from "./priceUtils";
@@ -13,11 +13,14 @@ export const getSellPriceFromFutBin = async (
   let sellPrice;
   try {
     const definitionId = player.definitionId;
+    const dataSource = getDataSource();
     if (player.type !== "player") {
       return sellPrice;
     }
     await fetchPrices([player]);
-    const existingValue = getValue(definitionId);
+    const existingValue = getValue(
+      `${definitionId}_${dataSource.toLowerCase()}_price`
+    );
     if (existingValue && existingValue.price) {
       sellPrice = existingValue.price;
       const futBinPercent =
@@ -38,14 +41,14 @@ export const getSellPriceFromFutBin = async (
       }
       calculatedPrice = roundOffPrice(calculatedPrice);
       writeToLog(
-        `= Futbin price for ${playerName}: ${sellPrice}: ${futBinPercent}% of sale price: ${calculatedPrice}`,
+        `= ${dataSource} price for ${playerName}: ${sellPrice}: ${futBinPercent}% of sale price: ${calculatedPrice}`,
         idProgressAutobuyer
       );
       sellPrice = calculatedPrice;
     } else {
       sellPrice = null;
       writeToLog(
-        `= Unable to get Futbin price for ${playerName}`,
+        `= Unable to get ${dataSource} price for ${playerName}`,
         idProgressAutobuyer
       );
     }

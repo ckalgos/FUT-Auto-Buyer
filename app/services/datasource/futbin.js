@@ -1,11 +1,11 @@
-import { getCardName } from "../utils/futItemUtil";
-import { sendRequest } from "../utils/networkUtil";
-import { getUserPlatform } from "../utils/userUtil";
-import { getValue, setValue } from "./repository";
+import { getCardName } from "../../utils/futItemUtil";
+import { sendRequest } from "../../utils/networkUtil";
+import { getUserPlatform } from "../../utils/userUtil";
+import { getValue, setValue } from "../repository";
 
 const supportedConsumables = new Set(["Position", "Chemistry Style"]);
 
-export const fetchPrices = async (items) => {
+const fetchPrices = async (items) => {
   const result = new Map();
 
   const missingPlayerIds = new Set();
@@ -16,9 +16,9 @@ export const fetchPrices = async (items) => {
       continue;
     }
 
-    const priceDetail = getValue(item.definitionId);
+    const priceDetail = getValue(`${item.definitionId}_futbin_price`);
     if (priceDetail) {
-      result.set(item.definitionId, priceDetail.price);
+      result.set(`${item.definitionId}_futbin_price`, priceDetail.price);
     } else if (item.isPlayer()) {
       missingPlayerIds.add(item.definitionId);
     } else if (
@@ -69,18 +69,21 @@ const fetchPlayerPrices = async (playerIds, result) => {
       const priceResponse = JSON.parse(futBinResponse);
 
       for (const id of [primaryId, ...playersIdArray]) {
-        const lcPrice = priceResponse[id].prices[platform].LCPrice;
+        const prices = priceResponse[id].prices[platform];
+        const lcPrice = prices.LCPrice;
         if (!lcPrice) {
           continue;
         }
         const cardPrice = parseInt(lcPrice.replace(/[,.]/g, ""));
 
+        const cacheKey = `${id}_futbin_price`;
         const cacheValue = {
           expiryTimeStamp: new Date(Date.now() + 15 * 60 * 1000),
           price: cardPrice,
         };
-        setValue(id, cacheValue);
-        result.set(id, cardPrice);
+
+        setValue(cacheKey, cacheValue);
+        result.set(cacheKey, cardPrice);
       }
     } catch (err) {
       console.log(err);
@@ -110,17 +113,22 @@ const fetchConsumablesPrices = async (missingConsumables, result) => {
       const consumableCards = missingConsumables.get(consumableType) || [];
       for (const { definitionId, subType } of consumableCards) {
         let cardPrice = consumablesPriceLookUp.get(subType);
+        const cacheKey = `${definitionId}_futbin_price`;
         if (cardPrice) {
           const cacheValue = {
             expiryTimeStamp: new Date(Date.now() + 15 * 60 * 1000),
             price: cardPrice,
           };
-          setValue(definitionId, cacheValue);
-          result.set(definitionId, cardPrice);
+          setValue(cacheKey, cacheValue);
+          result.set(cacheKey, cardPrice);
         }
       }
     } catch (err) {
       console.log(err);
     }
   }
+};
+
+export default {
+  fetchPrices,
 };

@@ -3,7 +3,7 @@ import {
   idAbFiltersFileToUpload,
 } from "../elementIds.constants";
 import { getValue } from "../services/repository";
-import { downloadJson, showLoader } from "./commonUtil";
+import { downloadJson } from "./commonUtil";
 import { showPopUp } from "./popupUtil";
 import { saveFilterInDB } from "./userExternalUtil";
 import { sendUINotification } from "./notificationUtil";

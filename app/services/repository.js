@@ -28,3 +28,8 @@ export const increAndGetStoreValue = (key) => {
   setValue(key, storeValue);
   return storeValue;
 };
+
+export const getDataSource = () => {
+  const commonSettings = getValue("CommonSettings") || {};
+  return (commonSettings["idAbUseFutWiz"] ? "futwiz" : "futbin").toUpperCase();
+};

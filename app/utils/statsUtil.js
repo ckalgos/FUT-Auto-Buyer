@@ -4,6 +4,7 @@ import { downloadCsv } from "./commonUtil";
 export const updateRequestCount = () => {
   const currentStats = getValue("sessionStats");
   currentStats["searchCount"]++;
+  currentStats["searchPerMinuteCount"]++;
   setValue("sessionStats", currentStats);
 };
 
@@ -35,3 +36,9 @@ export const downloadStats = () => {
   csvContent += transactions.map((transact) => `${transact}\n`).join("");
   downloadCsv(csvContent, "Stats");
 };
+
+setInterval(() => {
+  const currentStats = getValue("sessionStats");
+  currentStats["searchPerMinuteCount"] = 0;
+  setValue("sessionStats", currentStats);
+}, 55000);

@@ -35,7 +35,9 @@ export const processSellQueue = async () => {
     );
     sellQueue.length && (await wait(2));
   }
-  hasItemInQueue && writeToLog("--------------------", idProgressAutobuyer);
+  if (hasItemInQueue) {
+    writeToLog("--------------------", idProgressAutobuyer);
+  }
 };
 
 const updateLog = (

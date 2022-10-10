@@ -4,6 +4,7 @@ import {
   idAbStopErrorCodeCount,
   idAutoClearExpired,
   idAbResumeAfterErrorOccured,
+  idAbUseFutWiz,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -45,6 +46,12 @@ export const commonSettingsView = function () {
     "Auto Clear Expired Items",
     { idAutoClearExpired },
     "(Automatically clear expired items from transfer targets)",
+    "CommonSettings"
+  )}
+  ${generateToggleInput(
+    "Use Futwiz Price",
+    { idAbUseFutWiz },
+    "(Uses Futwiz price for buying/selling cards)",
     "CommonSettings"
   )}
   </div>`;

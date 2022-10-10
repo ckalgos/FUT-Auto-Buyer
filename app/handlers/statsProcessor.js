@@ -24,6 +24,7 @@ setValue("sessionStats", {
   searchCount: 0,
   profit: 0,
   transactions: [],
+  searchPerMinuteCount: 0,
 });
 
 export const statsProcessor = () => {

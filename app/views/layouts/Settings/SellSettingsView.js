@@ -10,6 +10,7 @@ import {
   idFutBinDuration,
   idAbDontMoveWon,
 } from "../../../elementIds.constants";
+import { getDataSource } from "../../../services/repository";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 
@@ -28,18 +29,19 @@ const updateAfterTax = (salePrice) => {
 };
 
 export const sellSettingsView = function () {
+  const dataSource = getDataSource();
   return `<div style='display : none' class='buyer-settings-wrapper sell-settings-view'>
   ${generateToggleInput(
     "Find Sale Price",
     { idSellFutBinPrice },
-    "(Uses Futbin price for listing)",
+    `(Uses ${dataSource} price for listing)`,
     "BuyerSettings"
   )}
   ${generateTextInput(
     "Sell Price Percent",
     "100-100",
     { idSellFutBinPercent },
-    `(Sale Price percent of FUTBIN Price)`,
+    `(Sale Price percent of ${dataSource} Price)`,
     "BuyerSettings",
     "text",
     "\\d+-\\d+$"

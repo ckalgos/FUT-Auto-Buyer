@@ -2,7 +2,7 @@ module.exports = {
   headers: {
     name: "FUT Auto Buyer",
     namespace: "http://tampermonkey.net/",
-    version: "1.3.8",
+    version: "1.4.0",
     description: "FUT Auto Buyer",
     author: "CK Algos",
     match: [

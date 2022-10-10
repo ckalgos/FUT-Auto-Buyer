@@ -155,9 +155,18 @@ export const addUserWatchItems = () => {
   return new Promise((resolve, reject) => {
     services.Item.requestWatchedItems().observe(this, function (t, response) {
       if (response.success) {
+        const bidItemsByFilter = getValue("filterBidItems") || new Map();
+        const botBiddedTrades = new Set(
+          Array.from(bidItemsByFilter.values())
+            .flat(1)
+            .reduce((a, c) => a.concat([...c]), [])
+        );
         const userWatchItems =
           response.response.items
-            .filter((item) => item._auction)
+            .filter(
+              (item) =>
+                item._auction && !botBiddedTrades.has(item._auction.tradeId)
+            )
             .map((item) => item._auction.tradeId) || [];
 
         setValue("userWatchItems", new Set(userWatchItems));

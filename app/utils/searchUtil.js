@@ -181,7 +181,6 @@ export const searchTransferMarket = function (buyerSetting) {
             }
 
             if (maxPurchases < 1) {
-              logWrite("(Exceeded num of buys/bids per search)");
               break;
             }
 

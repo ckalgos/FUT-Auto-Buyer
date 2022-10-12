@@ -201,6 +201,7 @@ export const searchSettingsView = function () {
         <option value="buy">Buy now price</option>
         <option value="bid">Bid now price</option>
         <option value="rating">Player rating</option>
+        <option value="externalprice">Futbin/Futwiz price</option>
       </select>
       </div>
     </div>

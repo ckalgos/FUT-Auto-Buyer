@@ -6,7 +6,10 @@ export const sortPlayers = (playerList, sortBy, sortOrder) => {
     sortFunc = (a) => parseInt(a.rating);
   } else if (sortBy === "expires") {
     sortFunc = (a) => parseInt(a._auction.expires);
+  } else if (sortBy === "externalprice") {
+    sortFunc = (a) => parseInt(a.externalPrice);
   }
+  
   playerList.sort((a, b) => {
     const sortAValue = sortFunc(a);
     const sortBValue = sortFunc(b);

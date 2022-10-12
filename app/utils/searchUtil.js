@@ -1,4 +1,4 @@
-import { idProgressAutobuyer } from "../elementIds.constants";
+import { idAbMuteLog, idProgressAutobuyer } from "../elementIds.constants";
 import { searchErrorHandler } from "../handlers/errorHandler";
 import {
   getDataSource,
@@ -94,6 +94,18 @@ export const searchTransferMarket = function (buyerSetting) {
           }
 
           let maxPurchases = buyerSetting["idAbMaxPurchases"] || 1;
+ 
+          if (useFutBinPrice && buyerSetting["idAbShouldSort"] && buyerSetting["idAbSortBy"] == "externalprice") {
+            for (let i = 0; i < response.data.items.length; i++) {
+              let player = response.data.items[i];
+              const existingValue = getValue(
+                `${player.definitionId}_${dataSource.toLowerCase()}_price`
+              );
+              if (existingValue && existingValue.price) {
+                player["externalPrice"] = existingValue.price;
+              }
+            }
+          }
 
           if (buyerSetting["idAbShouldSort"])
             response.data.items = sortPlayers(
@@ -157,6 +169,7 @@ export const searchTransferMarket = function (buyerSetting) {
             let maxRating = buyerSetting["idAbMaxRating"];
             let playerName = player._staticData.name;
 
+            const muteLog = buyerSetting["idAbMuteLog"];
             const shouldCheckRating = minRating || maxRating;
 
             const isValidRating =
@@ -166,36 +179,55 @@ export const searchTransferMarket = function (buyerSetting) {
             const logWrite = writeToLogClosure(
               `${playerName}(${playerRating}) Price: ${buyNowPrice} time: ${expires}`
             );
+            
+            if (player.externalPrice < buyerSetting["idAbExternalPriceMin"]) {
+              if (!muteLog)
+                logWrite("(Does not match FutBin/FutWiz value criteria) ("+player.externalPrice+")");
+              continue;
+            }
+
+            if (player.externalPrice > buyerSetting["idAbExternalPriceMax"]) {
+              if (!muteLog)
+                logWrite("(Does not match FutBin/FutWiz value criteria) ("+player.externalPrice+")");
+              continue;
+            }
 
             if (
               (!buyerSetting["idAbIgnoreAllowToggle"] && playersList.has(id)) ||
               (buyerSetting["idAbIgnoreAllowToggle"] && !playersList.has(id))
             ) {
-              logWrite("(Ignored player)");
+              if (!muteLog)
+                logWrite("(Ignored player)");
               continue;
             }
 
             if (!validSearchCount) {
-              logWrite("(Exceeded search result threshold)");
+              if (!muteLog)
+                logWrite("(Exceeded search result threshold)");
               continue;
             }
 
             if (maxPurchases < 1) {
+              if (!muteLog)
+                logWrite("(Exceeded num of buys/bids per search)");
               break;
             }
 
             if (!player.preferredPosition && buyerSetting["idAbAddFilterGK"]) {
-              logWrite("(is a Goalkeeper)");
+              if (!muteLog)
+                logWrite("(is a Goalkeeper)");
               continue;
             }
 
             if (!isValidRating) {
-              logWrite("(rating does not fit criteria)");
+              if (!muteLog)
+                logWrite("(rating does not fit criteria)");
               continue;
             }
 
             if (currentBids.has(auction.tradeId)) {
-              logWrite("(Cached Item)");
+              if (!muteLog)
+                logWrite("(Cached Item)");
               continue;
             }
 
@@ -204,7 +236,8 @@ export const searchTransferMarket = function (buyerSetting) {
               (!bidPrice && userCoins < buyNowPrice) ||
               (bidPrice && userCoins < checkPrice)
             ) {
-              logWrite("(Insufficient coins to buy/bid)");
+              if (!muteLog)
+                logWrite("(Insufficient coins to buy/bid)");
               continue;
             }
 
@@ -246,12 +279,14 @@ export const searchTransferMarket = function (buyerSetting) {
               (userBuyNowPrice && buyNowPrice > userBuyNowPrice) ||
               (bidPrice && currentBid > priceToBid)
             ) {
-              logWrite(
-                `BuyPrice: ${
-                  userBuyNowPrice || priceToBid
-                } (higher than specified buy/bid price)`
-              );
-              continue;
+                if (!muteLog) {
+                  logWrite(
+                  `BuyPrice: ${
+                    userBuyNowPrice || priceToBid
+                  } (higher than specified buy/bid price)`
+                  );
+                  continue;
+                }
             }
             logWrite("(No Actions Required)");
           }

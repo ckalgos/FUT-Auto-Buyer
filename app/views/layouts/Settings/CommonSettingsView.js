@@ -5,6 +5,7 @@ import {
   idAutoClearExpired,
   idAbResumeAfterErrorOccured,
   idAbUseFutWiz,
+  idAbMuteLog,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
@@ -52,6 +53,12 @@ export const commonSettingsView = function () {
     "Use Futwiz Price",
     { idAbUseFutWiz },
     "(Uses Futwiz price for buying/selling cards)",
+    "CommonSettings"
+  )}
+  ${generateToggleInput(
+    "Mute log messages",
+    { idAbMuteLog },
+    "(Do not show log messages for excluded players)",
     "CommonSettings"
   )}
   </div>`;

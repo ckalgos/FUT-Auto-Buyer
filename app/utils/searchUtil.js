@@ -93,8 +93,8 @@ export const searchTransferMarket = function (buyerSetting) {
             validSearchCount = false;
           }
 
-          let maxPurchases = buyerSetting["idAbMaxPurchases"];
-          
+          let maxPurchases = buyerSetting["idAbMaxPurchases"] || 1;
+ 
           if (useFutBinPrice && buyerSetting["idAbShouldSort"] && buyerSetting["idAbSortBy"] == "externalprice") {
             for (let i = 0; i < response.data.items.length; i++) {
               let player = response.data.items[i];

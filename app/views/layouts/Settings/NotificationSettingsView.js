@@ -20,11 +20,12 @@ import { generateButton } from "../../../utils/uiUtils/generateButton";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { generateToggleInput } from "../../../utils/uiUtils/generateToggleInput";
 import { sendNotificationToUser } from "../../../utils/notificationUtil";
+import { isMarketAlertApp } from "../../../app.constants";
 
 export const notificationSettingsView = function () {
   return `<div style='display : none' class='buyer-settings-wrapper notification-settings-view'> 
  ${
-   !isPhone()
+   !isMarketAlertApp
      ? `${generateTextInput(
          "Telegram Bot Token",
          "",
@@ -97,7 +98,7 @@ export const notificationSettingsView = function () {
     "CommonSettings"
   )}
    ${
-     !isPhone()
+     !isMarketAlertApp
        ? `${generateToggleInput(
            "Sound Notification",
            { idAbSoundToggle },

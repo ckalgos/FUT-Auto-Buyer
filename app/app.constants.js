@@ -60,3 +60,5 @@ export const defaultCommonSetting = {
   idAutoClearExpired: true,
   idAutoClearLog: true,
 };
+
+export const isMarketAlertApp = !!window.ReactNativeWebView;

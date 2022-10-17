@@ -2,6 +2,7 @@ import { getBuyerSettings, getValue, setValue } from "../services/repository";
 import { startAutoBuyer, stopAutoBuyer } from "../handlers/autobuyerProcessor";
 
 import { loadFilter } from "./userExternalUtil";
+import { isMarketAlertApp } from "../app.constants";
 
 let discordClient = null;
 
@@ -20,7 +21,7 @@ export const sendPinEvents = (pageId) => {
 export const sendNotificationToUser = (message, isSuccess, isTestMessage) => {
   const buyerSetting = getBuyerSettings();
   if (buyerSetting["idAbMessageNotificationToggle"] || isTestMessage) {
-    isPhone()
+    isMarketAlertApp
       ? sendNotificationToExternalPhone(message)
       : sendNotificationToExternal(buyerSetting, isSuccess, message);
     isTestMessage && sendUINotification("Test Notification Sent");

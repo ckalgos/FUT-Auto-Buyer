@@ -69,6 +69,7 @@ export const idProxyLogin = "elem_" + generateId(15);
 export const idAntiCaptchKey = "elem_" + generateId(15);
 export const idProxyPassword = "elem_" + generateId(15);
 export const idAutoClearLog = "elem_" + generateId(15);
+export const idShowLogReverse = "elem_" + generateId(15);
 export const idSellRatingThreshold = "elem_" + generateId(15);
 export const idSellFutBinPrice = "elem_" + generateId(15);
 export const idSellFutBinPercent = "elem_" + generateId(15);

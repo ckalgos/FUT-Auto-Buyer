@@ -1,6 +1,7 @@
 import {
   idAbStopErrorCode,
   idAutoClearLog,
+  idShowLogReverse,
   idAbStopErrorCodeCount,
   idAutoClearExpired,
   idAbResumeAfterErrorOccured,
@@ -40,6 +41,12 @@ export const commonSettingsView = function () {
     "Auto Clear Log",
     { idAutoClearLog },
     "(Automatically clear logs every 2 minutes)",
+    "CommonSettings"
+  )}
+  ${generateToggleInput(
+    "Show Log Reverse",
+    { idShowLogReverse },
+    "(View the logs in reverse)",
     "CommonSettings"
   )}
   ${generateToggleInput(

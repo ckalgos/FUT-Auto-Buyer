@@ -45,9 +45,12 @@ export const showCaptchaLogs = function (captchaCloseTab) {
 
 export const writeToLog = function (message, log) {
   setTimeout(() => {
+    const settings = getBuyerSettings();
+    let showLogReverse = settings && settings["idShowLogReverse"];
+
     var $log = $("#" + log);
     message = "[" + new Date().toLocaleTimeString() + "] " + message + "\n";
-    $log.val($log.val() + message);
+    $log.val((showLogReverse ? message + $log.val() : $log.val() + message));
     if ($log[0]) $log.scrollTop($log[0].scrollHeight);
   }, 50);
 };

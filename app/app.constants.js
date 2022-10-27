@@ -58,7 +58,8 @@ export const defaultCommonSetting = {
   idAbWaitTime: "5-8",
   idAbWaitTimeisDefaultValue: false,
   idAutoClearExpired: true,
-  idAutoClearLog: true,
+  idAutoClearLog: false,
+  idShowLogReverse: true,
 };
 
 export const isMarketAlertApp = !!window.ReactNativeWebView;

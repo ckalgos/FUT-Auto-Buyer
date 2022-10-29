@@ -36,7 +36,7 @@ export const buyPlayer = (
       this,
       async function (sender, data) {
         let priceTxt = formatString(price.toString(), 6);
-        const notificationType = buyerSetting["idNotificationType"];
+        const notificationType = buyerSetting["idNotificationType"] || "";
 
         if (data.success) {
           if (isBin) {

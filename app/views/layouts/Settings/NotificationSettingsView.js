@@ -3,6 +3,7 @@ import {
   idAbMessageNotificationToggle,
   idAbSendListingNotificationToggle,
   idAbSoundToggle,
+  idAbSoundVolume,
   idCapatchaMp3,
   idDiscordChannelId,
   idDiscordToken,
@@ -122,6 +123,13 @@ export const notificationSettingsView = function () {
   </audio> `
        : ""
    }
+   ${generateTextInput(
+    "Sound Volume",
+    100,
+    { idAbSoundVolume },
+    "in percent",
+    "CommonSettings"
+  )}
      ${generateToggleInput(
        "Use Custom Discord Webhook Name",
        { idAbCustomDiscordNameNotificationToggle },

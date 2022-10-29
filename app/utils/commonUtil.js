@@ -165,6 +165,7 @@ export const playAudio = function (eventType) {
     }
 
     elem.currentTime = 0;
+    elem.volume = (buyerSetting["idAbSoundVolume"] / 100).toFixed(2);
     elem.play();
   }
 };

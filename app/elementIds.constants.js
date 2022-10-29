@@ -31,6 +31,7 @@ export const idAbMessageNotificationToggle = "elem_" + generateId(15);
 export const idAbCustomDiscordNameNotificationToggle = "elem_" + generateId(15);
 export const idAbSendListingNotificationToggle = "elem_" + generateId(15);
 export const idAbSoundToggle = "elem_" + generateId(15);
+export const idAbSoundVolume = "elem_" + generateId(15);
 export const idTelegramBotToken = "elem_" + generateId(15);
 export const idTelegramChatId = "elem_" + generateId(15);
 export const idNotificationType = "elem_" + generateId(15);

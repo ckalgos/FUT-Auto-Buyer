@@ -18,12 +18,17 @@ export const sendPinEvents = (pageId) => {
   });
 };
 
-export const sendNotificationToUser = (message, isSuccess, isTestMessage) => {
+export const sendNotificationToUser = (
+  message,
+  isSuccess,
+  color,
+  isTestMessage
+) => {
   const buyerSetting = getBuyerSettings();
   if (buyerSetting["idAbMessageNotificationToggle"] || isTestMessage) {
     isMarketAlertApp
       ? sendNotificationToExternalPhone(message)
-      : sendNotificationToExternal(buyerSetting, isSuccess, message);
+      : sendNotificationToExternal(buyerSetting, isSuccess, message, color);
     isTestMessage && sendUINotification("Test Notification Sent");
   }
 };
@@ -34,12 +39,12 @@ const sendNotificationToExternalPhone = (message) => {
   );
 };
 
-const formDiscordMessage = (message, isSuccess, isCustomDiscordName) => {
+const formDiscordMessage = (message, isSuccess, isCustomDiscordName, color) => {
   let embedMessage = {
     embeds: [
       {
         description: message,
-        color: isSuccess ? 2555648 : 16711680,
+        color: color ? color : isSuccess ? 2555648 : 16711680,
         footer: {
           text: `Auto Buyer Alert - ${new Date().toLocaleTimeString()}`,
           icon_url:
@@ -65,7 +70,12 @@ const formDiscordRichEmbed = (discordMessage) => {
     .setFooter(message.footer.text, message.footer.icon_url);
 };
 
-const sendNotificationToExternal = (buyerSetting, isSuccess, message) => {
+const sendNotificationToExternal = (
+  buyerSetting,
+  isSuccess,
+  message,
+  color
+) => {
   const telegramToken = buyerSetting["idTelegramBotToken"];
   const telegramChatId = buyerSetting["idTelegramChatId"];
   const webHookUrl = buyerSetting["idWebHookUrl"];
@@ -74,8 +84,20 @@ const sendNotificationToExternal = (buyerSetting, isSuccess, message) => {
   const isCustomDiscordName =
     buyerSetting["idAbCustomDiscordNameNotificationToggle"];
   sendMessageToTelegram(telegramToken, telegramChatId, message);
-  sendMessageToDiscord(channelId, isSuccess, message, isCustomDiscordName);
-  sendMessageToDiscordWH(webHookUrl, isSuccess, message, isCustomDiscordName);
+  sendMessageToDiscord(
+    channelId,
+    isSuccess,
+    message,
+    isCustomDiscordName,
+    color
+  );
+  sendMessageToDiscordWH(
+    webHookUrl,
+    isSuccess,
+    message,
+    isCustomDiscordName,
+    color
+  );
   sendMessageToAlertApp(alertAppNotificationToken, message);
 };
 
@@ -92,14 +114,15 @@ const sendMessageToDiscordWH = (
   webHookUrl,
   isSuccess,
   message,
-  isCustomDiscordName
+  isCustomDiscordName,
+  color
 ) => {
   if (webHookUrl) {
     fetch(webHookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(
-        formDiscordMessage(message, isSuccess, isCustomDiscordName)
+        formDiscordMessage(message, isSuccess, isCustomDiscordName, color)
       ),
     });
   }
@@ -109,7 +132,8 @@ const sendMessageToDiscord = (
   channelId,
   isSuccess,
   message,
-  isCustomDiscordName
+  isCustomDiscordName,
+  color
 ) => {
   if (channelId) {
     if (discordClient) {
@@ -117,7 +141,7 @@ const sendMessageToDiscord = (
       channel &&
         channel.send(
           formDiscordRichEmbed(
-            formDiscordMessage(message, isSuccess, isCustomDiscordName)
+            formDiscordMessage(message, isSuccess, isCustomDiscordName, color)
           )
         );
     } else {
@@ -128,7 +152,12 @@ const sendMessageToDiscord = (
             channel &&
               channel.send(
                 formDiscordRichEmbed(
-                  formDiscordMessage(message, isSuccess, isCustomDiscordName)
+                  formDiscordMessage(
+                    message,
+                    isSuccess,
+                    isCustomDiscordName,
+                    color
+                  )
                 )
               );
           }

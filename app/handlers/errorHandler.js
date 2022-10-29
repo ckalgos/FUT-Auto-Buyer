@@ -1,5 +1,8 @@
 import { idProgressAutobuyer } from "../elementIds.constants";
-import { increAndGetStoreValue } from "../services/repository";
+import {
+  getBuyerSettings,
+  increAndGetStoreValue,
+} from "../services/repository";
 import { playAudio } from "../utils/commonUtil";
 import { showCaptchaLogs, writeToLog } from "../utils/logUtil";
 import { sendNotificationToUser } from "../utils/notificationUtil";
@@ -43,7 +46,10 @@ export const searchErrorHandler = (
   }
   if (shouldStopBot) {
     playAudio("capatcha");
-    sendNotificationToUser("Autobuyer Stopped", false);
+    const buyerSetting = getBuyerSettings();
+    buyerSetting["idNotificationType"] === "A" &&
+      sendNotificationToUser("Autobuyer Stopped", false);
+
     stopAutoBuyer();
   }
 };

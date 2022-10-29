@@ -110,7 +110,7 @@ export const buyPlayer = (
             }
           }
 
-          if (notificationType === "B" || notificationType === "A") {
+          if (notificationType.includes("B") || notificationType === "A") {
             sendNotificationToUser(
               "| " +
                 playerName.trim() +
@@ -134,7 +134,7 @@ export const buyPlayer = (
             })`,
             idProgressAutobuyer
           );
-          if (notificationType === "L" || notificationType === "A") {
+          if (notificationType.includes("L") || notificationType === "A") {
             sendNotificationToUser(
               "| " +
                 playerName.trim() +

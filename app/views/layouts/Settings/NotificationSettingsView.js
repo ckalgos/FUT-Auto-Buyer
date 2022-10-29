@@ -88,8 +88,7 @@ export const notificationSettingsView = function () {
     { idNotificationType },
     "Type A for all notifications, B for buy or L for lost",
     "CommonSettings",
-    "text",
-    "[A|B|L]$"
+    "text"
   )}
   ${generateToggleInput(
     "Send Notification",
@@ -132,7 +131,13 @@ export const notificationSettingsView = function () {
    ${generateButton(
      idTestNotification,
      "Test Notification",
-     () => sendNotificationToUser("Test Notification Message", true, true),
+     () =>
+       sendNotificationToUser(
+         "Test Notification Message",
+         true,
+         undefined,
+         true
+       ),
      "call-to-action"
    )}
    </div>

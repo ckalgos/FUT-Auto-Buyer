@@ -51,7 +51,8 @@ export const stopBotIfRequired = (buyerSetting) => {
     stopAfter = null;
     pauseCycle = null;
 
-    sendNotificationToUser(`Autobuyer Stopped - ${message}`, isPaused);
+    buyerSetting["idNotificationType"] === "A" &&
+      sendNotificationToUser(`Autobuyer Stopped - ${message}`, isPaused);
     stopAutoBuyer();
   }
 };

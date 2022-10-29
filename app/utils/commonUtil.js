@@ -163,7 +163,7 @@ export const playAudio = function (eventType) {
     } else if (eventType == "cardWon") {
       elem = document.getElementById(ElementIds.idWinMp3);
     }
-
+    elem.volume = (buyerSetting["idAbSoundVolume"] && buyerSetting["idAbSoundVolume"] > 0 && buyerSetting["idAbSoundVolume"] <= 100 ? (buyerSetting["idAbSoundVolume"] / 100).toFixed(2) : 1);
     elem.currentTime = 0;
     elem.play();
   }

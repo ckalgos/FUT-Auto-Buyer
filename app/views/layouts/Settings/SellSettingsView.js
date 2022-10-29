@@ -9,6 +9,7 @@ import {
   idSellCheckBuyPrice,
   idFutBinDuration,
   idAbDontMoveWon,
+  idAbQuickSell,
 } from "../../../elementIds.constants";
 import { getDataSource } from "../../../services/repository";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
@@ -45,11 +46,17 @@ export const sellSettingsView = function () {
     "BuyerSettings",
     "text",
     "\\d+-\\d+$"
-  )}
+  )}  
   ${generateToggleInput(
     "Check buy price before listing",
     { idSellCheckBuyPrice },
     "(List only if Buy Price is lesser than Sale Price)",
+    "BuyerSettings"
+  )}
+  ${generateToggleInput(
+    "Quick Sell",
+    { idAbQuickSell },
+    "(Will quick sell card if sell price is not given)",
     "BuyerSettings"
   )}
   ${generateTextInput(

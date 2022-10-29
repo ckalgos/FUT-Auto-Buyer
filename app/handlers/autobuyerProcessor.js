@@ -3,7 +3,11 @@ import { STATE_PAUSED, STATE_STOPPED } from "../app.constants";
 import { getBuyerSettings, getValue, setValue } from "../services/repository";
 import { stopBotIfRequired } from "../utils/autoActionsUtil";
 import { getRangeValue, playAudio } from "../utils/commonUtil";
-import { sendPinEvents, sendUINotification } from "../utils/notificationUtil";
+import {
+  sendNotificationToUser,
+  sendPinEvents,
+  sendUINotification,
+} from "../utils/notificationUtil";
 
 import { setRandomInterval } from "../utils/timeOutUtil";
 import { addUserWatchItems } from "../utils/watchlistUtil";
@@ -23,6 +27,7 @@ export const startAutoBuyer = async function (isResume) {
 
   const isActive = getValue("autoBuyerActive");
   if (isActive) return;
+  isResume && sendNotificationToUser("Autobuyer Started", true);
   setInitialValues(isResume);
   const {
     switchFilterWithContext,
@@ -92,6 +97,7 @@ export const stopAutoBuyer = (isPaused) => {
   }
   isPhone() && $(".ut-tab-bar-item").removeAttr("disabled");
   setValue("autoBuyerState", isPaused ? STATE_PAUSED : STATE_STOPPED);
+  isPaused && sendNotificationToUser("Autobuyer Paused", isPaused);
   sendUINotification(isPaused ? "Autobuyer Paused" : "Autobuyer Stopped");
   if (!isPaused) {
     processSellQueue();

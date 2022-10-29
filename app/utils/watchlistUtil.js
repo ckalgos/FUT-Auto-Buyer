@@ -115,7 +115,10 @@ export const watchListUtil = function (buyerSetting) {
                   }
                   if (!buyerSetting["idAbDontMoveWon"]) {
                     const sellQueue = getValue("sellQueue") || [];
-                    const profit = sellPrice * 0.95 - price;
+                    const profit =
+                      (buyerSetting["idAbQuickSell"]
+                        ? player.discardValue
+                        : sellPrice * 0.95) - price;
                     sellQueue.push({
                       player,
                       sellPrice,

@@ -63,7 +63,10 @@ export const buyPlayer = (
           }
 
           const shouldList = sellPrice && !isNaN(sellPrice) && isValidRating;
-          const profit = sellPrice * 0.95 - price;
+          const profit =
+            (buyerSetting["idAbQuickSell"]
+              ? player.discardValue
+              : sellPrice * 0.95) - price;
 
           if (isBin) {
             const winCount = increAndGetStoreValue("winCount");

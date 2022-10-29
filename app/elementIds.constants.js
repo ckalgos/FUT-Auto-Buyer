@@ -108,3 +108,5 @@ export const idLog = "elem_" + generateId(15);
 export const idAbOverSearchWarning = "elem_" + generateId(15);
 export const idAbMaxPurchases = "elem_" + generateId(15);
 export const idAbUseFutWiz = "elem_" + generateId(15);
+export const idAbQuickSell = "elem_" + generateId(15);
+export const idAbAddFilterBC = "elem_" + generateId(15);

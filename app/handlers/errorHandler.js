@@ -2,6 +2,7 @@ import { idProgressAutobuyer } from "../elementIds.constants";
 import { increAndGetStoreValue } from "../services/repository";
 import { playAudio } from "../utils/commonUtil";
 import { showCaptchaLogs, writeToLog } from "../utils/logUtil";
+import { sendNotificationToUser } from "../utils/notificationUtil";
 import { stopAutoBuyer } from "./autobuyerProcessor";
 import { solveCaptcha } from "./captchaSolver";
 
@@ -42,6 +43,7 @@ export const searchErrorHandler = (
   }
   if (shouldStopBot) {
     playAudio("capatcha");
+    sendNotificationToUser("Autobuyer Stopped", false);
     stopAutoBuyer();
   }
 };

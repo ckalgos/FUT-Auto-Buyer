@@ -218,13 +218,8 @@ export const cssOverride = () => {
   .logWrapper {
     position: relative;
     height: 100%
-  }
-  .ut-navigation-bar-view .view-navbar-currency-coins.ab:before {
-    content: unset !important;
-  }
-  .ut-navigation-bar-view .view-navbar-currency-coins.ab {
-    cursor: unset !important;
   } 
+ 
   .auto-buyer .autoBuyMin{
     display: none;
   }

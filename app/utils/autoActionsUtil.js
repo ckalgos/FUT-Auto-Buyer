@@ -50,6 +50,8 @@ export const stopBotIfRequired = (buyerSetting) => {
     writeToLog(`Autobuyer stopped | ${message}`, idProgressAutobuyer);
     stopAfter = null;
     pauseCycle = null;
+
+    sendNotificationToUser(`Autobuyer Stopped - ${message}`, isPaused);
     stopAutoBuyer();
   }
 };

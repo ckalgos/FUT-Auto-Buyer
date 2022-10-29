@@ -189,6 +189,16 @@ export const searchTransferMarket = function (buyerSetting) {
               continue;
             }
 
+            if (
+              (player.playStyle === DEFAULT_PLAYSTYLE_ID ||
+                player.playStyle ===
+                  ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_5) &&
+              buyerSetting["idAbAddFilterBC"]
+            ) {
+              logWrite("(is a Basic Chemistry)");
+              continue;
+            }
+
             if (!isValidRating) {
               logWrite("(rating does not fit criteria)");
               continue;

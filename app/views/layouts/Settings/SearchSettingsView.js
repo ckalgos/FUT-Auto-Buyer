@@ -16,6 +16,7 @@ import {
   idAbShouldSort,
   idAbSortBy,
   idAbSortOrder,
+  idAbAddFilterBC,
 } from "../../../elementIds.constants";
 import { generateTextInput } from "../../../utils/uiUtils/generateTextInput";
 import { checkAndAppendOption } from "../../../utils/filterUtil";
@@ -185,6 +186,12 @@ export const searchSettingsView = function () {
       "SKIP GK",
       { idAbAddFilterGK },
       "(Skip all goalkeepers to buy / bid a card)",
+      "BuyerSettings"
+    )}
+    ${generateToggleInput(
+      "SKIP Basic Chemistry",
+      { idAbAddFilterBC },
+      "(Skip cards with basic chemistry to buy / bid a card)",
       "BuyerSettings"
     )}
     ${generateToggleInput(

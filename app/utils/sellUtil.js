@@ -31,7 +31,8 @@ export const processSellQueue = async () => {
       buyerSettings,
       playerName,
       message,
-      sendListingNotification
+      sendListingNotification,
+      player.discardValue
     );
     sellQueue.length && (await wait(2));
   }
@@ -47,7 +48,8 @@ const updateLog = (
   buyerSetting,
   playerName,
   message,
-  sendListingNotification
+  sendListingNotification,
+  discardValue
 ) => {
   const formattedMessage = `${playerName.trim()}, ${
     message
@@ -58,6 +60,8 @@ const updateLog = (
       ? "listed for: " + sellPrice + ", Profit: " + profit
       : buyerSetting["idAbDontMoveWon"]
       ? ""
+      : buyerSetting["idAbQuickSell"]
+      ? "quick sold for:" + discardValue
       : "moved to club"
   } `;
   writeToLog(formattedMessage, idProgressAutobuyer);
@@ -88,6 +92,10 @@ const sellItems = (player, sellPrice, profit, shouldList, buyerSetting) => {
       ).observe(this, async function (sender, response) {
         resolve();
       });
+    } else if (buyerSetting["idAbQuickSell"]) {
+      services.Item.discard([player]);
+      updateProfit(profit);
+      resolve();
     } else {
       services.Item.move(player, ItemPile.CLUB).observe(
         this,

@@ -36,7 +36,7 @@ export const buyPlayer = (
       this,
       async function (sender, data) {
         let priceTxt = formatString(price.toString(), 6);
-        const notificationType = buyerSetting["idNotificationType"];
+        const notificationType = buyerSetting["idNotificationType"] || "";
 
         if (data.success) {
           if (isBin) {
@@ -63,7 +63,10 @@ export const buyPlayer = (
           }
 
           const shouldList = sellPrice && !isNaN(sellPrice) && isValidRating;
-          const profit = sellPrice * 0.95 - price;
+          const profit =
+            (buyerSetting["idAbQuickSell"]
+              ? player.discardValue
+              : sellPrice * 0.95) - price;
 
           if (isBin) {
             const winCount = increAndGetStoreValue("winCount");
@@ -107,7 +110,7 @@ export const buyPlayer = (
             }
           }
 
-          if (notificationType === "B" || notificationType === "A") {
+          if (notificationType.includes("B") || notificationType === "A") {
             sendNotificationToUser(
               "| " +
                 playerName.trim() +
@@ -131,7 +134,7 @@ export const buyPlayer = (
             })`,
             idProgressAutobuyer
           );
-          if (notificationType === "L" || notificationType === "A") {
+          if (notificationType.includes("L") || notificationType === "A") {
             sendNotificationToUser(
               "| " +
                 playerName.trim() +

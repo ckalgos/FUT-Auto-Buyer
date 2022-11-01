@@ -1,8 +1,9 @@
+import { isMarketAlertApp } from "../app.constants";
 import { idSession } from "../elementIds.constants";
 import { setValue } from "../services/repository";
 
 export const sendExternalRequest = async (options) => {
-  if (isPhone()) {
+  if (isMarketAlertApp) {
     sendPhoneRequest(options);
   } else {
     sendWebRequest(options);

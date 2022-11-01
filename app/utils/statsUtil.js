@@ -14,6 +14,12 @@ export const updateProfit = (val) => {
   setValue("sessionStats", currentStats);
 };
 
+export const resetProfit = () => {
+  const currentStats = getValue("sessionStats");
+  currentStats["profit"] = 0;
+  setValue("sessionStats", currentStats);
+};
+
 export const appendTransactions = (val) => {
   const currentStats = getValue("sessionStats");
   currentStats["transactions"] = currentStats["transactions"] || [];

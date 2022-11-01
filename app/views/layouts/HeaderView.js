@@ -31,8 +31,8 @@ const HeaderViewMobile = () => {
             <div class="stats-progress">
               <div id=${idAbSearchProgress} class="stats-fill"></div>
             </div>
-            <div class="view-navbar-currency-coins ab">Coins: <span id=${idAbCoins}></span></div>
-            <div class="view-navbar-currency-coins ab">Profit: <span id=${idAbProfit}></span></div>
+            <div class="view-navbar-currency-coins ab coins">Coins: <span id=${idAbCoins}></span></div>
+            <div class="view-navbar-currency-coins ab profit">Profit: <span id=${idAbProfit}></span></div>
             ${generateButton(
               idAbDownloadStats,
               "⇩",
@@ -84,8 +84,8 @@ const HeaderViewWeb = () => {
     </div>
   </div>
   <div class="view-navbar-currency" style="margin-left: 10px;">
-    <div class="view-navbar-currency-coins ab">Coins: <span  id=${idAbCoins}></span></div>
-    <div class="view-navbar-currency-coins ab">Profit: <span  id=${idAbProfit}></span></div>
+    <div class="view-navbar-currency-coins ab coins">Coins: <span  id=${idAbCoins}></span></div>
+    <div class="view-navbar-currency-coins ab profit">Profit: <span  id=${idAbProfit}></span></div>
   </div>
   <div class="view-navbar-clubinfo">
     <div class="view-navbar-clubinfo-data">

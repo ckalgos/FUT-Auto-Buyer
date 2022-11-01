@@ -1,3 +1,4 @@
+import { isMarketAlertApp } from "../app.constants";
 import * as ElementIds from "../elementIds.constants";
 import { getBuyerSettings } from "../services/repository";
 
@@ -30,13 +31,13 @@ export const hideLoader = () => {
 };
 
 export const downloadJson = (json, fileName) => {
-  isPhone()
+  isMarketAlertApp
     ? downloadJsonPhone(json, fileName)
     : downloadJsonWeb(json, fileName);
 };
 
 export const downloadCsv = (csvContent, fileName) => {
-  isPhone()
+  isMarketAlertApp
     ? downloadCsvPhone(csvContent, fileName)
     : downloadCsvWeb(csvContent, fileName);
 };
@@ -95,7 +96,6 @@ export const convertRangeToSeconds = (val) => {
   }
   return 0;
 };
-
 export const getRandNumberInRange = (range) => {
   const rangeVal = getRangeValue(range);
   if (rangeVal.length >= 2) {
@@ -153,7 +153,7 @@ export const promisifyTimeOut = (cb, wait) => {
 
 export const playAudio = function (eventType) {
   const buyerSetting = getBuyerSettings();
-  if (!isPhone() && buyerSetting["idAbSoundToggle"]) {
+  if (!isMarketAlertApp && buyerSetting["idAbSoundToggle"]) {
     let elem = document.getElementById(ElementIds.idWinMp3);
 
     if (eventType == "capatcha") {

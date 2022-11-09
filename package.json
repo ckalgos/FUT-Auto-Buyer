@@ -1,29 +1,54 @@
 {
-  "name": "fut-auto-buyer",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "userscript-typescript-template",
+  "version": "1.1.0",
+  "description": "Template repo using Webpack and TypeScript to build your userscript for Tampermonkey and more extensions.",
+  "main": "userscript/index.user.js",
   "scripts": {
-    "build:dev": "webpack --mode development",
-    "build:prod": "webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
     "serve": "webpack serve --mode development",
-    "build:mobile": "npx babel  dist/fut-auto-buyer.user.js --out-file dist/fut-auto-buyer.mobile.js --presets babel-preset-es2015"
+    "build:watch": "webpack --watch"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ckalgos/fut-auto-buyer.git"
+    "url": "git+https://github.com/pboymt/userscript-typescript-template.git"
   },
-  "author": "Ck Algos",
-  "license": "ISC",
-  "dependencies": {
-    "webpack": "^5.47.1"
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pboymt/userscript-typescript-template/issues"
   },
+  "homepage": "https://github.com/pboymt/userscript-typescript-template#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "terser-webpack-plugin": "^5.1.4",
-    "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^3.11.2",
-    "webpack-userscript": "^2.5.8"
+    "@types/node": "^16.11.10",
+    "@types/prettier": "^2.7.0",
+    "@types/tampermonkey": "^4.0.5",
+    "@types/webpack": "^5.28.0",
+    "axios-userscript-adapter": "^0.1.12",
+    "prettier": "^2.7.1",
+    "terser-webpack-plugin": "^5.3.6",
+    "ts-loader": "^9.2.6",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2",
+    "webpack": "^5.64.3",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.11.1"
+  },
+  "userscript": {
+    "require-template": "https://cdn.jsdelivr.net/npm/${dependencyName}@${dependencyVersion}",
+    "namespace": "http://tampermonkey.net/",
+    "license": "https://opensource.org/licenses/MIT",
+    "match": [
+      "https://github.com*"
+    ],
+    "connect": [],
+    "require": [],
+    "grant": [],
+    "exclude": [],
+    "resources": []
+  },
+  "dependencies": {
+    "axios": "^0.27.2"
   }
 }

@@ -12,6 +12,7 @@ import {
   convertRangeToSeconds,
 } from "./commonUtil";
 import { writeToLog } from "./logUtil";
+import { sendNotificationToUser } from "./notificationUtil";
 import { loadFilter } from "./userExternalUtil";
 import { updateUserCredits } from "./userUtil";
 

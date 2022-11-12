@@ -40,11 +40,29 @@
     "namespace": "http://tampermonkey.net/",
     "license": "https://opensource.org/licenses/MIT",
     "match": [
-      "https://github.com*"
+      "https://www.ea.com/*/fifa/ultimate-team/web-app/*",
+      "https://www.ea.com/fifa/ultimate-team/web-app/*"
     ],
-    "connect": [],
-    "require": [],
-    "grant": [],
+    "connect": [
+      "ea.com",
+      "ea2.com",
+      "futbin.com",
+      "futwiz.com",
+      "discordapp.com",
+      "futbin.org",
+      "exp.host",
+      "on.aws"
+    ],
+    "require": [
+      "https://code.jquery.com/jquery-3.6.1.min.js",
+      "https://raw.githubusercontent.com/ckalgos/FUT-Auto-Buyer/main/external/discord.11.4.2.min.js",
+      "https://greasyfork.org/scripts/47911-font-awesome-all-js/code/Font-awesome%20AllJs.js?version=275337"
+    ],
+    "grant": [
+      "GM_xmlhttpRequest"
+    ],
+    "updateURL": "",
+    "downloadURL": "",
     "exclude": [],
     "resources": []
   },

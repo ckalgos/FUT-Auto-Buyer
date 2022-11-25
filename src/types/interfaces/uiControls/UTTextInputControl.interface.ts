@@ -1,8 +1,8 @@
 import { UTControl } from "./UTControl.interface";
 
-export interface UTTextInputControl<T = string> extends UTControl {
+export interface UTTextInputControl<R = string> extends UTControl {
   new (): UTTextInputControl;
-  getValue(): T | undefined;
-  setValue(value: T): void;
+  getValue(): R | undefined;
+  setValue(value: R): void;
   setPlaceholder(placeHolder: string): void;
 }

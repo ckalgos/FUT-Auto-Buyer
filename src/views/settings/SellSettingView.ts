@@ -1,6 +1,5 @@
 import { InMemoryStore } from "../../classes/InMemoryStore";
 import { createNumericInput } from "../../utils/UI/EA/createNumericInput";
-import { createTextInput } from "../../utils/UI/EA/createTextInput";
 
 export const SellSettingView = () => {
   const wrapperDiv = document.createElement("div");
@@ -13,9 +12,9 @@ export const SellSettingView = () => {
   const sellPrice = createNumericInput(
     (value) => {
       sellSetting.sellPrice = value || 0;
-      store.set("sell-setting", sellSetting);
     },
     "Sell Price",
+    false,
     sellSetting.sellPrice,
     "buyer-settings-field"
   );

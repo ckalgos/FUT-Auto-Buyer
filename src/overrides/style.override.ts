@@ -11,7 +11,7 @@ export const styleOverride = () => {
             width: 100%;
         }
         .buyer-settings-field {
-          margin: 15px;
+          margin-bottom: 20px;
           width: 45%;
         }
         .phone .buyer-settings-field{

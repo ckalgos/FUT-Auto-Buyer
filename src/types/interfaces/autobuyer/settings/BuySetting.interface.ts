@@ -1,5 +1,6 @@
 export interface BuySetting {
   buyPrice?: number;
   bidPrice?: number;
-  textInput?: string;
+  noOfCards?: number;
+  bidExactPrice?: boolean;
 }

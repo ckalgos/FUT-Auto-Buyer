@@ -2,19 +2,25 @@ import { Logger } from "../classes/Logger";
 import { NotificationOrchestrator } from "../classes/notification/NotificationOrchestrator";
 import { Timer } from "../classes/Timer";
 import { AutoBuyerController } from "../controller/Autobuyer.controller";
+import { StatsFactory } from "../factory/StatsFactory";
 import { TransferFactory } from "../factory/TransferFactory";
+import { runStopHooks } from "../hooks/stop/runStopHooks";
 import { UINotificationTypeEnum } from "../types/enums/enums";
 import { find } from "../utils/UI/dom/dom.util";
+import { StatsProcessor } from "./stats/StatsProcessor";
 
 export class AutoBuyerProcessor {
   private static __instance: AutoBuyerProcessor;
-  private __interval: Timer | null = null;
-  private __controllerInstance: AutoBuyerController | null = null;
-  private __isStarted: boolean;
-  private __isOperationInProgress: boolean;
+  private interval: Timer | null = null;
+  private controllerInstance: AutoBuyerController | null = null;
+  private isStarted: boolean;
+  private isOperationInProgress: boolean;
+  private statsProcessor: StatsProcessor;
+
   private constructor() {
-    this.__isStarted = false;
-    this.__isOperationInProgress = false;
+    this.isStarted = false;
+    this.isOperationInProgress = false;
+    this.statsProcessor = StatsFactory.getInstance().getProcessor();
   }
 
   static getInstance() {
@@ -25,19 +31,26 @@ export class AutoBuyerProcessor {
   }
 
   setControllerInstance(instance: AutoBuyerController) {
-    this.__controllerInstance = instance;
+    this.controllerInstance = instance;
   }
 
   private async runActions() {
-    const searchCriteria = this.__controllerInstance?._viewmodel.searchCriteria;
-    if (!searchCriteria || this.__isOperationInProgress) {
+    const searchCriteria = this.controllerInstance?._viewmodel.searchCriteria;
+    if (!searchCriteria || this.isOperationInProgress) {
       return;
     }
     services.Notification.clearAll();
+    const message = runStopHooks();
+    if (message) {
+      Logger.writeToLog(message, UINotificationTypeEnum.NEGATIVE, true);
+      this.stop();
+      return;
+    }
+
     const orchestrator =
       TransferFactory.getInstance().getTransferOrchestrator();
 
-    this.__isOperationInProgress = true;
+    this.isOperationInProgress = true;
     try {
       const results = await orchestrator.searchMarket(searchCriteria);
       if (results) {
@@ -47,39 +60,39 @@ export class AutoBuyerProcessor {
         }
       }
     } catch (err) {
-      Logger.writeToLog("Error occured");
+      Logger.writeToLog("Error occured", UINotificationTypeEnum.NEGATIVE, true);
     }
-    this.__isOperationInProgress = false;
+    this.isOperationInProgress = false;
   }
 
   async start() {
-    if (this.__isStarted) {
+    if (this.isStarted) {
       return;
     }
 
-    Logger.writeToLog("Autobuyer Started");
-    NotificationOrchestrator.getInstance().notify(
+    Logger.writeToLog(
       "Autobuyer Started",
-      { ui: true },
-      UINotificationTypeEnum.POSITIVE
+      UINotificationTypeEnum.POSITIVE,
+      true
     );
     const contentView = find(".ut-navigation-container-view--content");
     if (contentView) {
       contentView.scrollTop = contentView.scrollHeight;
     }
-    this.__isStarted = true;
-    this.__interval = new Timer(this.runActions.bind(this), 5, 10);
-    this.__interval.run();
+    this.isStarted = true;
+    this.interval = new Timer(this.runActions.bind(this), 5, 10);
+    this.interval.run();
+    this.statsProcessor.start();
   }
 
   stop() {
-    this.__interval?.stop();
-    this.__isStarted = false;
-    Logger.writeToLog("Autobuyer Stopped");
-    NotificationOrchestrator.getInstance().notify(
+    this.interval?.stop();
+    this.statsProcessor.stop();
+    this.isStarted = false;
+    Logger.writeToLog(
       "Autobuyer Stopped",
-      { ui: true },
-      UINotificationTypeEnum.NEGATIVE
+      UINotificationTypeEnum.NEGATIVE,
+      true
     );
   }
 

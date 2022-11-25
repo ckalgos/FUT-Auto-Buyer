@@ -13,9 +13,9 @@ export const SearchSettingView = () => {
   const randomBuyPrice = createNumericInput(
     (value) => {
       searchSetting.randomMinBuy = value || 0;
-      store.set("search-setting", searchSetting);
     },
     "Random Min Buy Price",
+    false,
     searchSetting.randomMinBuy || 300,
     "buyer-settings-field"
   );
@@ -24,7 +24,6 @@ export const SearchSettingView = () => {
     "Use Random Min Buy",
     (toggled) => {
       searchSetting.useRandomMinBuy = toggled;
-      store.set("search-setting", searchSetting);
     },
     searchSetting.useRandomMinBuy,
     "buyer-settings-field"
@@ -34,7 +33,6 @@ export const SearchSettingView = () => {
     "Run in Foreground",
     (toggled) => {
       searchSetting.runForeGround = toggled;
-      store.set("search-setting", searchSetting);
     },
     searchSetting.runForeGround,
     "buyer-settings-field"

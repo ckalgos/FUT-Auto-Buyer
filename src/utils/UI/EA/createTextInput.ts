@@ -2,10 +2,12 @@ export const createTextInput = function (
   callBack: (value: string | undefined) => void,
   label: string,
   defaultValue?: string,
+  isNumber: boolean = false,
   customClass?: string
 ) {
   const panelRow = document.createElement("div");
   panelRow.classList.add("panelActionRow");
+
   panelRow.style.fontSize = "1rem";
 
   if (customClass) {
@@ -32,6 +34,7 @@ export const createTextInput = function (
     EventType.CHANGE
   );
   defaultValue && textInput.setValue(defaultValue);
+  isNumber && textInput.setType("number");
 
   panelRow.append(textInput.getRootElement());
   return panelRow;

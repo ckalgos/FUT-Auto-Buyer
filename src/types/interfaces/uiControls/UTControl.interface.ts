@@ -5,4 +5,5 @@ export interface UTControl {
   init(): void;
   removeFromSuperview(): void;
   setInteractionState(state: boolean): void;
+  setType(type: string): void;
 }

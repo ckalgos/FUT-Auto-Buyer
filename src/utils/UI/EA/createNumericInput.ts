@@ -1,6 +1,7 @@
 export const createNumericInput = function (
   callBack: (value: number | undefined) => void,
   label: string,
+  isNumberInput: boolean = false,
   defaultValue?: number,
   customClass?: string
 ) {
@@ -24,23 +25,49 @@ export const createNumericInput = function (
 
   panelRow.append(buttonLabel);
 
+  const input = isNumberInput
+    ? createNumberSpinnerInput(callBack)
+    : createNumericSpinnerInput(callBack);
+
+  defaultValue && input.setValue(defaultValue);
+
+  panelRow.append(input.getRootElement());
+  return panelRow;
+};
+
+const createNumericSpinnerInput = (
+  callBack: (value: number | undefined) => void
+) => {
   const numericInput = new UTNumericInputSpinnerControl();
   numericInput.init();
 
   const numericTextInput = numericInput.getInput();
-
-  numericTextInput.setPlaceholder(
-    services.Localization?.localize("roles.defaultRole") || ""
-  );
-
   numericTextInput.addTarget(
     numericInput,
     () => callBack(numericInput.getValue()),
     EventType.CHANGE
   );
+  numericTextInput.setPlaceholder(
+    services.Localization?.localize("roles.defaultRole") || ""
+  );
 
-  defaultValue && numericInput.setValue(defaultValue);
+  return numericInput;
+};
 
-  panelRow.append(numericInput.getRootElement());
-  return panelRow;
+const createNumberSpinnerInput = (
+  callBack: (value: number | undefined) => void
+) => {
+  const numberInput = new UTNumberInputSpinnerControl();
+  numberInput.init();
+  numberInput.addTarget(
+    numberInput,
+    () => callBack(numberInput.getValue()),
+    EventType.CHANGE
+  );
+  numberInput.setPlaceholder(
+    services.Localization?.localize(
+      "playerHealth.inputPlaceholder.unlimited"
+    ) || ""
+  );
+  return numberInput;
 };

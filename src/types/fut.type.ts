@@ -12,6 +12,7 @@ import { PINEventType } from "./interfaces/services/pinEvent.interface";
 import { Services } from "./interfaces/services/services.interface";
 import { UTCurrencyInputControl } from "./interfaces/uiControls/UTCurrentInputControl.interface";
 import { UTNavigationButtonControl } from "./interfaces/uiControls/UTNavigationButtonControl.interface";
+import { UTNumberInputSpinnerControl } from "./interfaces/uiControls/UTNumberInputSpinnerControl.interface";
 import { UTNumericInputSpinnerControl } from "./interfaces/uiControls/UTNumericInputSpinnerControl.interface";
 import { UTStandardButtonControl } from "./interfaces/uiControls/UTStandardButtonControl.interface";
 import { UTTextInputControl } from "./interfaces/uiControls/UTTextInputControl.interface";
@@ -30,6 +31,7 @@ declare global {
   const UTStandardButtonControl: UTStandardButtonControl;
   const UTNumericInputSpinnerControl: UTNumericInputSpinnerControl;
   const UTTextInputControl: UTTextInputControl;
+  const UTNumberInputSpinnerControl: UTNumberInputSpinnerControl;
   const UTToggleCellView: UTToggleInputControl;
   const UTCurrencyInputControl: UTCurrencyInputControl;
   const UTNavigationButtonControl: UTNavigationButtonControl;

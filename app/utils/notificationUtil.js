@@ -46,7 +46,7 @@ const formDiscordMessage = (message, isSuccess, isCustomDiscordName, color) => {
         description: message,
         color: color ? color : isSuccess ? 2555648 : 16711680,
         footer: {
-          text: `Auto Buyer Alert - ${new Date().toLocaleTimeString()}`,
+          text: `Auto Buyer Alert - ${new Date().toLocaleTimeString()} - Balance: ${services.User.getUser().coins.amount}`,
           icon_url:
             "https://cdn.discordapp.com/icons/768336764447621122/9de9ea0a7c6239e2f2fbfbd716189e79.webp",
         },

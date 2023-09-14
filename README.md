@@ -9,6 +9,8 @@
 <p align="center"> 
   <h3 align="center">FUT AutoBuyer</h3>
 
+   <h1>You can install the script from <a href='https://chrome.google.com/webstore/detail/boffdonfioidojlcpmfnkngipappmcoh'>Chrome Store</a></h1>
+   
   <p align="center">
     Autobuyer from FIFA Ultimate Team Webapp!
     <br />  

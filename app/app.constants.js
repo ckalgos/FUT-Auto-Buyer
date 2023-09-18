@@ -53,6 +53,7 @@ export const defaultCommonSetting = {
   idAbNumberFilterSearchisDefaultValue: true,
   idAbPauseFor: "15-30S",
   idAbSoundToggle: true,
+  idAbSoundVolume: 100,
   idAbStopAfter: "1-2H",
   idAbStopErrorCodeCount: 3,
   idAbWaitTime: "5-8",

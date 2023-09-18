@@ -3,6 +3,7 @@ import {
   idAbMessageNotificationToggle,
   idAbSendListingNotificationToggle,
   idAbSoundToggle,
+  idAbSoundVolume,
   idCapatchaMp3,
   idDiscordChannelId,
   idDiscordToken,
@@ -94,6 +95,13 @@ export const notificationSettingsView = function () {
     "Send Notification",
     { idAbMessageNotificationToggle },
     "",
+    "CommonSettings"
+  )}
+  ${generateTextInput(
+    "Sound Volume",
+    100,
+    { idAbSoundVolume },
+    "in percent",
     "CommonSettings"
   )}
    ${
